@@ -101,7 +101,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                       ),
                                       
                                       textInput('K', 
-                                                div(h5(tags$span(style="color:blue", "No of covariates"))), "10"),
+                                                div(h5(tags$span(style="color:blue", "No of covariates"))), "25"),
                                       
                                       tags$hr(),
                                       textInput('pow', 
@@ -160,7 +160,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                    ")),
                                   
                                   
-                                  tabPanel("1 xxxxxxxxxxx", value=7, 
+                                  tabPanel("1 Measured prognostic", value=7, 
                                            h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
                                            
                                            
@@ -182,7 +182,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            
                                   ) ,
                                   
-                                  tabPanel("2 xxxxxxxxx", value=3, 
+                                  tabPanel("2 Measured non prognostic", value=3, 
                                            h4("All covariates are not prognostic, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
                                            
                                            
@@ -204,9 +204,9 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            
                                   ) ,
                                   
-                                  tabPanel("3 xxxxxxxxxxxxxxxx", value=7, 
+                                  tabPanel("3 Assessing covariate balance", value=7, 
                                            
-                                           
+                                           h4("Larger sample sizes does not mean better covariate balance (however that is defined). Precision becomes better so smaller differences are picked up."),
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
                                            
                                            fluidRow(
@@ -221,25 +221,27 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
-                                  tabPanel("4 xxxxxxx", value=3, 
+                                  tabPanel("4 Summary", value=3, 
                                            
                                            h5(paste("Enter xxxxxxxxxxxxxxxxxxx")), 
                                            textInput('rcat2', 
                                                      div(h5(tags$span(style="color:blue",
                                                      ))), "999"),
-                                           
+                                           h4(htmlOutput("textWithNumber1",) ),
                                            
                                          #  div(plotOutput("preds2", width=fig.width1, height=fig.height3)),
                                          div( verbatimTextOutput("summary1") )  ,
                                            
-                                         h4("We see adjusting for known measured prognostic covariates results in a more precise estimate "),
-                                         h4("We see adjusting for measured non prognostic covariates we do not lose much precision."),
+                                         h4("[1 v 2] We see adjusting for known measured prognostic covariates results in a more precise estimate "),
+                                         h4("[3 v 4] We see adjusting for measured non prognostic covariates we do not lose much precision."),
                                            fluidRow(
                                                column(width = 7, offset = 0, style='padding:1px;',
                                           #            h4(paste("Figure 4. Plot of the predicted probabilities")), 
                                                       
                                                )),
                                   ),
+                                  
+                        
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel("5 xxxxxxxxxxxx", 
                                            h4(paste("xxxxxxxxxxxxxxx")),
@@ -529,10 +531,18 @@ server <- shinyServer(function(input, output   ) {
         
         doff <- as.vector( r["mean in group 0"] - r["mean in group 1"] )
         
+        
+        placebo <- as.vector(table(z)) [1]
+        treated <- as.vector(table(z)) [2]
+        bigN <- placebo + treated
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
         
-        return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2)) 
+        return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2,
+                      
+                      placebo=placebo, treated=treated, bigN=bigN
+                      
+                      )) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     
@@ -563,6 +573,10 @@ server <- shinyServer(function(input, output   ) {
     output$reg.plot <- renderPlot({         
         
         # Get the  data
+        
+        placebo <- mcmc()$placebo
+        treated <- mcmc()$treated
+        bigN <- mcmc()$bigN
    
         doff <- mcmc()$doff
         conf <- mcmc()$conf
@@ -572,7 +586,8 @@ server <- shinyServer(function(input, output   ) {
         par(mar=c(3,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
         plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
              ylab="Estimate Mean difference", xaxs="i",  type="n", 
-             main="'Imbalance' estimate mean difference of covariate distribution & 95% confidence interval ")
+             main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
+             placebo=",placebo,", treated=",treated,", total=",bigN,""))
         #axis(2, seq(-5,5,1))
         # axis(1, seq(1,K,10))
         points(1:K, doff[,1], pch=20)
@@ -670,8 +685,12 @@ server <- shinyServer(function(input, output   ) {
         stat1 <- reg1()$stat1 # ignoring true prog 
         stat2 <- reg1()$stat2 # adjusting for true prog
         
-        stat3 <- reg2()$stat3  #ignoring non prog
+        stat3 <- reg2()$stat3  # ignoring non prog
         stat4 <- reg2()$stat4  # adj for non prog
+        
+        # placebo <- mcmc()$placebo
+        # treated <- mcmc()$treated
+        # bigN <- mcmcm()$bigN
         
         d <- rbind(stat1, stat2, stat3, stat4)
         
@@ -680,13 +699,11 @@ server <- shinyServer(function(input, output   ) {
         colnames(d) <- c("Estimate","Standard error","t-value","P-value","sigma", "Adj. R2")
         
         rownames(d) <- c(
-            "multivariable adjusting for measured true prognostic covariates",
-                         "bivariate no adjustment, measured prognostic covariates ignored",
+                         "[1] Multivariable adjusting for measured true prognostic covariates",
+                         "[2] Bivariate no adjustment, measured prognostic covariates ignored",
                         
-                        
-                       
-                         "multivariable adjusting for measured non prognostic covariates",
-                         "bivariate no adjustment, measured non prognostic covariates ignored"
+                         "[3] Multivariable adjusting for measured non prognostic covariates",
+                         "[4] Bivariate no adjustment, measured non prognostic covariates ignored"
                          )
         
         return(print(d, digits=4))
@@ -697,7 +714,32 @@ server <- shinyServer(function(input, output   ) {
     
     
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
+    
+    output$textWithNumber1 <- renderText({ 
+        
+         placebo <- mcmc()$placebo
+        treated <- mcmc()$treated
+        bigN <- mcmcm()$bigN
+        
+        HTML(paste0(  tags$hr(),
+                      "Randomised 1:1 we have  "  
+                      , tags$span(style="color:red",   placebo)  ,
+                      " placebo patients and  "  
+                      , tags$span(style="color:red",  treated ) ,
+                      " patients, so in total "
+                      , tags$span(style="color:red",  bigN  ),
+                      " patients.", 
+                      br(), br(),
+                       
+                      br(), br(),
+                      tags$hr()
+                      
+                      
+        ))    
+        
+    })  
     
     
     
