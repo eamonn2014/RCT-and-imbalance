@@ -105,7 +105,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                       
                                       tags$hr(),
                                       textInput('pow', 
-                                                div(h5(tags$span(style="color:blue", "power %"))), "90"),
+                                                div(h5(tags$span(style="color:blue", "power %"))), "99.9"),
                                       
                                       textInput('sigma', 
                                                 div(h5(tags$span(style="color:blue", "residual variation"))), "2"),
@@ -114,8 +114,8 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                                 div(h5(tags$span(style="color:blue", "treatment effect"))), ".4"),
                                       
                                       
-                                      # textInput('or2', 
-                                      #           div(h5(tags$span(style="color:blue", "yyyyyyyyyyyyyyyy"))), "1"),
+                                      textInput('alpha', 
+                                                 div(h5(tags$span(style="color:blue", "alpha level two sided %"))), "1"),
                                       
                                       #  textInput('n2y2', 
                                       # #      div(h5("Enter the true correlation (tab 2)")), ".8"),
@@ -230,9 +230,10 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            
                                            
                                          #  div(plotOutput("preds2", width=fig.width1, height=fig.height3)),
+                                         div( verbatimTextOutput("summary1") )  ,
                                            
-                                           
-                                           
+                                         h4("We see adjusting for known measured prognostic covariates results in a more precise estimate "),
+                                         h4("We see adjusting for measured non prognostic covariates we do not lose much precision."),
                                            fluidRow(
                                                column(width = 7, offset = 0, style='padding:1px;',
                                           #            h4(paste("Figure 4. Plot of the predicted probabilities")), 
@@ -451,12 +452,15 @@ server <- shinyServer(function(input, output   ) {
         
         sigma <- as.numeric(unlist(strsplit(input$sigma,",")))
         
+        alpha <- as.numeric(unlist(strsplit(input$alpha,",")))
+        
         theta <- (as.numeric(unlist(strsplit(input$theta,","))))   # user enter odds, need log for the maths
         
         return(list(  
             K=K,  
             pow=pow/100,
             sigma=sigma, 
+            alpha=alpha/100, 
             theta=theta
         ))
         
@@ -473,9 +477,10 @@ server <- shinyServer(function(input, output   ) {
         pow=sample$pow
         sigma=sample$sigma
         theta=sample$theta        
+        alpha=sample$alpha    
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
-        Po <- power.t.test( delta =theta, sd=sigma, sig.level=0.05,
+        Po <- power.t.test( delta =theta, sd=sigma, sig.level=alpha,
                             power=pow, type="two.sample", alternative=c("two.sided"))
 
         N <-ceiling(Po$n)*2
@@ -598,7 +603,13 @@ server <- shinyServer(function(input, output   ) {
         A<-summary(ols2)
         B<-summary(ols1)
         
-        return(list(  A=A, B=B)) 
+        #get stats so we can compare together
+        x<- A
+        stat1 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+        x<- B
+        stat2 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+        
+        return(list(  A=A, B=B, stat1=stat1, stat2=stat2)) 
         
     })
     
@@ -627,7 +638,15 @@ server <- shinyServer(function(input, output   ) {
         A<-summary(ols2)
         B<-summary(ols1)
         
-        return(list(  C=A, D=B)) 
+        #get stats so we can compare together
+        x<- A
+        stat3 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+        x<- B
+        stat4 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+        
+        
+        
+        return(list(  C=A, D=B,   stat4=stat4, stat3=stat3)) 
         
     })
     
@@ -646,6 +665,33 @@ server <- shinyServer(function(input, output   ) {
     
     
     
+    output$summary1 <- renderPrint({
+        
+        stat1 <- reg1()$stat1 # ignoring true prog 
+        stat2 <- reg1()$stat2 # adjusting for true prog
+        
+        stat3 <- reg2()$stat3  #ignoring non prog
+        stat4 <- reg2()$stat4  # adj for non prog
+        
+        d <- rbind(stat1, stat2, stat3, stat4)
+        
+        d<- data.frame(d)
+        
+        colnames(d) <- c("Estimate","Standard error","t-value","P-value","sigma", "Adj. R2")
+        
+        rownames(d) <- c(
+            "multivariable adjusting for measured true prognostic covariates",
+                         "bivariate no adjustment, measured prognostic covariates ignored",
+                        
+                        
+                       
+                         "multivariable adjusting for measured non prognostic covariates",
+                         "bivariate no adjustment, measured non prognostic covariates ignored"
+                         )
+        
+        return(print(d, digits=4))
+        
+    })
     
     
     
