@@ -111,7 +111,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                                 div(h5(tags$span(style="color:blue", "residual variation"))), "2"),
                                       tags$hr(), 
                                       textInput('theta', 
-                                                div(h5(tags$span(style="color:blue", "treatment effect"))), "2"),
+                                                div(h5(tags$span(style="color:blue", "treatment effect"))), ".4"),
                                       
                                       
                                       # textInput('or2', 
@@ -161,12 +161,12 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   
                                   
                                   tabPanel("1 xxxxxxxxxxx", value=7, 
-                                           h4("xxxxxxxxxxxxxxxxxxxx"),
+                                           h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
                                            
                                            
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
-                                                      div( verbatimTextOutput("A") )     
+                                                      div( verbatimTextOutput("B") )     
                                                      # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
                                                       
                                                ) ,
@@ -174,7 +174,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                                
                                                fluidRow(
                                                    column(width = 5, offset = 0, style='padding:1px;',
-                                                          div( verbatimTextOutput("B") )        
+                                                          div( verbatimTextOutput("A") )        
                                                         #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
                                                           
                                                    ))),
@@ -183,42 +183,37 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   ) ,
                                   
                                   tabPanel("2 xxxxxxxxx", value=3, 
+                                           h4("All covariates are not prognostic, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
+                                           
+                                           
+                                           fluidRow(
+                                               column(width = 6, offset = 0, style='padding:1px;',
+                                                      div( verbatimTextOutput("D") )     
+                                                      # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+                                                      
+                                               ) ,
+                                               
+                                               
+                                               fluidRow(
+                                                   column(width = 5, offset = 0, style='padding:1px;',
+                                                          div( verbatimTextOutput("C") )        
+                                                          #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
+                                                          
+                                                   ))),
+                                           h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
+                                           
+                                  ) ,
+                                  
+                                  tabPanel("3 xxxxxxxxxxxxxxxx", value=7, 
+                                           
                                            
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
                                            
                                            fluidRow(
                                                column(width = 7, offset = 0, style='padding:1px;',
-                                                #      h4(paste("Figure 3. xxxxxxxxxxxxxxx")), 
+                                                      #      h4(paste("Figure 3. xxxxxxxxxxxxxxx")), 
                                                       
                                                )),
-                                           
-                                           
-                                  ),
-                                  
-                                  tabPanel("3 xxxxxxxxxxxxxxxx", value=7, 
-                                           
-                                           fluidRow(
-                                               column(width = 6, offset = 0, style='padding:1px;',
-                                                      h4("Table 1 xxxxxxxxxxxxxxxxx"), 
-                                                      #div( verbatimTextOutput("reg.summary1") )
-                                               ) ,
-                                               
-                                               
-                                               
-                                               h4("Table xxxxxxxxxxxxxxxxxxxxx"),
-                                               fluidRow(
-                                                   column(width = 6, offset = 0, style='padding:1px;',
-                                                          
-                                                          splitLayout(
-                                                              textInput("bas1", div(h5("Enter xxxxxxxx")), value="1", width=100),
-                                                              textInput("bas2", div(h5("Enter xxxxxxxx")),value="2", width=100)
-                                                          ),
-                                                          
-                                                          
-                                                         # div( verbatimTextOutput("reg.summary3")),
-                                                          
-                                                          h4(htmlOutput("textWithNumber",) ),
-                                                   ))),
                                            
                                   ) ,
                                   
@@ -499,7 +494,8 @@ server <- shinyServer(function(input, output   ) {
         # put the data together
         dat <- fake
         
-        
+        y <- a +  theta*z + rnorm(N,0, sigma)
+        fake2 <- data.frame(X=X, y=y, z=z)
         
         
         
@@ -531,7 +527,7 @@ server <- shinyServer(function(input, output   ) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
         
-        return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X)) 
+        return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2)) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     
@@ -616,6 +612,54 @@ server <- shinyServer(function(input, output   ) {
         
         return(reg1()$B)
     })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    reg2 <- reactive({  
+        
+        d <- mcmc()$fake2
+        
+        X <- mcmc()$X  #have to bring X through , as model will fail without this
+        
+        ols2 <- lm(y~X+z,data=d)
+        ols1 <- lm(y~z,d)
+        
+        A<-summary(ols2)
+        B<-summary(ols1)
+        
+        return(list(  C=A, D=B)) 
+        
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$C <- renderPrint({
+        
+        return(reg2()$C)
+    })
+    
+    output$D <- renderPrint({
+        
+        return(reg2()$D)
+    })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
