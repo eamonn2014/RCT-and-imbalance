@@ -125,7 +125,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                                 div(h5(tags$span(style="color:blue", "No of covariates"))), "10"),
                                       
                                       textInput('Kp', 
-                                                div(h5(tags$span(style="color:blue", "Make covriates X1 to Xn prognostic only"))), "5"),
+                                                div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab3 only)"))), "5"),
                                       
                                       tags$hr(),
                                       textInput('pow', 
