@@ -1,6 +1,27 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Rshiny ideas from on https://gallery.shinyapps.io/multi_regression/
+#  It follows that covariate imbalance, contrary
+ #to what has been claimed by Altman, is just as much of a problem for large Studies as for
+# small ones
+
+#Using observed imbalances to find covariates to adjust for is arbitrary and reduces power by maximizing co-linearity with treatment
+
+
+#' Can you reconcile these two points?
+#'   
+#'   @f2harrell
+#' : One covariate imbalance is likely to be counterbalanced by another in opposite direction.
+#' 
+#' @stephensenn
+#' : One covariate imblance likely coincides with other imbalances in same direction (thus, adjusting for one adjusts for them all)
+#' Stephen John Senn
+#' @stephensenn
+#' ·
+#' 22 Aug 2019
+#' 1/2 So the first is true(ish) of unobserved covariates. The second  covers the fact that given observed  imbalance/balance in one covariate there may be imbalance/balance in another. So what?!
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/2
 rm(list=ls()) 
 set.seed(333) # reproducible
 library(directlabels)
@@ -51,7 +72,7 @@ expit <- function(x) 1/(1/exp(x) + 1)
 inv_logit <- function(logit) exp(logit) / (1 + exp(logit))
 is.even <- function(x){ x %% 2 == 0 } # function to id. odd maybe useful
 options(width=200)
-
+options(scipen=999)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2
                 # paper
@@ -101,7 +122,10 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                       ),
                                       
                                       textInput('K', 
-                                                div(h5(tags$span(style="color:blue", "No of covariates"))), "25"),
+                                                div(h5(tags$span(style="color:blue", "No of covariates"))), "10"),
+                                      
+                                      textInput('Kp', 
+                                                div(h5(tags$span(style="color:blue", "No of prognostic covariates"))), "5"),
                                       
                                       tags$hr(),
                                       textInput('pow', 
@@ -160,7 +184,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                    ")),
                                   
                                   
-                                  tabPanel("1 Measured prognostic", value=7, 
+                                  tabPanel("1 Measured covariates prognostic", value=7, 
                                            h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
                                            
                                            
@@ -182,7 +206,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            
                                   ) ,
                                   
-                                  tabPanel("2 Measured non prognostic", value=3, 
+                                  tabPanel("2 Measured covariates non prognostic", value=3, 
                                            h4("All covariates are not prognostic, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
                                            
                                            
@@ -204,21 +228,32 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            
                                   ) ,
                                   
-                                  tabPanel("3 Assessing covariate balance", value=7, 
-                                           
-                                           h4("Larger sample sizes does not mean better covariate balance (however that is defined). Precision becomes better so smaller differences are picked up."),
-                                           div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
-                                           
-                                           fluidRow(
-                                               column(width = 7, offset = 0, style='padding:1px;',
-                                                      #      h4(paste("Figure 3. xxxxxxxxxxxxxxx")), 
-                                                      
-                                               )),
-                                           
-                                  ) ,
-                                  
+                           
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                  tabPanel( "3 Measured covariates mix of non prog and prognostic", 
+                                           h4(paste("xxxxxxxxxxxxxxx")),
+                                           
+                                           h4("Some covariates are  prognostic, some not"),
+                                           
+                                           
+                                           fluidRow(
+                                             column(width = 6, offset = 0, style='padding:1px;',
+                                                    div( verbatimTextOutput("E") )     
+                                                    # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+                                                    
+                                             ) ,
+                                             
+                                             
+                                             fluidRow(
+                                               column(width = 5, offset = 0, style='padding:1px;',
+                                                      div( verbatimTextOutput("F") )        
+                                                      #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
+                                                      
+                                               ))),
+                                           h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
+                                           
+                                           width = 30 )     ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
                                   tabPanel("4 Summary", value=3, 
@@ -232,8 +267,9 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                          #  div(plotOutput("preds2", width=fig.width1, height=fig.height3)),
                                          div( verbatimTextOutput("summary1") )  ,
                                            
-                                         h4("[1 v 2] We see adjusting for known measured prognostic covariates results in a more precise estimate "),
+                                         h4("[1 v 2] We see adjusting for known measured prognostic covariates results in a more precise estimate. "),
                                          h4("[3 v 4] We see adjusting for measured non prognostic covariates we do not lose much precision."),
+                                         h4("[5 v 6] We see adjusting for measured covariates results in a more precise estimate."),
                                            fluidRow(
                                                column(width = 7, offset = 0, style='padding:1px;',
                                           #            h4(paste("Figure 4. Plot of the predicted probabilities")), 
@@ -242,50 +278,21 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   ),
                                   
                         
+                               
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel("5 xxxxxxxxxxxx", 
-                                           h4(paste("xxxxxxxxxxxxxxx")),
+                                  tabPanel("5 Assessing covariate balance", value=7, 
                                            
-                                           h4("xxxxxxxxxxxxxx"),
+                                           h4("Larger sample sizes does not mean better covariate balance (however that is defined). Precision becomes better so smaller differences are picked up."),
+                                           div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
+                                           
                                            fluidRow(
-                                               column(width = 6, offset = 0, style='padding:1px;',
-                                                      
-                                                    #  div(plotOutput("preds", width=fig.width7, height=fig.height3)),
-                                                      
-                                                      fluidRow(
-                                                          
-                                                          textInput('base', 
-                                                                div(h5(tags$span(style="color:blue", 
-                                                                                    "xxxxxxxxxxxx"))), "1")
-                                                          
-                                                          
-                                                      ),
-                                               ) ,
-                                               
-                                               fluidRow(
-                                                   
-                                                   
-                                                   column(width = 5, offset = 0, style='padding:1px;',
-                                                          
-                                                       #   div(plotOutput("predicts", width=fig.width7, height=fig.height3)),
-                                                          
-                                                          fluidRow(
-                                                              
-                                                              textInput('group', 
-                                                                        div(h5(tags$span(style="color:blue", 
-                                                                                         "xxxxxxxxxxxxxxx"))), "1"),
-                                                              
-                                                              textInput('rcat', 
-                                                                        div(h5(tags$span(style="color:blue", 
-                                                                                         "xxxxxxxxxxxxxxx"))), "999"),
-                                                              
-                                                          ),
-                                                          
-                                                   ))),
+                                             column(width = 7, offset = 0, style='padding:1px;',
+                                                    #      h4(paste("Figure 3. xxxxxxxxxxxxxxx")), 
+                                                    
+                                             )),
                                            
-                                           
-                                           width = 30 )     ,
-                                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                  ) ,
+                                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel("6 xxxx",
                                         #   h4(paste("Table 3 Predicted probabilities, the estimated mean Y (meanY) is calculated by summing values of Y multiplied by the estimated Prob(Y=j)")),
                                            fluidRow(
@@ -450,6 +457,8 @@ server <- shinyServer(function(input, output   ) {
         
         K <- as.numeric(unlist(strsplit(input$K,",")))
         
+        Kp <- as.numeric(unlist(strsplit(input$Kp,",")))
+        
         pow <- as.numeric(unlist(strsplit(input$pow,",")))
         
         sigma <- as.numeric(unlist(strsplit(input$sigma,",")))
@@ -460,6 +469,7 @@ server <- shinyServer(function(input, output   ) {
         
         return(list(  
             K=K,  
+            Kp=Kp,  
             pow=pow/100,
             sigma=sigma, 
             alpha=alpha/100, 
@@ -476,6 +486,7 @@ server <- shinyServer(function(input, output   ) {
         sample <- random.sample()
        
         K=sample$K
+        Kp=sample$Kp
         pow=sample$pow
         sigma=sample$sigma
         theta=sample$theta        
@@ -496,16 +507,22 @@ server <- shinyServer(function(input, output   ) {
         # b= rep(1,K)                               
         b <- round(sort(runif(K, 0,5)), digits=2)  # making up some beta coefficients
         
+        
+        #prognostic
         y <- a+ X %*% b + theta*z + rnorm(N,0, sigma)
         fake <- data.frame(X=X, y=y, z=z)
-        # put the data together
         dat <- fake
+      
         
+        # not prognostic
         y <- a +  theta*z + rnorm(N,0, sigma)
         fake2 <- data.frame(X=X, y=y, z=z)
         
         
-        
+        #mix of prog. and non prognostic
+        y <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma)
+        fake3 <- data.frame(X=X, y=y, z=z)
+       
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # confidence interval
@@ -525,6 +542,7 @@ server <- shinyServer(function(input, output   ) {
         mzz <-   lapply(zz, function(x) 
             (x[5])
         )
+        
         mzz<- as.data.frame(mzz)
         ci <- t(mzz)
         r<- as.data.frame(ci)
@@ -538,7 +556,7 @@ server <- shinyServer(function(input, output   ) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
         
-        return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2,
+        return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                       
                       placebo=placebo, treated=treated, bigN=bigN
                       
@@ -678,6 +696,43 @@ server <- shinyServer(function(input, output   ) {
     
     
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    reg3<- reactive({  
+      
+      d <- mcmc()$fake3
+      
+      X <- mcmc()$X  #have to bring X through , as model will fail without this
+      
+      ols2 <- lm(y~X+z,data=d)
+      ols1 <- lm(y~z,d)
+      
+      A<-summary(ols2)
+      B<-summary(ols1)
+      
+      #get stats so we can compare together
+      x<- A
+      stat5 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+      x<- B
+      stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+      
+      
+      
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6)) 
+      
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$F <- renderPrint({
+      
+      return(reg3()$A)
+    })
+    
+    output$E <- renderPrint({
+      
+      return(reg3()$B)
+    })
+    
     
     
     output$summary1 <- renderPrint({
@@ -688,22 +743,29 @@ server <- shinyServer(function(input, output   ) {
         stat3 <- reg2()$stat3  # ignoring non prog
         stat4 <- reg2()$stat4  # adj for non prog
         
+        
+        stat5 <- reg3()$stat5  # ignoring non prog
+        stat6 <- reg3()$stat6  # adj for non prog
+        
         # placebo <- mcmc()$placebo
         # treated <- mcmc()$treated
         # bigN <- mcmcm()$bigN
         
-        d <- rbind(stat1, stat2, stat3, stat4)
+        d <- rbind(stat1, stat2, stat3, stat4, stat5, stat6)
         
         d<- data.frame(d)
         
-        colnames(d) <- c("Estimate","Standard error","t-value","P-value","sigma", "Adj. R2")
+        colnames(d) <- c("Estimate","Standard error","t-value","P-value","sigma", "Adj.R2")
         
         rownames(d) <- c(
                          "[1] Multivariable adjusting for measured true prognostic covariates",
                          "[2] Bivariate no adjustment, measured prognostic covariates ignored",
                         
                          "[3] Multivariable adjusting for measured non prognostic covariates",
-                         "[4] Bivariate no adjustment, measured non prognostic covariates ignored"
+                         "[4] Bivariate no adjustment, measured non prognostic covariates ignored",
+                         
+                         "[5] Multivariable adjusting for measured prognostic and non prognostic covariates",
+                         "[6] Bivariate no adjustment, measured covariates ignored"
                          )
         
         return(print(d, digits=4))
