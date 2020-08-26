@@ -125,7 +125,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                                 div(h5(tags$span(style="color:blue", "No of covariates"))), "10"),
                                       
                                       textInput('Kp', 
-                                                div(h5(tags$span(style="color:blue", "No of prognostic covariates"))), "5"),
+                                                div(h5(tags$span(style="color:blue", "Make covriates X1 to Xn prognostic only"))), "5"),
                                       
                                       tags$hr(),
                                       textInput('pow', 
@@ -234,7 +234,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   tabPanel( "3 Measured covariates mix of non prog and prognostic", 
                                            h4(paste("xxxxxxxxxxxxxxx")),
                                            
-                                           h4("Some covariates are  prognostic, some not"),
+                                           h4("First X1:Xn covariates only are prognostic, the remainder are not"),
                                            
                                            
                                            fluidRow(
@@ -258,7 +258,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   
                                   tabPanel("4 Summary", value=3, 
                                            
-                                           h5(paste("Enter xxxxxxxxxxxxxxxxxxx")), 
+                                           h5(paste("Using only one realisation we make some observations (to be more certain of findings requires numerous simulations).")), 
                                            textInput('rcat2', 
                                                      div(h5(tags$span(style="color:blue",
                                                      ))), "999"),
