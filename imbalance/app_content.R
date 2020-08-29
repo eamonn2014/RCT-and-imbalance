@@ -954,8 +954,8 @@ server <- shinyServer(function(input, output   ) {
         X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
         z <- sample(c(0,1), N, replace=T)              # treatment indicator
         b <- round(sort(runif(K, 0,5)), digits=2)      # making up some beta coefficients
-        y <- a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
-        y2 <- a+  theta*z + rnorm(N,0, sigma)          # linear predictor
+        y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
+        y2 <- a+           theta*z + rnorm(N,0, sigma)          # linear predictor
         y3 <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma)
         
         data.frame(X=X, y=y, z=z, y2=y2, y3=y3)
@@ -1016,7 +1016,7 @@ server <- shinyServer(function(input, output   ) {
       
      
       library(plyr)
-      res <- raply(100,statfun(simfun())) # run the model many times
+      res <- raply(simuls, statfun(simfun())) # run the model many times
       #res <- (res[,dim(res)[2],1:2])      # pull out mean of interest and se of interest
       result <- apply(res,2,mean)
       
@@ -1030,7 +1030,7 @@ server <- shinyServer(function(input, output   ) {
       )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
-    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     
     
@@ -1039,6 +1039,90 @@ server <- shinyServer(function(input, output   ) {
     })
     
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+    
+    simul2 <- reactive({
+      
+      sample <- random.sample()
+      # need to rename to avoid recursive issues
+      K1=sample$K
+      Kp=sample$Kp
+      pow=sample$pow
+      sigma1=sample$sigma
+      theta1=sample$theta        
+      alpha=sample$alpha  
+      
+      
+      simuls=sample$simuls
+      
+      nobs <- mcmc()$N # 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # simulate models many times collect estimate and SE
+      
+      simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
+        
+        x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
+        
+        A <- forceSymmetric(x)
+        
+        diag(A) <- 1
+    
+        M <- A
+        
+        M <- nearPD(M, conv.tol = 1e-7)$mat # default
+        # Cholesky decomposition
+        L = chol(M)
+        nvars = dim(L)[1]
+     
+        # Random variables that follow an M correlation matrix
+        r = t(L) %*% matrix(rnorm(nvars*nobs, 2,2), nrow=nvars, ncol=nobs)
+        r = t(r)
+        
+        r <- as.matrix(r)
+        rdata <- as.data.frame(r)
+        XX<- as.matrix(rdata)
+        y <- a+ XX %*% b + theta*z + rnorm(N,0, sigma)
+        data.frame(X=X, y=y, z=z)
+        
+      }
+      
+      #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
+      
+      statfun <- function(d) {
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        zz <- lm(y~., data=d)    ## adjusting for prognostic X, y2 is not included by use of the '-'
+        f <-  summary(zz)
+        
+        zz1 <- lm(y~z, data=d)      ## not adjusting for prognostic X, only trt. indictor included
+        f1 <-  summary(zz1)
+        
+        cbind(
+          
+          coef(f)["z", "Estimate"],
+          coef(f)["z", "Std. Error"],
+          coef(f1)["z", "Estimate"],
+          coef(f1)["z", "Std. Error"]
+          
+        )
+        
+      }
+      
+      
+      library(plyr)
+      res <- raply(100,statfun(simfun())) # run the model many times
+      result <- apply(res,2,mean)
+      
+      
+      
+      return(list(  
+        
+        res=res,
+        result=result  # means
+        
+      )) 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    })
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     
     
