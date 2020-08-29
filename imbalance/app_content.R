@@ -1242,9 +1242,9 @@ server <- shinyServer(function(input, output   ) {
                     "Mean and se adjusting for true prognostic covariates (black lines) "  
                     , tags$span(style="color:red",  p3(result[1]))  ,
                     " ; "  
-                    , tags$span(style="color:red",  p3(result[3] )) ,
+                    , tags$span(style="color:red",  p3(result[2] )) ,
                     " and ignoring in analysis (red lines) "
-                    , tags$span(style="color:red",  p3(result[2]  )),
+                    , tags$span(style="color:red",  p3(result[3]  )),
                     " ; "
                     , tags$span(style="color:red",  p3(result[4] )) ,
                     
@@ -1252,9 +1252,9 @@ server <- shinyServer(function(input, output   ) {
                     "Mean and se adjusting for non prognostic covariates (blue lines) "  
                     , tags$span(style="color:red",  p3(result[5]))  ,
                     " ; "  
-                    , tags$span(style="color:red",  p3(result[7] )) ,
+                    , tags$span(style="color:red",  p3(result[6] )) ,
                     " and ignoring in analysis (green lines) "
-                    , tags$span(style="color:red",  p3(result[6]  )),
+                    , tags$span(style="color:red",  p3(result[7]  )),
                     " ; "
                     , tags$span(style="color:red",  p3(result[8] )) ,
                     
