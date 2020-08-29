@@ -61,6 +61,9 @@ fig.height7 <- 600
 fig.width9 <- 1380
 fig.height9 <- 500
 
+
+fig.width7 <- 400
+fig.height7 <- 400
 ## convenience functions
 p0 <- function(x) {formatC(x, format="f", digits=1)}
 p1 <- function(x) {formatC(x, format="f", digits=1)}
@@ -328,23 +331,27 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   tabPanel( "7 Adjusting for prog covariates simulation",
                                             h4(paste("xxxxxxxxxxxxxxx")),
                                             
-                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
+                                          #  h4("First X1:Xn covariates only are prognostic, the remainder are not"),
                                             
                                             
                                             fluidRow(
                                               column(width = 6, offset = 0, style='padding:1px;',
                                                    #  div( verbatimTextOutput("sim1") ),
                                                      div(plotOutput("reg.plot2",  width=fig.width7, height=fig.height7)),
-                                                     
+                                                   div(plotOutput("reg.plot4",  width=fig.width7, height=fig.height7)),
+                                                   div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)),
                                               ) ,
                                               
                                               
                                               fluidRow(
                                                 column(width = 5, offset = 0, style='padding:1px;',
                                                     #   div( verbatimTextOutput("H") )
-                                                       div(plotOutput("reg.plot3",  width=fig.width7, height=fig.height7))
+                                                       div(plotOutput("reg.plot3",  width=fig.width7, height=fig.height7)),
+                                                    div(plotOutput("reg.plot5",  width=fig.width7, height=fig.height7)),
+                                                    div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
                                                        
                                                 ))),
+                                            
                                             h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
                                             
                                             width = 30 )     ,
@@ -947,15 +954,15 @@ server <- shinyServer(function(input, output   ) {
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # simulate models many times collect estimate and SE
 
-      simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
+      simfun <- function(N=100, K=10, a=1, sigma=1, theta=0.4) {
         
         X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
         z <- sample(c(0,1), N, replace=T)              # treatment indicator
         b <- round(sort(runif(K, 0,5)), digits=2)      # making up some beta coefficients
         y <- a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
-        y2 <-a+           theta*z + rnorm(N,0, sigma)          # linear predictor
+        y2 <- a+  theta*z + rnorm(N,0, sigma)          # linear predictor
         #y <- a+    theta*z + rnorm(N,0, sigma)  # linear predictor
-        data.frame(X=X, y=y, z=z)
+        data.frame(X=X, y=y, z=z, y2=y2)
         
       }
       
@@ -963,27 +970,31 @@ server <- shinyServer(function(input, output   ) {
       
       statfun <- function(d) {
         
-        zz <- lm(y~., data=d)
+        zz <- lm(y~.-y2, data=d)
         f <-  summary(zz)
         
         zz1 <- lm(y~z, data=d)
         f1 <-  summary(zz1)
         
-        
         cbind(
-          f$coefficients [, 1],
-          coef(f)[, "Std. Error"]
+          #f$coefficients [,1]["z"],
+          coef(f)["z", "Estimate"],
+          coef(f)["z", "Std. Error"],
+          coef(f1)["z", "Estimate"],
+          coef(f1)["z", "Std. Error"]
           
         )
         
       }
       
+     
       library(plyr)
-      res <- raply(simuls,statfun(simfun())) # run the model many times
-      res <- (res[,dim(res)[2],1:2])      # pull out mean of interest and se of interest
+      res <- raply(100,statfun(simfun())) # run the model many times
+      #res <- (res[,dim(res)[2],1:2])      # pull out mean of interest and se of interest
       result <- apply(res,2,mean)
       
-
+      
+      
       return(list(  
         
         res=res,
@@ -1036,11 +1047,72 @@ server <- shinyServer(function(input, output   ) {
     
     
     
+    output$reg.plot4 <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      
+      hist(res[,3], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[3]), ""), xlab='Treatment effect')
+      
+    })
     
     
+    output$reg.plot5 <- renderPlot({         
+      
+      # Get the  data
+      res <- simul()$res
+      result <- simul()$result
+      
+      hist(res[,4], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[4]), ""), xlab='Treatment effect se')
+      
+    })
     
     
+    output$reg.plotx <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      d1 <-  (res[,1] )
+      d2 <-  (res[,3] )
+ 
+      plot(density(d1), xlim = c(- 3, 3), main="Kernel Density of xxxx")                  # Plot density of x
+      lines(density(d2), col = "red")                                                      # Overlay density  
+                        
+     
+      legend("topleft",                                  # Add legend to density
+             legend = c("Density adj", "Density not adj" ),
+             col = c("black", "red"),
+             lty = 1)
+    })
     
+  
+    
+    
+    output$reg.ploty <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      d1 <-  (res[,2] )
+      d2 <-  (res[,4] )
+      
+      plot(density(d1), xlim = c(0, 2), main="Kernel Density of se")                  # Plot density of x
+      lines(density(d2), col = "red")                                                      # Overlay density  
+      
+      
+      legend("topright",                                  # Add legend to density
+             legend = c("Density adj", "Density not adj" ),
+             col = c("black", "red"),
+             lty = 1)
+    })
     
     
     
