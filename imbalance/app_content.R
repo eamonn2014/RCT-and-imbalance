@@ -141,6 +141,9 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                       textInput('alpha', 
                                                  div(h5(tags$span(style="color:blue", "alpha level two sided %"))), "1"),
                                       
+                                      textInput('simuls', 
+                                                div(h5(tags$span(style="color:blue", "Number of simulations"))), "499"),
+                                      
                                       #  textInput('n2y2', 
                                       # #      div(h5("Enter the true correlation (tab 2)")), ".8"),
                                       # div(h5(tags$span(style="color:blue", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"))), "0.8"),
@@ -254,9 +257,37 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
                                            
                                            width = 30 )     ,
+                                  
+                                  
+                                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                  tabPanel( "4 Measured correlated covariates",
+                                            h4(paste("xxxxxxxxxxxxxxx")),
+
+                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
+
+
+                                            fluidRow(
+                                              column(width = 6, offset = 0, style='padding:1px;',
+                                                     div( verbatimTextOutput("G") )
+                                                     # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+
+                                              ) ,
+
+
+                                              fluidRow(
+                                                column(width = 5, offset = 0, style='padding:1px;',
+                                                       div( verbatimTextOutput("H") )
+                                                       #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7))
+
+                                                ))),
+                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
+
+                                            width = 30 )     ,
+
+                                  
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
-                                  tabPanel("4 Summary", value=3, 
+                                  tabPanel("5 Summary", value=3, 
                                            
                                            h5(paste("Using only one realisation we make some observations (to be more certain of findings requires numerous simulations).")), 
                                            textInput('rcat2', 
@@ -270,6 +301,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                          h4("[1 v 2] We see adjusting for known measured prognostic covariates results in a more precise estimate. "),
                                          h4("[3 v 4] We see adjusting for measured non prognostic covariates we do not lose much precision."),
                                          h4("[5 v 6] We see adjusting for measured covariates results in a more precise estimate."),
+                                         h4("[5 v 6] We see adjusting for measured correlated covariates results in a more precise estimate than if we don't adjust for them."),
                                            fluidRow(
                                                column(width = 7, offset = 0, style='padding:1px;',
                                           #            h4(paste("Figure 4. Plot of the predicted probabilities")), 
@@ -280,7 +312,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                         
                                
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel("5 Assessing covariate balance", value=7, 
+                                  tabPanel("6 Assessing covariate balance", value=7, 
                                            
                                            h4("Larger sample sizes does not mean better covariate balance (however that is defined). Precision becomes better so smaller differences are picked up."),
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
@@ -293,21 +325,33 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            
                                   ) ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel("6 xxxx",
-                                        #   h4(paste("Table 3 Predicted probabilities, the estimated mean Y (meanY) is calculated by summing values of Y multiplied by the estimated Prob(Y=j)")),
-                                           fluidRow(
-                                               column(width = 12, offset = 0, style='padding:1px;',
-                                                      
-                                                   #   div( verbatimTextOutput("reg.summaryp") ),
-                                                   #   h4(paste("Table 4 Predicted cummulative probabilities ")),
-                                                    #  div( verbatimTextOutput("reg.summaryc") ),
-                                               ) ,
-                                               
-                                           ),
-                                           
-                                  ),
+                                  tabPanel( "7 Adjusting for prog covariates simulation",
+                                            h4(paste("xxxxxxxxxxxxxxx")),
+                                            
+                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
+                                            
+                                            
+                                            fluidRow(
+                                              column(width = 6, offset = 0, style='padding:1px;',
+                                                   #  div( verbatimTextOutput("sim1") ),
+                                                     div(plotOutput("reg.plot2",  width=fig.width7, height=fig.height7)),
+                                                     
+                                              ) ,
+                                              
+                                              
+                                              fluidRow(
+                                                column(width = 5, offset = 0, style='padding:1px;',
+                                                    #   div( verbatimTextOutput("H") )
+                                                       div(plotOutput("reg.plot3",  width=fig.width7, height=fig.height7))
+                                                       
+                                                ))),
+                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
+                                            
+                                            width = 30 )     ,
                                   
-                                  tabPanel("7 xxxxxxxxx", value=3, 
+                                  
+                                  
+                                  tabPanel("8 xxxxxxxxx", value=3, 
                                            h4(" xxxxxxxxxxxxx"),
                                            
                                            
@@ -327,7 +371,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            h4("xxxxxxxxxxxxxxxxxxxxx"),
                                   ),
                                   
-                                  tabPanel("8 xxxxxxxx", value=3, 
+                                  tabPanel("9 xxxxxxxx", value=3, 
                                            
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
@@ -364,7 +408,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   ) ,
                                   
                                   
-                                  tabPanel("9 xxxxxxxxx", value=3, 
+                                  tabPanel("10 xxxxxxxxx", value=3, 
                                            
                                            #h5(paste("Checking assumptions")), 
                                            #div(plotOutput("assumption", width=fig.width1, height=fig.height3)),
@@ -376,7 +420,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   ),
                                   
                                   
-                                  tabPanel("10 xxxxxxxx", value=3, 
+                                  tabPanel("11 xxxxxxxx", value=3, 
                                            
                                         #   div(plotOutput("ecdfs", width=fig.width1, height=fig.height3)),
                                            h4("Figure 11 xxxxxxxxxxxx"), 
@@ -391,7 +435,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                   ),
                                   
                                   
-                                  tabPanel("11 xxxxxxxxxxxx", 
+                                  tabPanel("12 xxxxxxxxxxxx", 
                                            
                                            fluidRow(
                                                column(width = 9, offset = 0, style='padding:1px;',
@@ -467,13 +511,15 @@ server <- shinyServer(function(input, output   ) {
         
         theta <- (as.numeric(unlist(strsplit(input$theta,","))))   # user enter odds, need log for the maths
         
+        simuls <- (as.numeric(unlist(strsplit(input$simuls,","))))   # user enter odds, need log for the maths
         return(list(  
             K=K,  
             Kp=Kp,  
             pow=pow/100,
             sigma=sigma, 
             alpha=alpha/100, 
-            theta=theta
+            theta=theta,
+            simuls=simuls
         ))
         
     })
@@ -554,11 +600,70 @@ server <- shinyServer(function(input, output   ) {
         treated <- as.vector(table(z)) [2]
         bigN <- placebo + treated
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   
+        
+        
+        
+        
+        
+        ################################################################
+        ###correlation between variable
+        ################################################################
+        library(Matrix)
+         
+        nobs <- N
+        
+        x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
+        
+        A <- forceSymmetric(x)
+        
+        diag(A) <- 1
+        
+        #isSymmetric(A)
+      
+        M <- A
+        
+        #https://r.789695.n4.nabble.com/how-do-I-make-a-correlation-matrix-positive-definite-td3006440.html
+        M <- nearPD(M, conv.tol = 1e-7)$mat # default
+        # Cholesky decomposition
+        L = chol(M)
+        nvars = dim(L)[1]
+        
+        # R chol function produces an upper triangular version of L
+        # so we have to transpose it.
+        # Just to be sure we can have a look at t(L) and the
+        # product of the Cholesky decomposition by itself
+        
+        t(L)
+        
+        t(L) %*% L
+        
+        # Random variables that follow an M correlation matrix
+        r = t(L) %*% matrix(rnorm(nvars*nobs, 2,2), nrow=nvars, ncol=nobs)
+        r = t(r)
+        
+        
+        r <- as.matrix(r)
+        rdata <- as.data.frame(r)
+        XX<- as.matrix(rdata)
+        # rdata
+        # x
+        # splom(rdata)
+        # cor(rdata)
+        
+        # #######################################
+        # apply(rdata,2, sd)
+        # apply(rdata,2, mean)
+        # 
+        
+        
+        y <- a+ XX %*% b + theta*z + rnorm(N,0, sigma)
+        fake4 <- data.frame(X=rdata, y=y, z=z)
+        
+     
         
         return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                       
-                      placebo=placebo, treated=treated, bigN=bigN
+                      placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX
                       
                       )) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -733,6 +838,42 @@ server <- shinyServer(function(input, output   ) {
       return(reg3()$B)
     })
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    reg4<- reactive({  
+      
+      d <- mcmc()$fake4
+      
+      X <- mcmc()$XX  #have to bring X through , as model will fail without this
+      
+      ols2 <- lm(y~X+z,data=d)
+      ols1 <- lm(y~z,d)
+      
+      A<-summary(ols2)
+      B<-summary(ols1)
+      
+      #get stats so we can compare together
+      x<- A
+      stat5 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+      x<- B
+      stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+      
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6)) 
+      
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$H <- renderPrint({
+      
+      return(reg4()$A)
+    })
+    
+    output$G <- renderPrint({
+      
+      return(reg4()$B)
+    })
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     
     
     output$summary1 <- renderPrint({
@@ -747,11 +888,15 @@ server <- shinyServer(function(input, output   ) {
         stat5 <- reg3()$stat5  # ignoring non prog
         stat6 <- reg3()$stat6  # adj for non prog
         
+        
+        stat7 <- reg4()$stat5  # ignoring non prog
+        stat8 <- reg4()$stat6  # adj for non prog
+        
         # placebo <- mcmc()$placebo
         # treated <- mcmc()$treated
         # bigN <- mcmcm()$bigN
         
-        d <- rbind(stat1, stat2, stat3, stat4, stat5, stat6)
+        d <- rbind(stat1, stat2, stat3, stat4, stat5, stat6, stat7, stat8)
         
         d<- data.frame(d)
         
@@ -765,12 +910,136 @@ server <- shinyServer(function(input, output   ) {
                          "[4] Bivariate no adjustment, measured non prognostic covariates ignored",
                          
                          "[5] Multivariable adjusting for measured prognostic and non prognostic covariates",
-                         "[6] Bivariate no adjustment, measured covariates ignored"
+                         "[6] Bivariate no adjustment, measured covariates ignored",
+                         
+                         "[7] Multivariable adjusting for measured prognostic covariates that are correlated",
+                         "[7] Bivariate no adjustment, measured correlated covariates ignored"
                          )
         
         return(print(d, digits=4))
         
     })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    simul <- reactive({
+      
+      sample <- random.sample()
+      # need to rename to avoid recursive issues
+      K1=sample$K
+      Kp=sample$Kp
+      pow=sample$pow
+      sigma1=sample$sigma
+      theta1=sample$theta        
+      alpha=sample$alpha  
+      
+
+      simuls=sample$simuls
+      
+      N1 <- mcmc()$N # 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # simulate models many times collect estimate and SE
+
+      simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
+        
+        X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
+        z <- sample(c(0,1), N, replace=T)              # treatment indicator
+        b <- round(sort(runif(K, 0,5)), digits=2)      # making up some beta coefficients
+        y <- a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
+        y2 <-a+           theta*z + rnorm(N,0, sigma)          # linear predictor
+        #y <- a+    theta*z + rnorm(N,0, sigma)  # linear predictor
+        data.frame(X=X, y=y, z=z)
+        
+      }
+      
+      #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
+      
+      statfun <- function(d) {
+        
+        zz <- lm(y~., data=d)
+        f <-  summary(zz)
+        
+        zz1 <- lm(y~z, data=d)
+        f1 <-  summary(zz1)
+        
+        
+        cbind(
+          f$coefficients [, 1],
+          coef(f)[, "Std. Error"]
+          
+        )
+        
+      }
+      
+      library(plyr)
+      res <- raply(simuls,statfun(simfun())) # run the model many times
+      res <- (res[,dim(res)[2],1:2])      # pull out mean of interest and se of interest
+      result <- apply(res,2,mean)
+      
+
+      return(list(  
+        
+        res=res,
+        result=result
+                    
+      )) 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    })
+    
+    
+    
+    
+    output$sim1 <- renderPrint({
+      return(simul()$result)
+    })
+    
+    
+    
+    
+    
+    
+    
+     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #  plot 2
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+    
+    output$reg.plot2 <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      
+      hist(res[,1], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[1]), ""), xlab='Treatment effect')
+      
+    })
+    
+    
+    output$reg.plot3 <- renderPlot({         
+      
+      # Get the  data
+      res <- simul()$res
+      result <- simul()$result
+      
+      hist(res[,2], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[2]), ""), xlab='Treatment effect se')
+      
+    })
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -803,7 +1072,32 @@ server <- shinyServer(function(input, output   ) {
         
     })  
     
-    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # simulations
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      sim<- reactive({
+        
+        sample <- random.sample()
+        
+        K=sample$K
+        Kp=sample$Kp
+        pow=sample$pow
+        sigma=sample$sigma
+        theta=sample$theta        
+        alpha=sample$alpha    
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        
+        
+       
+        
+        return(list(   
+                      
+        )) 
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      })
     
     
     
