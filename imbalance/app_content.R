@@ -337,8 +337,8 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                             fluidRow(
                                               column(width = 6, offset = 0, style='padding:1px;',
                                                    #  div( verbatimTextOutput("sim1") ),
-                                                     div(plotOutput("reg.plot2",  width=fig.width7, height=fig.height7)),
-                                                   div(plotOutput("reg.plot4",  width=fig.width7, height=fig.height7)),
+                                               #      div(plotOutput("reg.plot2",  width=fig.width7, height=fig.height7)),
+                                               #    div(plotOutput("reg.plot4",  width=fig.width7, height=fig.height7)),
                                                    div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)),
                                               ) ,
                                               
@@ -346,17 +346,18 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                               fluidRow(
                                                 column(width = 5, offset = 0, style='padding:1px;',
                                                     #   div( verbatimTextOutput("H") )
-                                                       div(plotOutput("reg.plot3",  width=fig.width7, height=fig.height7)),
-                                                    div(plotOutput("reg.plot5",  width=fig.width7, height=fig.height7)),
+                                                  #     div(plotOutput("reg.plot3",  width=fig.width7, height=fig.height7)),
+                                                  #  div(plotOutput("reg.plot5",  width=fig.width7, height=fig.height7)),
                                                     div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
                                                        
                                                 ))),
-                                            
+                                          h4(htmlOutput("textWithNumber2",) ),
                                             h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
                                             
                                             width = 30 )     ,
                                   
                                   
+                                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
                                   tabPanel("8 xxxxxxxxx", value=3, 
                                            h4(" xxxxxxxxxxxxx"),
@@ -969,19 +970,34 @@ server <- shinyServer(function(input, output   ) {
       #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
       
       statfun <- function(d) {
-        
-        zz <- lm(y~.-y2, data=d)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        zz <- lm(y~.-y2, data=d)    ## adjusting for prognostic X, y2 is not included by use of the '-'
         f <-  summary(zz)
         
-        zz1 <- lm(y~z, data=d)
+        zz1 <- lm(y~z, data=d)      ## not adjusting for prognostic X, only trt. indictor included
         f1 <-  summary(zz1)
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        zz2 <- lm(y2~.-y, data=d)    ## adjusting for  X which are not prognostic
+        f2 <-  summary(zz2)
+        
+        zz3 <- lm(y2~z, data=d)      ## not adjusting for X which are not prognostic
+        f3 <-  summary(zz3)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        
         
         cbind(
           #f$coefficients [,1]["z"],
           coef(f)["z", "Estimate"],
           coef(f)["z", "Std. Error"],
           coef(f1)["z", "Estimate"],
-          coef(f1)["z", "Std. Error"]
+          coef(f1)["z", "Std. Error"],
+          
+          coef(f2)["z", "Estimate"],
+          coef(f2)["z", "Std. Error"],
+          coef(f3)["z", "Estimate"],
+          coef(f3)["z", "Std. Error"]
           
         )
         
@@ -998,7 +1014,7 @@ server <- shinyServer(function(input, output   ) {
       return(list(  
         
         res=res,
-        result=result
+        result=result  # means
                     
       )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1019,58 +1035,58 @@ server <- shinyServer(function(input, output   ) {
     
      
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    #  plot 2
+    #  plot 2 not using
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
     
-    output$reg.plot2 <- renderPlot({         
-      
-      # Get the  data
-      
-      res <- simul()$res
-      result <- simul()$result
-      
-      
-      hist(res[,1], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[1]), ""), xlab='Treatment effect')
-      
-    })
-    
-    
-    output$reg.plot3 <- renderPlot({         
-      
-      # Get the  data
-      res <- simul()$res
-      result <- simul()$result
-      
-      hist(res[,2], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[2]), ""), xlab='Treatment effect se')
-      
-    })
-    
-    
-    
-    output$reg.plot4 <- renderPlot({         
-      
-      # Get the  data
-      
-      res <- simul()$res
-      result <- simul()$result
-      
-      
-      hist(res[,3], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[3]), ""), xlab='Treatment effect')
-      
-    })
-    
-    
-    output$reg.plot5 <- renderPlot({         
-      
-      # Get the  data
-      res <- simul()$res
-      result <- simul()$result
-      
-      hist(res[,4], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[4]), ""), xlab='Treatment effect se')
-      
-    })
-    
-    
+    # output$reg.plot2 <- renderPlot({         
+    #   
+    #   # Get the  data
+    #   
+    #   res <- simul()$res
+    #   result <- simul()$result
+    #   
+    #   
+    #   hist(res[,1], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[1]), ""), xlab='Treatment effect')
+    #   
+    # })
+    # 
+    # 
+    # output$reg.plot3 <- renderPlot({         
+    #   
+    #   # Get the  data
+    #   res <- simul()$res
+    #   result <- simul()$result
+    #   
+    #   hist(res[,2], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[2]), ""), xlab='Treatment effect se')
+    #   
+    # })
+    # 
+    # 
+    # 
+    # output$reg.plot4 <- renderPlot({         
+    #   
+    #   # Get the  data
+    #   
+    #   res <- simul()$res
+    #   result <- simul()$result
+    #   
+    #   
+    #   hist(res[,3], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[3]), ""), xlab='Treatment effect')
+    #   
+    # })
+    # 
+    # 
+    # output$reg.plot5 <- renderPlot({         
+    #   
+    #   # Get the  data
+    #   res <- simul()$res
+    #   result <- simul()$result
+    #   
+    #   hist(res[,4], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[4]), ""), xlab='Treatment effect se')
+    #   
+    # })
+    # 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     output$reg.plotx <- renderPlot({         
       
       # Get the  data
@@ -1078,12 +1094,19 @@ server <- shinyServer(function(input, output   ) {
       res <- simul()$res
       result <- simul()$result
       
+      
+      sample <- random.sample()
+      theta1=sample$theta     
+      
+      
       d1 <-  (res[,1] )
       d2 <-  (res[,3] )
  
-      plot(density(d1), xlim = c(- 3, 3), main="Kernel Density of xxxx")                  # Plot density of x
+      plot(density(d1), xlim = c(- 3, 3), main="Kernel Density of treatment effect estimates",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
       lines(density(d2), col = "red")                                                      # Overlay density  
-                        
+      abline(v = theta1, col = "red")                  
      
       legend("topleft",                                  # Add legend to density
              legend = c("Density adj", "Density not adj" ),
@@ -1091,8 +1114,7 @@ server <- shinyServer(function(input, output   ) {
              lty = 1)
     })
     
-  
-    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     
     output$reg.ploty <- renderPlot({         
       
@@ -1104,7 +1126,9 @@ server <- shinyServer(function(input, output   ) {
       d1 <-  (res[,2] )
       d2 <-  (res[,4] )
       
-      plot(density(d1), xlim = c(0, 2), main="Kernel Density of se")                  # Plot density of x
+      plot(density(d1), xlim = c(0, 2), main="Kernel Density of standard error of trt effect",
+           xlab="Standard error", #Change the x-axis label
+           ylab="Density") #y-axis label)                  # Plot density of x
       lines(density(d2), col = "red")                                                      # Overlay density  
       
       
@@ -1114,11 +1138,35 @@ server <- shinyServer(function(input, output   ) {
              lty = 1)
     })
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    output$textWithNumber2 <- renderText({ 
+      
+      result <- simul()$result  # means
+      
+      HTML(paste0(  tags$hr(),
+                    "Mean and se adjusting  "  
+                    , tags$span(style="color:red",  p3(result[1]))  ,
+                    " ; "  
+                    , tags$span(style="color:red",  p3(result[3] )) ,
+                    " and ignoring in analysis "
+                    , tags$span(style="color:red",  p3(result[2]  )),
+                    " ; "
+                    , tags$span(style="color:red",  p3(result[4] )) ,
+                    
+                    br(), br(),
+                    
+                    br(), br(),
+                    tags$hr()
+                    
+                    
+      ))    
+      
+    })  
     
     
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     
     output$textWithNumber1 <- renderText({ 
         
@@ -1144,33 +1192,39 @@ server <- shinyServer(function(input, output   ) {
         
     })  
     
+    
+
+    
+    
+    
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # simulations
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      sim<- reactive({
-        
-        sample <- random.sample()
-        
-        K=sample$K
-        Kp=sample$Kp
-        pow=sample$pow
-        sigma=sample$sigma
-        theta=sample$theta        
-        alpha=sample$alpha    
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        
-        
-       
-        
-        return(list(   
-                      
-        )) 
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      })
-    
+      # #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # sim<- reactive({
+      #   
+      #   sample <- random.sample()
+      #   
+      #   K=sample$K
+      #   Kp=sample$Kp
+      #   pow=sample$pow
+      #   sigma=sample$sigma
+      #   theta=sample$theta        
+      #   alpha=sample$alpha    
+      #   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #   
+      #   
+      #   
+      #  
+      #   
+      #   return(list(   
+      #                 
+      #   )) 
+      #   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # })
+      # 
     
     
     
