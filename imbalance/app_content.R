@@ -929,14 +929,7 @@ server <- shinyServer(function(input, output   ) {
         
     })
     
-    
-    
-    
-    
-    
-    
-    
-    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
     
     simul <- reactive({
       
@@ -963,8 +956,9 @@ server <- shinyServer(function(input, output   ) {
         b <- round(sort(runif(K, 0,5)), digits=2)      # making up some beta coefficients
         y <- a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
         y2 <- a+  theta*z + rnorm(N,0, sigma)          # linear predictor
-        #y <- a+    theta*z + rnorm(N,0, sigma)  # linear predictor
-        data.frame(X=X, y=y, z=z, y2=y2)
+        y3 <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma)
+        
+        data.frame(X=X, y=y, z=z, y2=y2, y3=y3)
         
       }
       
@@ -979,26 +973,42 @@ server <- shinyServer(function(input, output   ) {
         f1 <-  summary(zz1)
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        zz2 <- lm(y2~.-y, data=d)    ## adjusting for  X which are not prognostic
+        zz2 <- lm(y2~.-y-y3, data=d)    ## adjusting for  X which are not prognostic
         f2 <-  summary(zz2)
         
         zz3 <- lm(y2~z, data=d)      ## not adjusting for X which are not prognostic
         f3 <-  summary(zz3)
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#some prognostic
+        zz4 <- lm(y3~.-y-y2, data=d)    ## adjusting for some  X which are not prognostic
+        f4 <-  summary(zz4)
+        
+        zz5 <- lm(y3~z, data=d)      ## not adjusting for X which are not prognostic
+        f5 <-  summary(zz5)
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         
         
         cbind(
+          
           #f$coefficients [,1]["z"],
           coef(f)["z", "Estimate"],
           coef(f)["z", "Std. Error"],
+          
           coef(f1)["z", "Estimate"],
           coef(f1)["z", "Std. Error"],
           
           coef(f2)["z", "Estimate"],
           coef(f2)["z", "Std. Error"],
+          
           coef(f3)["z", "Estimate"],
-          coef(f3)["z", "Std. Error"]
+          coef(f3)["z", "Std. Error"],
+          
+          #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new
+          coef(f4)["z", "Estimate"],
+          coef(f4)["z", "Std. Error"],
+          
+          coef(f5)["z", "Estimate"],
+          coef(f5)["z", "Std. Error"]
           
         )
         
@@ -1165,7 +1175,7 @@ server <- shinyServer(function(input, output   ) {
       
     })  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    output$reg.plotx <- renderPlot({         
+    output$reg.plotx <- renderPlot({         #means
       
       # Get the  data
       
@@ -1180,29 +1190,41 @@ server <- shinyServer(function(input, output   ) {
       d2 <-  density(res[,3] )
       d3 <-  density(res[,5] )
       d4 <-  density(res[,7] )
+      d5 <-  density(res[,9] )
+      d6 <-  density(res[,11] )
       
-      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
-      dx <- range(c(d1$x,d2$x,  d3$x, d4$x))
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x))
       
       
       plot( (d1), xlim = dx, main="Kernel Density of treatment effect estimates", ylim=c(0,dz),
            xlab="Treatment effect", #Change the x-axis label
            ylab="Density") #y-axis label)                   # Plot density of x
-      lines( (d2), col = "red")  
+      lines( (d2), col = "red", lty=2)  
       lines( (d3), col = "blue")    
-      lines( (d4), col = "green")    # Overlay density  
+      lines( (d4), col = "green")       
+      lines( (d5), col = "brown")    
+      lines( (d6), col = "pink")    
+      
       abline(v = theta1, col = "grey")                  
       
       legend("topright",                                  # Add legend to density
-             legend = c("Density adj for true prognostic", "Density not adj for true prognostic" ,"Density adj for non prognostic", "Density not adj for non prognostic"),
-             col = c("black", "red","blue","green"),
+             legend = c(" adj for true prognostic", 
+                        " not adj for true prognostic" ,
+                        " adj for non prognostic", 
+                        " not adj for non prognostic",
+                        " adj for some non prognostic", 
+                        " not adj when some prognostic"
+                        
+                        ),
+             col = c("black", "red","blue","green","brown", "pink"),
              lty = 1, bty = "n")
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     
-    output$reg.ploty <- renderPlot({         
+    output$reg.ploty <- renderPlot({         #standard errors
       
       # Get the  data
       
@@ -1213,23 +1235,33 @@ server <- shinyServer(function(input, output   ) {
       d2 <-  density(res[,4] )
       d3 <-  density(res[,6] )
       d4 <-  density(res[,8] )
+      d5 <-  density(res[,10] )
+      d6 <-  density(res[,12] )
       
-      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
-      dx <- range(c(d1$x,d2$x, d3$x, d4$x))
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x))
       
       
-      plot( (d1), xlim = dx, main="Kernel Density of treatment standard error estimates",ylim=c(0,dz),
-           xlab="Standard error", #Change the x-axis label
-           ylab="Density") #y-axis label)                   # Plot density of x
-      lines((d2), col = "red")  
-      lines((d3), col = "blue")    
-      lines((d4), col = "green")    # Overlay density  
-     # abline(v = theta1, col = "grey")                  
+      plot( (d1), xlim = dx, main="Kernel Density of standard error estimates", ylim=c(0,dz),
+            xlab="Treatment effect", #Change the x-axis label
+            ylab="Density") #y-axis label)                   # Plot density of x
+      lines( (d2), col = "red" , lty=2)  
+      lines( (d3), col = "blue")    
+      lines( (d4), col = "green")       
+      lines( (d5), col = "brown")    
+      lines( (d6), col = "pink")                   
       
       legend("topright",                                  # Add legend to density
-             legend = c("Density adj for true prognostic", "Density not adj for true prognostic" ,"Density adj for non prognostic", "Density not adj for non prognostic"),
-             col = c("black", "red","blue","green"),
-             lty = 1 , bty = "n")
+             legend = c(" adj for true prognostic", 
+                        " not adj for true prognostic" ,
+                        " adj for non prognostic", 
+                        " not adj for non prognostic",
+                        " adj for some non prognostic", 
+                        " not adj when some prognostic"
+                        
+             ),
+             col = c("black", "red","blue","green","brown", "pink"),
+             lty = 1, bty = "n")
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1258,7 +1290,15 @@ server <- shinyServer(function(input, output   ) {
                     " ; "
                     , tags$span(style="color:red",  p3(result[8] )) ,
                     
-                    
+                    br(), br(),
+                    "Mean and se adjusting for mix of prognostic and non prognostic covariates (brown lines) "  
+                    , tags$span(style="color:red",  p3(result[9]))  ,
+                    " ; "  
+                    , tags$span(style="color:red",  p3(result[10] )) ,
+                    " and ignoring in analysis (pink lines) "
+                    , tags$span(style="color:red",  p3(result[11]  )),
+                    " ; "
+                    , tags$span(style="color:red",  p3(result[12] )) ,
                     
                     
                     br(), br(),
@@ -1281,27 +1321,28 @@ server <- shinyServer(function(input, output   ) {
       theta1=sample$theta     
       
       #https://stackoverflow.com/questions/6939136/how-to-overlay-density-plots-in-r
+      
       d1 <-  density(res[,1] )
       d2 <-  density(res[,3] )
       d3 <-  density(res[,5] )
       d4 <-  density(res[,7] )
+      d5 <-  density(res[,9] )
+      d6 <-  density(res[,11] )
       
-      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
-      dx <- range(c(d1$x,d2$x,  d3$x, d4$x))
-      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x))
       
       plot((d1), xlim = dx, main=paste0("Kernel Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),
-           xlab="Treatment effect", #Change the x-axis label
-           ylab="Density") #y-axis label)                   # Plot density of x
-      lines((d2), col = "red")  
-      lines((d3), col = "blue")    
-      lines((d4), col = "green")    # Overlay density  
+            xlab="Treatment effect", #Change the x-axis label
+            ylab="Density") #y-axis label)                   # Plot density of x
+      lines( (d2), col = "red", lty=2)  
+      lines( (d3), col = "blue")    
+      lines( (d4), col = "green")       
+      lines( (d5), col = "brown")    
+      lines( (d6), col = "pink")    
       abline(v = theta1, col = "grey")                  
       
-      # legend("topleft",                                  # Add legend to density
-      #        legend = c("Density adj for true prognostic","Density adj for non prognostic", "Density not adj for non prognostic"),
-      #        col = c("black", "blue","green"),
-      #        lty = 1)
+  
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -1324,23 +1365,23 @@ server <- shinyServer(function(input, output   ) {
       d2 <-  density(res[,4] )
       d3 <-  density(res[,6] )
       d4 <-  density(res[,8] )
+      d5 <-  density(res[,10] )
+      d6 <-  density(res[,12] )
       
-      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
-      dx <- range(c(d1$x, d3$x, d4$x))
-     
+      dz <- max(c(d1$y, d3$y,  d4$y,   d5$y))
+      dx <- range(c(d1$x,  d3$x, d4$x, d5$x))
       
       plot( (d1), xlim = c(dx), main=paste0("Kernel Density of treatment standard error estimates, truth= ",p5(se.),""), ylim=c(0,dz),
-           xlab="Standard error effect", #Change the x-axis label
-           ylab="Density") #y-axis label)                   # Plot density of x
-     # lines(density(d2), col = "red")  
+            xlab="Treatment effect", #Change the x-axis label
+            ylab="Density") #y-axis label)                   # Plot density of x
+      #lines( (d2), col = "red")  
       lines( (d3), col = "blue")    
-      lines( (d4), col = "green")    # Overlay density  
-       abline(v = se., col = "grey")                  
+      lines( (d4), col = "green")       
+      lines( (d5), col = "brown")    
+      lines( (d6), col = "pink")    
       
-      # legend("topright",                                  # Add legend to density
-      #        legend = c("Density adj for true prognostic","Density adj for non prognostic", "Density not adj for non prognostic"),
-      #        col = c("black","blue","green"),
-      #        lty = 1)
+       abline(v = se., col = "grey")                  
+   
     })
     
     
