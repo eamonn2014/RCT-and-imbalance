@@ -62,7 +62,7 @@ fig.width9 <- 1380
 fig.height9 <- 500
 
 
-fig.width7 <- 400
+fig.width7 <- 600
 fig.height7 <- 400
 ## convenience functions
 p0 <- function(x) {formatC(x, format="f", digits=1)}
@@ -340,6 +340,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                                #      div(plotOutput("reg.plot2",  width=fig.width7, height=fig.height7)),
                                                #    div(plotOutput("reg.plot4",  width=fig.width7, height=fig.height7)),
                                                    div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)),
+                                               div(plotOutput("reg.plotxx",  width=fig.width7, height=fig.height7)),
                                               ) ,
                                               
                                               
@@ -349,7 +350,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                                   #     div(plotOutput("reg.plot3",  width=fig.width7, height=fig.height7)),
                                                   #  div(plotOutput("reg.plot5",  width=fig.width7, height=fig.height7)),
                                                     div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
-                                                       
+                                                  div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
                                                 ))),
                                           h4(htmlOutput("textWithNumber2",) ),
                                             h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
@@ -955,7 +956,7 @@ server <- shinyServer(function(input, output   ) {
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # simulate models many times collect estimate and SE
 
-      simfun <- function(N=100, K=10, a=1, sigma=1, theta=0.4) {
+      simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
         
         X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
         z <- sample(c(0,1), N, replace=T)              # treatment indicator
@@ -1087,56 +1088,56 @@ server <- shinyServer(function(input, output   ) {
     # })
     # 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    output$reg.plotx <- renderPlot({         
-      
-      # Get the  data
-      
-      res <- simul()$res
-      result <- simul()$result
-      
-      
-      sample <- random.sample()
-      theta1=sample$theta     
-      
-      
-      d1 <-  (res[,1] )
-      d2 <-  (res[,3] )
- 
-      plot(density(d1), xlim = c(- 3, 3), main="Kernel Density of treatment effect estimates",
-           xlab="Treatment effect", #Change the x-axis label
-           ylab="Density") #y-axis label)                   # Plot density of x
-      lines(density(d2), col = "red")                                                      # Overlay density  
-      abline(v = theta1, col = "red")                  
-     
-      legend("topleft",                                  # Add legend to density
-             legend = c("Density adj", "Density not adj" ),
-             col = c("black", "red"),
-             lty = 1)
-    })
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    
-    output$reg.ploty <- renderPlot({         
-      
-      # Get the  data
-      
-      res <- simul()$res
-      result <- simul()$result
-      
-      d1 <-  (res[,2] )
-      d2 <-  (res[,4] )
-      
-      plot(density(d1), xlim = c(0, 2), main="Kernel Density of standard error of trt effect",
-           xlab="Standard error", #Change the x-axis label
-           ylab="Density") #y-axis label)                  # Plot density of x
-      lines(density(d2), col = "red")                                                      # Overlay density  
-      
-      
-      legend("topright",                                  # Add legend to density
-             legend = c("Density adj", "Density not adj" ),
-             col = c("black", "red"),
-             lty = 1)
-    })
+    # output$reg.plotx <- renderPlot({         
+    #   
+    #   # Get the  data
+    #   
+    #   res <- simul()$res
+    #   result <- simul()$result
+    #   
+    #   
+    #   sample <- random.sample()
+    #   theta1=sample$theta     
+    #   
+    #   
+    #   d1 <-  (res[,1] )
+    #   d2 <-  (res[,3] )
+    # 
+    #   plot(density(d1), xlim = c(- 3, 3), main="Kernel Density of treatment effect estimates",
+    #        xlab="Treatment effect", #Change the x-axis label
+    #        ylab="Density") #y-axis label)                   # Plot density of x
+    #   lines(density(d2), col = "red")                                                      # Overlay density  
+    #   abline(v = theta1, col = "red")                  
+    #  
+    #   legend("topleft",                                  # Add legend to density
+    #          legend = c("Density adj", "Density not adj" ),
+    #          col = c("black", "red"),
+    #          lty = 1)
+    # })
+    # 
+    # #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    # 
+    # output$reg.ploty <- renderPlot({         
+    #   
+    #   # Get the  data
+    #   
+    #   res <- simul()$res
+    #   result <- simul()$result
+    #   
+    #   d1 <-  (res[,2] )
+    #   d2 <-  (res[,4] )
+    #   
+    #   plot(density(d1), xlim = c(0, 2), main="Kernel Density of standard error of trt effect",
+    #        xlab="Standard error", #Change the x-axis label
+    #        ylab="Density") #y-axis label)                  # Plot density of x
+    #   lines(density(d2), col = "red")                                                      # Overlay density  
+    #   
+    #   
+    #   legend("topright",                                  # Add legend to density
+    #          legend = c("Density adj", "Density not adj" ),
+    #          col = c("black", "red"),
+    #          lty = 1)
+    # })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
@@ -1163,7 +1164,184 @@ server <- shinyServer(function(input, output   ) {
       ))    
       
     })  
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$reg.plotx <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      
+      sample <- random.sample()
+      theta1=sample$theta     
+      
+      d1 <-  density(res[,1] )
+      d2 <-  density(res[,3] )
+      d3 <-  density(res[,5] )
+      d4 <-  density(res[,7] )
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x))
+      
+      
+      plot( (d1), xlim = dx, main="Kernel Density of treatment effect estimates", ylim=c(0,dz),
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      lines( (d2), col = "red")  
+      lines( (d3), col = "blue")    
+      lines( (d4), col = "green")    # Overlay density  
+      abline(v = theta1, col = "grey")                  
+      
+      legend("topright",                                  # Add legend to density
+             legend = c("Density adj for true prognostic", "Density not adj for true prognostic" ,"Density adj for non prognostic", "Density not adj for non prognostic"),
+             col = c("black", "red","blue","green"),
+             lty = 1, bty = "n")
+    })
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    
+    output$reg.ploty <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      d1 <-  density(res[,2] )
+      d2 <-  density(res[,4] )
+      d3 <-  density(res[,6] )
+      d4 <-  density(res[,8] )
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
+      dx <- range(c(d1$x,d2$x, d3$x, d4$x))
+      
+      
+      plot( (d1), xlim = dx, main="Kernel Density of treatment standard error estimates",ylim=c(0,dz),
+           xlab="Standard error", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      lines((d2), col = "red")  
+      lines((d3), col = "blue")    
+      lines((d4), col = "green")    # Overlay density  
+     # abline(v = theta1, col = "grey")                  
+      
+      legend("topright",                                  # Add legend to density
+             legend = c("Density adj for true prognostic", "Density not adj for true prognostic" ,"Density adj for non prognostic", "Density not adj for non prognostic"),
+             col = c("black", "red","blue","green"),
+             lty = 1 , bty = "n")
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    output$textWithNumber2 <- renderText({ 
+      
+      result <- simul()$result  # means
+      
+      HTML(paste0(  tags$hr(),
+                    "Mean and se adjusting for true prognostic covariates (black lines) "  
+                    , tags$span(style="color:red",  p3(result[1]))  ,
+                    " ; "  
+                    , tags$span(style="color:red",  p3(result[3] )) ,
+                    " and ignoring in analysis (red lines) "
+                    , tags$span(style="color:red",  p3(result[2]  )),
+                    " ; "
+                    , tags$span(style="color:red",  p3(result[4] )) ,
+                    
+                    br(), br(),
+                    "Mean and se adjusting for non prognostic covariates (blue lines) "  
+                    , tags$span(style="color:red",  p3(result[5]))  ,
+                    " ; "  
+                    , tags$span(style="color:red",  p3(result[7] )) ,
+                    " and ignoring in analysis (green lines) "
+                    , tags$span(style="color:red",  p3(result[6]  )),
+                    " ; "
+                    , tags$span(style="color:red",  p3(result[8] )) ,
+                    
+                    
+                    
+                    
+                    br(), br(),
+                    tags$hr()
+                    
+                    
+      ))    
+      
+    })  
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$reg.plotxx <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      
+      sample <- random.sample()
+      theta1=sample$theta     
+      
+      #https://stackoverflow.com/questions/6939136/how-to-overlay-density-plots-in-r
+      d1 <-  density(res[,1] )
+      d2 <-  density(res[,3] )
+      d3 <-  density(res[,5] )
+      d4 <-  density(res[,7] )
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x))
+      
+      
+      plot((d1), xlim = dx, main=paste0("Kernel Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      lines((d2), col = "red")  
+      lines((d3), col = "blue")    
+      lines((d4), col = "green")    # Overlay density  
+      abline(v = theta1, col = "grey")                  
+      
+      # legend("topleft",                                  # Add legend to density
+      #        legend = c("Density adj for true prognostic","Density adj for non prognostic", "Density not adj for non prognostic"),
+      #        col = c("black", "blue","green"),
+      #        lty = 1)
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    
+    output$reg.plotyy <- renderPlot({         
+      
+      # Get the  data
+      
+      res <- simul()$res
+      result <- simul()$result
+      
+      sample <- random.sample()
+      sigma1=sample$sigma
+      N1 <- mcmc()$N # 
+      
+      se. = sqrt((2*(sigma1^2 + sigma1^2)) /N1)
+      
+      d1 <-  density(res[,2] )
+      d2 <-  density(res[,4] )
+      d3 <-  density(res[,6] )
+      d4 <-  density(res[,8] )
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y))
+      dx <- range(c(d1$x, d3$x, d4$x))
+     
+      
+      plot( (d1), xlim = c(dx), main=paste0("Kernel Density of treatment standard error estimates, truth= ",p5(se.),""), ylim=c(0,dz),
+           xlab="Standard error effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+     # lines(density(d2), col = "red")  
+      lines( (d3), col = "blue")    
+      lines( (d4), col = "green")    # Overlay density  
+       abline(v = se., col = "grey")                  
+      
+      # legend("topright",                                  # Add legend to density
+      #        legend = c("Density adj for true prognostic","Density adj for non prognostic", "Density not adj for non prognostic"),
+      #        col = c("black","blue","green"),
+      #        lty = 1)
+    })
     
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
