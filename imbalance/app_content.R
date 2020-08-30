@@ -922,7 +922,7 @@ server <- shinyServer(function(input, output   ) {
                          "[6] Bivariate no adjustment, measured covariates ignored",
                          
                          "[7] Multivariable adjusting for measured prognostic covariates that are correlated",
-                         "[7] Bivariate no adjustment, measured correlated covariates ignored"
+                         "[8] Bivariate no adjustment, measured correlated covariates ignored"
                          )
         
         return(print(d, digits=4))
