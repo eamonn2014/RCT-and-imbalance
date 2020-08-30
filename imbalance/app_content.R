@@ -132,7 +132,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                       
                                       tags$hr(),
                                       textInput('pow', 
-                                                div(h5(tags$span(style="color:blue", "power %"))), "99.9"),
+                                                div(h5(tags$span(style="color:blue", "power %"))), "80"),
                                       
                                       textInput('sigma', 
                                                 div(h5(tags$span(style="color:blue", "residual variation"))), "2"),
@@ -142,10 +142,10 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                       
                                       
                                       textInput('alpha', 
-                                                 div(h5(tags$span(style="color:blue", "alpha level two sided %"))), "1"),
+                                                 div(h5(tags$span(style="color:blue", "alpha level two sided %"))), "5"),
                                       
                                       textInput('simuls', 
-                                                div(h5(tags$span(style="color:blue", "Number of simulations"))), "499"),
+                                                div(h5(tags$span(style="color:blue", "Number of simulations"))), "99"),
                                       
                                       #  textInput('n2y2', 
                                       # #      div(h5("Enter the true correlation (tab 2)")), ".8"),
@@ -1008,7 +1008,15 @@ server <- shinyServer(function(input, output   ) {
           coef(f4)["z", "Std. Error"],
           
           coef(f5)["z", "Estimate"],
-          coef(f5)["z", "Std. Error"]
+          coef(f5)["z", "Std. Error"],
+          
+          # collect p values
+          coef(f)["z", "Pr(>|t|)"]  < alpha,
+          coef(f1)["z", "Pr(>|t|)"] < alpha,
+          coef(f2)["z", "Pr(>|t|)"] < alpha,
+          coef(f3)["z", "Pr(>|t|)"] < alpha,
+          coef(f4)["z", "Pr(>|t|)"] < alpha,
+          coef(f5)["z", "Pr(>|t|)"] < alpha
           
         )
         
@@ -1055,7 +1063,7 @@ server <- shinyServer(function(input, output   ) {
       
       simuls=sample$simuls
       
-      nobs <- mcmc()$N # 
+      N1 <- mcmc()$N # 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # simulate models many times collect estimate and SE
       
@@ -1075,14 +1083,16 @@ server <- shinyServer(function(input, output   ) {
         nvars = dim(L)[1]
      
         # Random variables that follow an M correlation matrix
-        r = t(L) %*% matrix(rnorm(nvars*nobs, 2,2), nrow=nvars, ncol=nobs)
+        r = t(L) %*% matrix(rnorm(nvars*N, 2,2), nrow=nvars, ncol=N)
         r = t(r)
         
         r <- as.matrix(r)
         rdata <- as.data.frame(r)
         XX<- as.matrix(rdata)
+        z <- sample(c(0,1), N, replace=T)              # treatment indicator
+        b <- round(sort(runif(K, 0,5)), digits=2)      # making up some beta coefficients
         y <- a+ XX %*% b + theta*z + rnorm(N,0, sigma)
-        data.frame(X=X, y=y, z=z)
+        data.frame(X=XX, y=y, z=z)
         
       }
       
@@ -1101,15 +1111,16 @@ server <- shinyServer(function(input, output   ) {
           coef(f)["z", "Estimate"],
           coef(f)["z", "Std. Error"],
           coef(f1)["z", "Estimate"],
-          coef(f1)["z", "Std. Error"]
-          
+          coef(f1)["z", "Std. Error"], 
+          coef(f)["z", "Pr(>|t|)"]  < alpha,
+          coef(f1)["z", "Pr(>|t|)"]  < alpha
         )
         
       }
       
       
       library(plyr)
-      res <- raply(100,statfun(simfun())) # run the model many times
+      res <- raply(simuls, statfun(simfun())) # run the model many times
       result <- apply(res,2,mean)
       
       
@@ -1266,6 +1277,10 @@ server <- shinyServer(function(input, output   ) {
       res <- simul()$res
       result <- simul()$result
       
+      res2 <- simul2()$res
+      result2 <- simul2()$result
+      
+      
       
       sample <- random.sample()
       theta1=sample$theta     
@@ -1276,9 +1291,13 @@ server <- shinyServer(function(input, output   ) {
       d4 <-  density(res[,7] )
       d5 <-  density(res[,9] )
       d6 <-  density(res[,11] )
+      d7 <-  density(res2[,1] )
+      d8 <-  density(res2[,3] )
       
-      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y))
-      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x))
+      
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
       
       
       plot( (d1), xlim = dx, main="Kernel Density of treatment effect estimates", ylim=c(0,dz),
@@ -1289,20 +1308,26 @@ server <- shinyServer(function(input, output   ) {
       lines( (d4), col = "green")       
       lines( (d5), col = "brown")    
       lines( (d6), col = "pink")    
+      lines( (d7), col = "yellow")    
+      lines( (d8), col = "purple")    
+      
+      
       
       abline(v = theta1, col = "grey")                  
       
-      legend("topright",                                  # Add legend to density
-             legend = c(" adj for true prognostic", 
-                        " not adj for true prognostic" ,
-                        " adj for non prognostic", 
-                        " not adj for non prognostic",
-                        " adj for some non prognostic", 
-                        " not adj when some prognostic"
-                        
-                        ),
-             col = c("black", "red","blue","green","brown", "pink"),
-             lty = 1, bty = "n")
+      # legend("topright",                                  # Add legend to density
+      #        legend = c(" adj for true prognostic", 
+      #                   " not adj for true prognostic" ,
+      #                   " adj for non prognostic", 
+      #                   " not adj for non prognostic",
+      #                   " adj for some non prognostic", 
+      #                   " not adj when some prognostic",
+      #                   " adj for correlated prognostic", 
+      #                   " not adj for correlated prognostic"
+      #             ),
+      #        
+      #        col = c("black", "red","blue","green","brown", "pink", "yellow", "purple"),
+      #        lty = 1, bty = "n")
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -1315,16 +1340,23 @@ server <- shinyServer(function(input, output   ) {
       res <- simul()$res
       result <- simul()$result
       
+      res2 <- simul2()$res
+      result2 <- simul2()$result
+      
+      
       d1 <-  density(res[,2] )
       d2 <-  density(res[,4] )
       d3 <-  density(res[,6] )
       d4 <-  density(res[,8] )
       d5 <-  density(res[,10] )
       d6 <-  density(res[,12] )
+      d7 <-  density(res2[,2] )
+      d8 <-  density(res2[,4] )
       
-      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y))
-      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x))
       
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
       
       plot( (d1), xlim = dx, main="Kernel Density of standard error estimates", ylim=c(0,dz),
             xlab="Treatment effect", #Change the x-axis label
@@ -1333,7 +1365,10 @@ server <- shinyServer(function(input, output   ) {
       lines( (d3), col = "blue")    
       lines( (d4), col = "green")       
       lines( (d5), col = "brown")    
-      lines( (d6), col = "pink")                   
+      lines( (d6), col = "pink")    
+      lines( (d7), col = "yellow")    
+      lines( (d8), col = "purple")    
+      
       
       legend("topright",                                  # Add legend to density
              legend = c(" adj for true prognostic", 
@@ -1341,10 +1376,12 @@ server <- shinyServer(function(input, output   ) {
                         " adj for non prognostic", 
                         " not adj for non prognostic",
                         " adj for some non prognostic", 
-                        " not adj when some prognostic"
+                        " not adj when some prognostic", 
+                        " adj for correlated prognostic", 
+                        " not adj for correlated prognostic"
                         
              ),
-             col = c("black", "red","blue","green","brown", "pink"),
+             col = c("black", "red","blue","green","brown", "pink", "yellow", "purple"),
              lty = 1, bty = "n")
     })
     
@@ -1353,36 +1390,64 @@ server <- shinyServer(function(input, output   ) {
     output$textWithNumber2 <- renderText({ 
       
       result <- simul()$result  # means
+      result2 <- simul2()$result  # means
       
       HTML(paste0(  tags$hr(),
                     "Mean and se adjusting for true prognostic covariates (black lines) "  
                     , tags$span(style="color:red",  p3(result[1]))  ,
                     " ; "  
                     , tags$span(style="color:red",  p3(result[2] )) ,
-                    " and ignoring in analysis (red lines) "
+                    " power "
+                    , tags$span(style="color:blue",  p3(result[13] )) ,
+                    " and ignoring in analysis (red dashed lines) "
                     , tags$span(style="color:red",  p3(result[3]  )),
                     " ; "
                     , tags$span(style="color:red",  p3(result[4] )) ,
+                    " power "
+                    , tags$span(style="color:blue",  p3(result[14] )) ,
+                    
                     
                     br(), br(),
                     "Mean and se adjusting for non prognostic covariates (blue lines) "  
                     , tags$span(style="color:red",  p3(result[5]))  ,
                     " ; "  
                     , tags$span(style="color:red",  p3(result[6] )) ,
+                    " power "
+                    , tags$span(style="color:blue",  p3(result[15] )) ,
                     " and ignoring in analysis (green lines) "
                     , tags$span(style="color:red",  p3(result[7]  )),
                     " ; "
                     , tags$span(style="color:red",  p3(result[8] )) ,
+                    " power "
+                    , tags$span(style="color:blue",  p3(result[16] )) ,
                     
                     br(), br(),
                     "Mean and se adjusting for mix of prognostic and non prognostic covariates (brown lines) "  
                     , tags$span(style="color:red",  p3(result[9]))  ,
                     " ; "  
                     , tags$span(style="color:red",  p3(result[10] )) ,
+                    " power "
+                    , tags$span(style="color:blue",  p3(result[17] )) ,
                     " and ignoring in analysis (pink lines) "
                     , tags$span(style="color:red",  p3(result[11]  )),
                     " ; "
                     , tags$span(style="color:red",  p3(result[12] )) ,
+                    " power "
+                    , tags$span(style="color:blue",  p3(result[18] )) ,
+                    
+                    br(), br(),
+                    "Mean and se adjusting for true prognostic correlated covariates (yellow lines) "  
+                    , tags$span(style="color:red",  p3(result2[1]))  ,
+                    " ; "  
+                    , tags$span(style="color:red",  p3(result2[2] )) ,
+                    " power "
+                    , tags$span(style="color:blue",  p3(result2[5] )) ,
+                    " and ignoring in analysis (purple lines) "
+                    , tags$span(style="color:red",  p3(result2[3]  )),
+                    " ; "
+                    , tags$span(style="color:red",  p3(result2[4] )) ,
+                    " power "
+                    , tags$span(style="color:blue",  p3(result2[6] )) ,
                     
                     
                     br(), br(),
@@ -1396,15 +1461,16 @@ server <- shinyServer(function(input, output   ) {
     output$reg.plotxx <- renderPlot({         
       
       # Get the  data
-      
       res <- simul()$res
       result <- simul()$result
+      
+      res2 <- simul2()$res
+      result2 <- simul2()$result
+      
       
       
       sample <- random.sample()
       theta1=sample$theta     
-      
-      #https://stackoverflow.com/questions/6939136/how-to-overlay-density-plots-in-r
       
       d1 <-  density(res[,1] )
       d2 <-  density(res[,3] )
@@ -1412,9 +1478,14 @@ server <- shinyServer(function(input, output   ) {
       d4 <-  density(res[,7] )
       d5 <-  density(res[,9] )
       d6 <-  density(res[,11] )
+      d7 <-  density(res2[,1] )
+      d8 <-  density(res2[,3] )
       
-      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y))
-      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x))
+      
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
+      
       
       plot((d1), xlim = dx, main=paste0("Kernel Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),
             xlab="Treatment effect", #Change the x-axis label
@@ -1424,6 +1495,11 @@ server <- shinyServer(function(input, output   ) {
       lines( (d4), col = "green")       
       lines( (d5), col = "brown")    
       lines( (d6), col = "pink")    
+      lines( (d7), col = "yellow")    
+      lines( (d8), col = "purple")    
+      
+      
+      
       abline(v = theta1, col = "grey")                  
       
   
@@ -1439,6 +1515,10 @@ server <- shinyServer(function(input, output   ) {
       res <- simul()$res
       result <- simul()$result
       
+      res2 <- simul2()$res
+      result2 <- simul2()$result
+      
+      
       sample <- random.sample()
       sigma1=sample$sigma
       N1 <- mcmc()$N # 
@@ -1451,6 +1531,9 @@ server <- shinyServer(function(input, output   ) {
       d4 <-  density(res[,8] )
       d5 <-  density(res[,10] )
       d6 <-  density(res[,12] )
+      d7 <-  density(res2[,2] )
+      d8 <-  density(res2[,4] )
+      
       
       dz <- max(c(d1$y, d3$y,  d4$y,   d5$y))
       dx <- range(c(d1$x,  d3$x, d4$x, d5$x))
@@ -1463,6 +1546,9 @@ server <- shinyServer(function(input, output   ) {
       lines( (d4), col = "green")       
       lines( (d5), col = "brown")    
       lines( (d6), col = "pink")    
+      lines( (d7), col = "yellow")    
+      lines( (d8), col = "purple")    
+      
       
        abline(v = se., col = "grey")                  
    
