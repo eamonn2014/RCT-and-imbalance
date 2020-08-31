@@ -21,7 +21,7 @@
 #' : One covariate imbalance is likely to be counterbalanced by another in opposite direction.
 #' 
 #' @stephensenn
-#' : One covariate imblance likely coincides with other imbalances in same direction (thus, adjusting for one adjusts for them all)
+#' : One covariate imbalance likely coincides with other imbalances in same direction (thus, adjusting for one adjusts for them all)
 #' Stephen John Senn
 #' @stephensenn
 #' ·
@@ -163,6 +163,9 @@ We perform simulation for a 1:1 RCT, estimating treatment effects whilst examini
                                       
                                       textInput('simuls', 
                                                 div(h5(tags$span(style="color:blue", "Number of simulations"))), "99"),
+                                      
+                                      textInput('covar', 
+                                                div(h5(tags$span(style="color:blue", "covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
                                       
                                       #  textInput('n2y2', 
                                       # #      div(h5("Enter the true correlation (tab 2)")), ".8"),
@@ -535,9 +538,11 @@ server <- shinyServer(function(input, output   ) {
         
         alpha <- as.numeric(unlist(strsplit(input$alpha,",")))
         
-        theta <- (as.numeric(unlist(strsplit(input$theta,","))))   # user enter odds, need log for the maths
+        theta <- (as.numeric(unlist(strsplit(input$theta,","))))    
         
-        simuls <- (as.numeric(unlist(strsplit(input$simuls,","))))   # user enter odds, need log for the maths
+        simuls <- (as.numeric(unlist(strsplit(input$simuls,","))))    
+        
+        covar <- (as.numeric(unlist(strsplit(input$covar,","))))   
         return(list(  
             K=K,  
             Kp=Kp,  
@@ -545,7 +550,8 @@ server <- shinyServer(function(input, output   ) {
             sigma=sigma, 
             alpha=alpha/100, 
             theta=theta,
-            simuls=simuls
+            simuls=simuls,
+            covar=covar
         ))
         
     })
@@ -567,17 +573,19 @@ server <- shinyServer(function(input, output   ) {
         sigma=sample$sigma
         theta=sample$theta        
         alpha=sample$alpha    
+        covar=sample$covar
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         Po <- power.t.test( delta =theta, sd=sigma, sig.level=alpha,
                             power=pow, type="two.sample", alternative=c("two.sided"))
 
         N <-ceiling(Po$n)*2
-                                                   # variables
-        X <- array(runif(N*K , -1,1), c(N,K))     # initally covars were uniform dist
         
-        # Simulate a difference in two means with data SD of ?
+        if (covar==1) {  
+        X <- array(runif(N*K , -1,1), c(N,K))     # initially covars were uniform dist
+        } else {
         X <- array(rnorm(N*K, 0, 1), c(N,K))  
+        }
         
         z <- sample(c(0,1), N, replace=T)          # treatment indicator
         a <- 1                                     # intercept
@@ -647,7 +655,7 @@ server <- shinyServer(function(input, output   ) {
         nobs <- N
         
         x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
-        x <- Matrix(rnorm(K*K, 0, 1),  K)  
+  
         A <- forceSymmetric(x)
         
         diag(A) <- 1
@@ -729,8 +737,18 @@ server <- shinyServer(function(input, output   ) {
     
     output$reg.plot <- renderPlot({         
         
-        # Get the  data
-        
+        # Get the  data#
+    
+      # as in frank harrell's covariate imbalance code. he used .3 cutoff for difference in mean when se =.2
+      # se*1.5
+      
+      sample <- random.sample()
+      sigma1=sample$sigma
+      N1 <- mcmc()$N # 
+      
+      se. <-  sqrt((2*(sigma1^2 + sigma1^2)) /N1)  
+      se. <-  sqrt((sigma1^2+sigma1^2) / (N1/2) )  #ditto
+      
         placebo <- mcmc()$placebo
         treated <- mcmc()$treated
         bigN <- mcmc()$bigN
@@ -744,11 +762,16 @@ server <- shinyServer(function(input, output   ) {
         plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
              ylab="Estimate Mean difference", xaxs="i",  type="n", 
              main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
-             placebo=",placebo,", treated=",treated,", total=",bigN,""))
+             placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.5*standard error of difference"))
         #axis(2, seq(-5,5,1))
         # axis(1, seq(1,K,10))
         points(1:K, doff[,1], pch=20)
-        abline(0, 0, col="gray")
+        abline(0, 0, col="pink", lty=w, lwd=ww)
+        abline(se., 0, col="pink" , lty=w, lwd=ww)
+        abline(-se., 0, col="pink" , lty=w, lwd=ww)
+        abline(1.5*se., 0, col="pink" , lty=w, lwd=ww)
+        abline(1.5*-se., 0, col="pink" , lty=w, lwd=ww)
+        
         for (i in 1:K){
             if (prod(conf[i,c(1,2)]) < 0 ) {
                 lines(c(i,i), conf[i,c(1,2)], lwd=.8, col='blue') 
@@ -966,7 +989,7 @@ server <- shinyServer(function(input, output   ) {
       sigma1=sample$sigma
       theta1=sample$theta        
       alpha=sample$alpha  
-      
+      covar=sample$covar
 
       simuls=sample$simuls
       
@@ -976,9 +999,21 @@ server <- shinyServer(function(input, output   ) {
 
       simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
         
-        X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
-        # Simulate a difference in two means with data SD of ?
-        X <- array(rnorm(N*K, 0, 1), c(N,K))  
+        # X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
+        # # Simulate a difference in two means with data SD of ?
+        # X <- array(rnorm(N*K, 0, 1), c(N,K))  
+        # 
+        
+        if (covar==1) {  
+          X <- array(runif(N*K , -1,1), c(N,K))     # initially covars were uniform dist
+        } else {
+          X <- array(rnorm(N*K, 0, 1), c(N,K))  
+        }
+        
+        
+        
+        
+        
         z <- sample(c(0,1), N, replace=T)              # treatment indicator
         b <- round(sort(runif(K, 0,5)), digits=2)      # making up some beta coefficients
         y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
@@ -1098,7 +1133,6 @@ server <- shinyServer(function(input, output   ) {
         
         x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
         
-        x <- Matrix(rnorm(K*K, 0, 1),  K)   
         A <- forceSymmetric(x)
         
         diag(A) <- 1
@@ -1553,7 +1587,8 @@ server <- shinyServer(function(input, output   ) {
       sigma1=sample$sigma
       N1 <- mcmc()$N # 
       
-      se. = sqrt((2*(sigma1^2 + sigma1^2)) /N1)
+      se. <-  sqrt((2*(sigma1^2 + sigma1^2)) /N1)  
+      se. <-  sqrt((sigma1^2+sigma1^2) / (N1/2) )  #ditto
       
       d1 <-  density(res[,2] )
       d2 <-  density(res[,4] )

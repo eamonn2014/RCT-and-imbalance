@@ -1,14 +1,38 @@
 
-N=1000
-K =100
-x <- replicate(N, mean(rnorm(K/2)-mean(rnorm(K/2))))
+
+sim=1000
+n =100
+
+
+x <- replicate(sim, mean(rnorm(n/2, 0,1))-mean(rnorm(n/2, 0,1 )))
 sd(x)
+summary(x)
+ 
+x2 <- rnorm(1000, sd=sqrt(4/ n))
+sd(x2)
+summary(x2)
+ 
 
-sqrt(4/K)
+##generalise
+
+std <- 1
+
+sim=1000
+n =100
+x <- replicate(sim, mean( rnorm(n/2, 0, std)) - mean(rnorm(n/2, 0, std )))
+sd(x)
+summary(x)
+
+x2 <- rnorm(1000, sd= sqrt(  (std^2+std^2) / (n/2) )  )
+sd(x2)
+summary(x2)
+
+ 
 
 
 
-####
+
+###################################################################################################################################################
 #https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/3
 
 
@@ -49,3 +73,4 @@ jc
        'Average number of additional variables examined to find this:',
        round(mean(jc)), '\n')
 cat(w, sep='')
+###################################################################################################################################################

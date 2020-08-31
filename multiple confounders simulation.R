@@ -388,12 +388,27 @@ set.seed(987897)
    zz1 <- lm(y~z, data=d)
    f1 <-  summary(zz1)
    
+   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   zz2 <- lm(y2~.-y, data=d)    ## adjusting for  X which are not prognostic
+   f2 <-  summary(zz2)
+   
+   zz3 <- lm(y2~z, data=d)      ## not adjusting for X which are not prognostic
+   f3 <-  summary(zz3)
+   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   
+   
+   
    cbind(
      #f$coefficients [,1]["z"],
      coef(f)["z", "Estimate"],
      coef(f)["z", "Std. Error"],
      coef(f1)["z", "Estimate"],
-     coef(f1)["z", "Std. Error"]
+     coef(f1)["z", "Std. Error"],
+     
+     coef(f2)["z", "Estimate"],
+     coef(f2)["z", "Std. Error"],
+     coef(f3)["z", "Estimate"],
+     coef(f3)["z", "Std. Error"]
      
    )
    
