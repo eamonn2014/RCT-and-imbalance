@@ -3,10 +3,18 @@
 #  It follows that covariate imbalance, contrary
  #to what has been claimed by Altman, is just as much of a problem for large Studies as for
 # small ones
-
+#https://twitter.com/f2harrell/status/1299755896319475712
+#https://twitter.com/f2harrell/status/1298640944405807105
+#'ut adjusted estimation does not have to be robust to be a major improvement over unadjusted analysis.  Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist). '
 #Using observed imbalances to find covariates to adjust for is arbitrary and reduces power by maximizing co-linearity with treatment
 
+#https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32
+#'randomisation entitles us to ignore covariates we have not measured.'
+# To me the goal of a parallel-group randomized clinical trial is to answer this question: do two patients starting out at the same point 
+# (same age, severity of disease, etc.), one on treatment A and one on treatment B, end up with the same expected outcomes? This is fundamentally a completely conditional model.
 
+
+##https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2
 #' Can you reconcile these two points?
 #'   
 #'   @f2harrell
@@ -76,6 +84,8 @@ inv_logit <- function(logit) exp(logit) / (1 + exp(logit))
 is.even <- function(x){ x %% 2 == 0 } # function to id. odd maybe useful
 options(width=200)
 options(scipen=999)
+w=1  # line type
+ww=3 # line thickness
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2
                 # paper
@@ -86,9 +96,16 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                     direction = "bottom"
                 ),
                 
-                h2("xxxxxxxxxxxxxxx"), 
+                h2("Covariate adjustment in randomised controlled trials"), 
                 
-                h4("xx
+                h4("we investigate some misconceptions concerning randomised trials include (i)  there is no need for baseline covariates in the analysis, that is,
+                many randomised controlled trials (RCTs) are analysed in a simple manner using only the randomised treatment as the independent variable. (ii)
+                imbalances in baseline covariates are problematic. When the response outcome is continuous, precision of the treatment effect estimate is improved when adjusting for baseline covariates 
+in a randomised controlled trial. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
+may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
+attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
+This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
+We perform simulation for a 1:1 RCT, estimating treatment effects whilst examining adjustment of covariates related to the outcome, covariates not related to the outcome and collinear covariates.
          "), 
                 
                 h3("  "), 
@@ -328,7 +345,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                                            
                                   ) ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "7 Adjusting for prog covariates simulation",
+                                  tabPanel( "7 Simulation",
                                             h4(paste("xxxxxxxxxxxxxxx")),
                                             
                                           #  h4("First X1:Xn covariates only are prognostic, the remainder are not"),
@@ -534,7 +551,11 @@ server <- shinyServer(function(input, output   ) {
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # tab 1 simulate po model data and analyse
+    # tab 1 simulate data (covariates and response)  
+    # prognostic reponse
+    # covariates that are not prognostic
+    # mix of above 2
+    # look at the difference of the covariates across arms
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     mcmc <- reactive({
         
@@ -553,7 +574,11 @@ server <- shinyServer(function(input, output   ) {
 
         N <-ceiling(Po$n)*2
                                                    # variables
-        X <- array(runif(N*K , -1,1), c(N,K))  
+        X <- array(runif(N*K , -1,1), c(N,K))     # initally covars were uniform dist
+        
+        # Simulate a difference in two means with data SD of ?
+        X <- array(rnorm(N*K, 0, 1), c(N,K))  
+        
         z <- sample(c(0,1), N, replace=T)          # treatment indicator
         a <- 1                                     # intercept
         
@@ -622,7 +647,7 @@ server <- shinyServer(function(input, output   ) {
         nobs <- N
         
         x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
-        
+        x <- Matrix(rnorm(K*K, 0, 1),  K)  
         A <- forceSymmetric(x)
         
         diag(A) <- 1
@@ -952,6 +977,8 @@ server <- shinyServer(function(input, output   ) {
       simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
         
         X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
+        # Simulate a difference in two means with data SD of ?
+        X <- array(rnorm(N*K, 0, 1), c(N,K))  
         z <- sample(c(0,1), N, replace=T)              # treatment indicator
         b <- round(sort(runif(K, 0,5)), digits=2)      # making up some beta coefficients
         y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
@@ -1071,6 +1098,7 @@ server <- shinyServer(function(input, output   ) {
         
         x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
         
+        x <- Matrix(rnorm(K*K, 0, 1),  K)   
         A <- forceSymmetric(x)
         
         diag(A) <- 1
@@ -1300,16 +1328,16 @@ server <- shinyServer(function(input, output   ) {
       dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
       
       
-      plot( (d1), xlim = dx, main="Kernel Density of treatment effect estimates", ylim=c(0,dz),
+      plot( (d1), xlim = dx, main="Density of treatment effect estimates", ylim=c(0,dz),lty=w, lwd=ww,
            xlab="Treatment effect", #Change the x-axis label
            ylab="Density") #y-axis label)                   # Plot density of x
-      lines( (d2), col = "red", lty=2)  
-      lines( (d3), col = "blue")    
-      lines( (d4), col = "green")       
-      lines( (d5), col = "brown")    
-      lines( (d6), col = "pink")    
-      lines( (d7), col = "yellow")    
-      lines( (d8), col = "purple")    
+      lines( (d2), col = "red", lty=w, lwd=ww)  
+      lines( (d3), col = "blue", lty=w, lwd=ww)    
+      lines( (d4), col = "green", lty=w, lwd=ww)          
+      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d6), col = "pink", lty=w, lwd=ww)       
+      lines( (d7), col = "yellow", lty=w, lwd=ww)       
+      lines( (d8), col = "purple", lty=w, lwd=ww)     
       
       
       
@@ -1358,17 +1386,16 @@ server <- shinyServer(function(input, output   ) {
       dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
       dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
       
-      plot( (d1), xlim = dx, main="Kernel Density of standard error estimates", ylim=c(0,dz),
-            xlab="Treatment effect", #Change the x-axis label
+      plot( (d1), xlim = dx, main="Density of standard error estimates", ylim=c(0,dz),lty=w, lwd=ww,
+            xlab="Standard error", #Change the x-axis label
             ylab="Density") #y-axis label)                   # Plot density of x
-      lines( (d2), col = "red" , lty=2)  
-      lines( (d3), col = "blue")    
-      lines( (d4), col = "green")       
-      lines( (d5), col = "brown")    
-      lines( (d6), col = "pink")    
-      lines( (d7), col = "yellow")    
-      lines( (d8), col = "purple")    
-      
+      lines( (d2), col = "red", lty=w, lwd=ww)  
+      lines( (d3), col = "blue", lty=w, lwd=ww)    
+      lines( (d4), col = "green", lty=w, lwd=ww)          
+      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d6), col = "pink", lty=w, lwd=ww)       
+      lines( (d7), col = "yellow", lty=w, lwd=ww)       
+      lines( (d8), col = "purple", lty=w, lwd=ww)     
       
       legend("topright",                                  # Add legend to density
              legend = c(" adj for true prognostic", 
@@ -1382,7 +1409,7 @@ server <- shinyServer(function(input, output   ) {
                         
              ),
              col = c("black", "red","blue","green","brown", "pink", "yellow", "purple"),
-             lty = 1, bty = "n")
+             lty = w, lwd=ww,bty = "n")
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1486,17 +1513,20 @@ server <- shinyServer(function(input, output   ) {
       dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
       dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
       
+        
+      dx <- range(c(d1$x,  d3$x, d4$x, d5$x))
       
-      plot((d1), xlim = dx, main=paste0("Kernel Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),
+      
+      plot((d1), xlim = dx, main=paste0("Density of treatment estimates (zoomed in), truth= ",p3(theta1),""), ylim=c(0,dz),lty=w, lwd=ww,
             xlab="Treatment effect", #Change the x-axis label
             ylab="Density") #y-axis label)                   # Plot density of x
-      lines( (d2), col = "red", lty=2)  
-      lines( (d3), col = "blue")    
-      lines( (d4), col = "green")       
-      lines( (d5), col = "brown")    
-      lines( (d6), col = "pink")    
-      lines( (d7), col = "yellow")    
-      lines( (d8), col = "purple")    
+      lines( (d2), col = "red", lty=w, lwd=ww)  
+      lines( (d3), col = "blue", lty=w, lwd=ww)    
+      lines( (d4), col = "green", lty=w, lwd=ww)          
+      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d6), col = "pink", lty=w, lwd=ww)       
+      lines( (d7), col = "yellow", lty=w, lwd=ww)       
+      lines( (d8), col = "purple", lty=w, lwd=ww)       
       
       
       
@@ -1535,20 +1565,19 @@ server <- shinyServer(function(input, output   ) {
       d8 <-  density(res2[,4] )
       
       
-      dz <- max(c(d1$y, d3$y,  d4$y,   d5$y))
-      dx <- range(c(d1$x,  d3$x, d4$x, d5$x))
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y)) 
+      dx <- range(c(d1$x,  d3$x, d4$x, d5$x)) #ignore some of the distributions
       
-      plot( (d1), xlim = c(dx), main=paste0("Kernel Density of treatment standard error estimates, truth= ",p5(se.),""), ylim=c(0,dz),
-            xlab="Treatment effect", #Change the x-axis label
+      plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates (zoomed in), truth= ",p5(se.),""), ylim=c(0,dz),lty=w, lwd=ww,
+            xlab="Standard error", #Change the x-axis label
             ylab="Density") #y-axis label)                   # Plot density of x
-      #lines( (d2), col = "red")  
-      lines( (d3), col = "blue")    
-      lines( (d4), col = "green")       
-      lines( (d5), col = "brown")    
-      lines( (d6), col = "pink")    
-      lines( (d7), col = "yellow")    
-      lines( (d8), col = "purple")    
-      
+      lines( (d2), col = "red", lty=w, lwd=ww)  
+      lines( (d3), col = "blue", lty=w, lwd=ww)    
+      lines( (d4), col = "green", lty=w, lwd=ww)          
+      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d6), col = "pink", lty=w, lwd=ww)       
+      lines( (d7), col = "yellow", lty=w, lwd=ww)       
+      lines( (d8), col = "purple", lty=w, lwd=ww)     
       
        abline(v = se., col = "grey")                  
    
