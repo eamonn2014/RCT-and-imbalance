@@ -1341,7 +1341,7 @@ server <- shinyServer(function(input, output   ) {
       
       
       
-      abline(v = theta1, col = "grey")                  
+      abline(v = theta1, col = "grey")                    
       
       # legend("topright",                                  # Add legend to density
       #        legend = c(" adj for true prognostic", 
