@@ -240,9 +240,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                
                                                fluidRow(
                                                    column(width = 5, offset = 0, style='padding:1px;',
-                                                          div( verbatimTextOutput("A") )        
+                                                          div( verbatimTextOutput("A") )   ,     
                                                         #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
-                                                          
+                                                        div( verbatimTextOutput("R1") )
                                                    ))),
                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
                                            
@@ -262,9 +262,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                
                                                fluidRow(
                                                    column(width = 5, offset = 0, style='padding:1px;',
-                                                          div( verbatimTextOutput("C") )        
+                                                          div( verbatimTextOutput("C") )  ,      
                                                           #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
-                                                          
+                                                          div( verbatimTextOutput("R2") )
                                                    ))),
                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
                                            
@@ -289,9 +289,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                              
                                              fluidRow(
                                                column(width = 5, offset = 0, style='padding:1px;',
-                                                      div( verbatimTextOutput("F") )        
+                                                      div( verbatimTextOutput("F") ) ,       
                                                       #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
-                                                      
+                                                      div( verbatimTextOutput("R3") )
                                                ))),
                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
                                            
@@ -317,7 +317,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 column(width = 5, offset = 0, style='padding:1px;',
                                                        div( verbatimTextOutput("H") ),
                                                        #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7))
-                                                       div( verbatimTextOutput("R") )
+                                                       div( verbatimTextOutput("R4") )
                                                 ))),
                                             h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
 
@@ -794,6 +794,8 @@ server <- shinyServer(function(input, output   ) {
         
         A<-summary(ols2)
         B<-summary(ols1)
+        xx <- cov2cor(vcov(ols2))
+        R <- round(xx,2)
         
         #get stats so we can compare together
         x<- A
@@ -801,7 +803,7 @@ server <- shinyServer(function(input, output   ) {
         x<- B
         stat2 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
         
-        return(list(  A=A, B=B, stat1=stat1, stat2=stat2)) 
+        return(list(  A=A, B=B, stat1=stat1, stat2=stat2, R=R)) 
         
     })
     
@@ -815,7 +817,10 @@ server <- shinyServer(function(input, output   ) {
         
         return(reg1()$B)
     })
-    
+    output$R1 <- renderPrint({
+      
+      return(reg1()$R)
+    })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     reg2 <- reactive({  
@@ -829,6 +834,8 @@ server <- shinyServer(function(input, output   ) {
         
         A<-summary(ols2)
         B<-summary(ols1)
+        xx <- cov2cor(vcov(ols2))
+        R <- round(xx,2)
         
         #get stats so we can compare together
         x<- A
@@ -836,7 +843,7 @@ server <- shinyServer(function(input, output   ) {
         x<- B
         stat4 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
 
-        return(list(  C=A, D=B,   stat4=stat4, stat3=stat3)) 
+        return(list(  C=A, D=B,   stat4=stat4, stat3=stat3, R=R)) 
         
     })
     
@@ -850,7 +857,10 @@ server <- shinyServer(function(input, output   ) {
         
         return(reg2()$D)
     })
-    
+    output$R2 <- renderPrint({
+      
+      return(reg2()$R)
+    })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     reg3<- reactive({  
@@ -865,13 +875,16 @@ server <- shinyServer(function(input, output   ) {
       A<-summary(ols2)
       B<-summary(ols1)
       
+      xx <- cov2cor(vcov(ols2))
+      R <- round(xx,2)
+      
       #get stats so we can compare together
       x<- A
       stat5 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
       x<- B
       stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
       
-      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6)) 
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R)) 
       
     })
     
@@ -885,7 +898,10 @@ server <- shinyServer(function(input, output   ) {
       
       return(reg3()$B)
     })
-    
+    output$R3 <- renderPrint({
+      
+      return(reg3()$R)
+    })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     reg4<- reactive({  
@@ -925,7 +941,7 @@ server <- shinyServer(function(input, output   ) {
       return(reg4()$B)
     })
     
-    output$R <- renderPrint({
+    output$R4 <- renderPrint({
       
       return(reg4()$R)
     })
