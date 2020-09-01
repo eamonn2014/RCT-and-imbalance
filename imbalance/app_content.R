@@ -142,7 +142,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   br(),  
                                   tags$style(".well {background-color:#b6aebd ;}"), 
                                   
-                                  h4("xxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
+                                  h4("User inputs"),
                                   div(
                                       
                                       
@@ -225,8 +225,30 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                             .navbar-default .navbar-nav > li > a[data-value='t3'] {color: green;background-color: lightgreen;}
                    ")),
                                   
+                                  tabPanel("1 Power calculation", value=7,
+                                         #  h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
+
+
+                                           fluidRow(
+                                             column(width = 6, offset = 0, style='padding:1px;',
+                                                    div( verbatimTextOutput("Power") ),
+                                                    h4(paste("Table 1 Result of power calculation based on inputs")),
+                                                    
+                                                    # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+                                                    h4(htmlOutput("textWithNumber3") ),
+                                             ) ,
+
+
+                                             fluidRow(
+                                               column(width = 5, offset = 0, style='padding:1px;',
+                                                     # div( verbatimTextOutput("A") )   ,
+                                                      #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7))
+                                                      #div( verbatimTextOutput("R1") )
+                                               ))),
+                                          
+                                  ) ,
                                   
-                                  tabPanel("1 Measured covariates prognostic", value=7, 
+                                  tabPanel("2 Measured covariates prognostic", value=7, 
                                            h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
                                            
                                            
@@ -248,7 +270,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                   ) ,
                                   
-                                  tabPanel("2 Measured covariates non prognostic", value=3, 
+                                  tabPanel("3 Measured covariates non prognostic", value=3, 
                                            h4("All covariates are not prognostic, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
                                            
                                            
@@ -273,7 +295,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                            
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "3 Measured covariates mix of non prog and prognostic", 
+                                  tabPanel( "4 Measured covariates mix of non prog and prognostic", 
                                            h4(paste("xxxxxxxxxxxxxxx")),
                                            
                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
@@ -299,7 +321,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "4 Measured correlated covariates",
+                                  tabPanel( "5 Measured correlated covariates",
                                             h4(paste("xxxxxxxxxxxxxxx")),
 
                                             h4("First X1:Xn covariates only are prognostic, the remainder are not"),
@@ -326,7 +348,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
-                                  tabPanel("5 Summary", value=3, 
+                                  tabPanel("6 Observations", value=3, 
                                            
                                            h5(paste("Using only one realisation we make some observations (to be more certain of findings requires numerous simulations).")), 
                                          #  textInput('rcat2', 
@@ -351,7 +373,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                         
                                
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel("6 Assessing covariate balance", value=7, 
+                                  tabPanel("7 Observed covariate balance", value=7, 
                                            
                                            h4("Larger sample sizes does not mean better covariate balance (however that is defined). Precision becomes better so smaller differences are picked up."),
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
@@ -364,7 +386,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                   ) ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "7 Simulation",
+                                  tabPanel( "8 Simulation",
                                             h4(paste("xxxxxxxxxxxxxxx")),
                                             
                                           #  h4("First X1:Xn covariates only are prognostic, the remainder are not"),
@@ -396,9 +418,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
-                                  tabPanel("8 xxxxxxxxx", value=3, 
-                                           h4(" xxxxxxxxxxxxx"),
-                                           
+                                  tabPanel("9 prognostic covariates data", value=3, 
+                                           h4("Data response and treatment used tabs 2 and 3"),
+                                           div( verbatimTextOutput("dat")),
                                            
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
@@ -416,48 +438,50 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            h4("xxxxxxxxxxxxxxxxxxxxx"),
                                   ),
                                   
-                                  tabPanel("9 xxxxxxxx", value=3, 
-                                           
-                                           fluidRow(
-                                               column(width = 6, offset = 0, style='padding:1px;',
-                                                      h4("xxxxxxxxxxxxxxx"),
-                                                      textInput('kints',
-                                                           div(h5(tags$span(style="color:blue",
-                                                                                ""))), ""), 
-                                                      
-                                                      #div(plotOutput("PP.plot", width=fig.width7, height=fig.height6)),
-                                                      h4("Figure xxxxxxxxxxxxxx"),
-                                                      br() , 
-                                                      
-                                                      h4(""),
-                                                      
-                                                      h4("Table xxxxxxxxxxxxx"),
-                                                      #div( verbatimTextOutput("predz"), width = 2), # 
-                                               ),
-                                               
-                                               fluidRow(
-                                                   
-                                                   
-                                                   h4("xxxxxxxxxxxx"),
-                                                   h4("yyyyyyyyyyyy"),
-                                                   br(), br(), br() ,  
-                                                   
-                                                   
-                                                   column(width = 5, offset = 0, style='padding:0px;',
-                                                          
-                                                        #  div(plotOutput("PP.plot2", width=fig.width7, height=fig.height6)),
-                                                          h4("Figure 9 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
-                                                          
-                                                   )))
-                                           
-                                  ) ,
+                                  # tabPanel("9 xxxxxxxx", value=3, 
+                                  #          
+                                  #          fluidRow(
+                                  #              column(width = 6, offset = 0, style='padding:1px;',
+                                  #                     h4("xxxxxxxxxxxxxxx"),
+                                  #                    # div( verbatimTextOutput("dat")),
+                                  #                     textInput('kints',
+                                  #                          div(h5(tags$span(style="color:blue",
+                                  #                                               ""))), ""), 
+                                  #                     
+                                  #                     #div(plotOutput("PP.plot", width=fig.width7, height=fig.height6)),
+                                  #                     h4("Figure xxxxxxxxxxxxxx"),
+                                  #                     br() , 
+                                  #                     
+                                  #                     h4(""),
+                                  #                     
+                                  #                     h4("Table xxxxxxxxxxxxx"),
+                                  #                     #div( verbatimTextOutput("predz"), width = 2), # 
+                                  #              ),
+                                  #              
+                                  #              fluidRow(
+                                  #                  
+                                  #                  
+                                  #                  h4("xxxxxxxxxxxx"),
+                                  #                  h4("yyyyyyyyyyyy"),
+                                  #                  br(), br(), br() ,  
+                                  #                  
+                                  #                  
+                                  #                  column(width = 5, offset = 0, style='padding:0px;',
+                                  #                         
+                                  #                       #  div(plotOutput("PP.plot2", width=fig.width7, height=fig.height6)),
+                                  #                         h4("Figure 9 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
+                                  #                         
+                                  #                  )))
+                                  #          
+                                  # ) ,
+                                  # 
                                   
-                                  
-                                  tabPanel("10 xxxxxxxxx", value=3, 
+                                  tabPanel("10 non prognostic covariate data", value=3, 
                                            
                                            #h5(paste("Checking assumptions")), 
                                            #div(plotOutput("assumption", width=fig.width1, height=fig.height3)),
-                                           h4("Figure xxxxxxxxxxxxxx"),
+                                           h4("Same data as tab 9 but different response (see tabs 4 and 5)"),
+                                           div( verbatimTextOutput("fake2")),
                                            h4( "xxxxxxxxxxxx" ),
                                            h4("Table  xxxxxxxxxxxxxxxxxxx"),
                                          # div( verbatimTextOutput("assump")),  
@@ -465,11 +489,11 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ),
                                   
                                   
-                                  tabPanel("11 xxxxxxxx", value=3, 
+                                  tabPanel("11 Mixture of prognostic and no prognostic covariates data", value=3, 
                                            
                                         #   div(plotOutput("ecdfs", width=fig.width1, height=fig.height3)),
-                                           h4("Figure 11 xxxxxxxxxxxx"), 
-                                           h4("xxxxxxxxxxxxxxxx"), 
+                                        h4("Same data as tab 8 and 9 but different response (see tabs 6 and 7)"), 
+                                        div( verbatimTextOutput("fake3")),
                                          #  div(plotOutput("logitseries", width=fig.width1, height=fig.height3)),
                                            
                                            
@@ -480,12 +504,12 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ),
                                   
                                   
-                                  tabPanel("12 xxxxxxxxxxxx", 
+                                  tabPanel("12 correlated covariates data", 
                                            
                                            fluidRow(
                                                column(width = 9, offset = 0, style='padding:1px;',
                                                       h4("Table 9 xxxxxxxxxxxx"),
-                                                    div( verbatimTextOutput("dat")),
+                                                    div( verbatimTextOutput("fake4")),
                                                ),
                                                
                                                column(width = 3, offset = 0, style='padding:1px;',
@@ -493,23 +517,37 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       h4("xxxxxxxxxxxxx
                                                   \n"),
                                                       
+                                                      
+                                                      
+                                                      #
+                                                      #
+                                                      #'ut adjusted estimation does not have to be robust to be a major improvement over unadjusted analysis.  Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist). '
+                                                      #Using observed imbalances to find covariates to adjust for is arbitrary and reduces power by maximizing co-linearity with treatment
+                                                      
+                                                      #
+                                                      #'randomisation entitles us to ignore covariates we have not measured.'
+                                                      # To me the goal of a parallel-group randomized clinical trial is to answer this question: do two patients starting out at the same point 
+                                                      # (same age, severity of disease, etc.), one on treatment A and one on treatment B, end up with the same expected outcomes? This is fundamentally a completely conditional model.
+                                                      
+                                                      
+                                                      ##                         
+                                                      
+                                                      
+                                                      
+                                                      
+                                                      
+                                                      
                                                       tags$hr(),
                                                       div(h4("References:")),  
-                                                      tags$a(href = "https://stats.stackexchange.com/search?q=proportional+odds+model", tags$span(style="color:blue", "[1] xxxxxxxxxxxxx"),),   
+                                                      tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
                                                       div(p(" ")),
-                                                      tags$a(href = "hhttps://en.wikipedia.org/wiki/Ordered_logit",  tags$span(style="color:blue", "[2] xxxxxxxxxxxxxx"),),   
+                                                      tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[2]  Frank Harrell twitter"),),   
                                                       div(p(" ")),
-                                                      #  tags$a(href = "https://projecteuclid.org/download/pdf_1/euclid.aos/1176344552", tags$span(style="color:blue", "[3] Krushke"),),
-                                                      #  div(p(" ")),
-                                                      tags$a(href = "http://hbiostat.org/doc/rms.pdf", tags$span(style="color:blue", "[3] xxxxxxxxxxxxxx"),),  
+                                                      tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Data discourse"),),  
                                                       div(p(" ")),
-                                                      tags$a(href = "https://rdrr.io/cran/rms/man/predict.lrm.html", tags$span(style="color:blue", "[4] xxxxxxxxxxxxxxxx"),),  
+                                                      tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[4] Data discourse"),),  
                                                       div(p(" ")),
-                                                      tags$a(href = "https://psyarxiv.com/x8swp/", tags$span(style="color:blue", "[5] xxxxxxxxxxxxx"),),  
-                                                      div(p(" ")),
-                                                      tags$a(href = "https://stats.stackexchange.com/questions/89474/interpretation-of-ordinal-logistic-regression#89485
-", tags$span(style="color:blue", "[6] xxxxxxxxxxxxx"),),  
-                                                      div(p(" ")),
+                
                                                       tags$hr()
                                                       
                                                )
@@ -704,20 +742,21 @@ server <- shinyServer(function(input, output   ) {
 
         y <- a+ XX %*% b + theta*z + rnorm(N,0, sigma)
         fake4 <- data.frame(X=rdata, y=y, z=z)
-
-     
-        
-        
+   
         
         return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                       
-                      placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX
+                      placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX, Po=Po
                       
                       )) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     
+    output$Power <- renderPrint({        
+      
+      return(mcmc()$Po)
 
+    })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # beta dist plot 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
@@ -915,7 +954,7 @@ server <- shinyServer(function(input, output   ) {
       
       
       xx <- cov2cor(vcov(ols2))
-      R <- round(xx,2)
+      R <- round(xx,6)
       
       A<-summary(ols2)
       B<-summary(ols1)
@@ -1575,6 +1614,40 @@ server <- shinyServer(function(input, output   ) {
       
     })  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    
+    output$textWithNumber3 <- renderText({ 
+      
+      power <- mcmc()$N  # means
+     
+      HTML(paste0(  tags$hr(),
+                    
+                    "Based on the study design dictated by inputs we will randomise ",
+                    tags$span(style="color:green",   N)  ,
+                    " patients in a 1:1 fashion" ,
+                                        br(), br()
+                    
+           
+      ))    
+      
+    })  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$reg.plotxx <- renderPlot({         
       
       # Get the  data
@@ -1841,6 +1914,33 @@ server <- shinyServer(function(input, output   ) {
         #d <- plyr::arrange(d, baseline, treatment)
         
         return(print(d, digits=4))
+    })
+    
+    output$fake2 <- renderPrint({
+      
+      d <- mcmc()$fake2
+      
+      #d <- plyr::arrange(d, baseline, treatment)
+      
+      return(print(d, digits=4))
+    })
+    
+    output$fake3 <- renderPrint({
+      
+      d <- mcmc()$fake3
+      
+      #d <- plyr::arrange(d, baseline, treatment)
+      
+      return(print(d, digits=4))
+    })
+    
+    output$fake4 <- renderPrint({
+      
+      d <- mcmc()$fake4
+      
+      #d <- plyr::arrange(d, baseline, treatment)
+      
+      return(print(d, digits=4))
     })
     
     
