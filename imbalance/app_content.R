@@ -87,6 +87,21 @@ options(width=200)
 options(scipen=999)
 w=1  # line type
 ww=3 # line thickness
+
+# not used, but could use this for MSE
+calc.mse <- function(obs, pred, rsq = FALSE){
+  if(is.vector(obs)) obs <- as.matrix(obs)
+  if(is.vector(pred)) pred <- as.matrix(pred)
+  
+  n <- nrow(obs)
+  rss <- colSums((obs - pred)^2, na.rm = TRUE)
+  if(rsq == FALSE) rss/n else {
+    tss <- diag(var(obs, na.rm = TRUE)) * (n - 1)
+    1 - rss/tss
+  }
+}
+
+RR=.37 ## used to limit correlations between variables
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2
                 # paper
@@ -99,8 +114,8 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 
                 h2("Covariate adjustment in randomised controlled trials"), 
                 
-                h4("We investigate some misconceptions concerning randomised trials include (i)  there is no need for baseline covariates in the analysis, that is,
-                many randomised controlled trials (RCTs) are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, precision of the treatment effect estimate is improved when adjusting for baseline covariates 
+                h4("We investigate some misconceptions concerning randomised trials (RCTs) include (i)  there is no need for baseline covariates in the analysis, that is,
+                many randomised controlled trials are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, precision of the treatment effect estimate is improved when adjusting for baseline covariates 
 in a randomised controlled trial. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
 may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
@@ -300,9 +315,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
 
                                               fluidRow(
                                                 column(width = 5, offset = 0, style='padding:1px;',
-                                                       div( verbatimTextOutput("H") )
+                                                       div( verbatimTextOutput("H") ),
                                                        #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7))
-
+                                                       div( verbatimTextOutput("R") )
                                                 ))),
                                             h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
 
@@ -645,7 +660,7 @@ server <- shinyServer(function(input, output   ) {
          
         nobs <- N
         
-        x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
+        x <- Matrix(runif(K*K,-RR,RR), K)   # create a correlation matrix randomly , wont allow very high correlations
   
         A <- forceSymmetric(x)
         
@@ -690,6 +705,10 @@ server <- shinyServer(function(input, output   ) {
         y <- a+ XX %*% b + theta*z + rnorm(N,0, sigma)
         fake4 <- data.frame(X=rdata, y=y, z=z)
 
+     
+        
+        
+        
         return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                       
                       placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX
@@ -878,6 +897,10 @@ server <- shinyServer(function(input, output   ) {
       ols2 <- lm(y~X+z,data=d)
       ols1 <- lm(y~z,d)
       
+      
+      xx <- cov2cor(vcov(ols2))
+      R <- round(xx,2)
+      
       A<-summary(ols2)
       B<-summary(ols1)
       
@@ -887,7 +910,7 @@ server <- shinyServer(function(input, output   ) {
       x<- B
       stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
       
-      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6)) 
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R)) 
       
     })
     
@@ -900,6 +923,11 @@ server <- shinyServer(function(input, output   ) {
     output$G <- renderPrint({
       
       return(reg4()$B)
+    })
+    
+    output$R <- renderPrint({
+      
+      return(reg4()$R)
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
@@ -1103,7 +1131,7 @@ server <- shinyServer(function(input, output   ) {
       
       simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
         
-        x <- Matrix(runif(K*K,-.37,.37), K)   # create a correlation matrix randomly , wont allow very high correlations
+        x <- Matrix(runif(K*K,-RR,RR), K)   # create a correlation matrix randomly , wont allow very high correlations
         
         A <- forceSymmetric(x)
         
