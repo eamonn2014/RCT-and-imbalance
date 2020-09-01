@@ -121,7 +121,7 @@ may be related to the outcome, they are therefore not considered to be confoundi
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
 We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, covariates not related to the outcome and collinear covariates. Secondly, 
-                imbalances in baseline covariates are problematic, this is not the case.
+                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting performs comparably ONLY when there are no prognostic covariates.
          "), 
                 
                 h3("  "), 
@@ -1040,7 +1040,7 @@ server <- shinyServer(function(input, output   ) {
       
       statfun <- function(d) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        zz <- lm(y~.-y2, data=d)    ## adjusting for prognostic X, y2 is not included by use of the '-'
+        zz <- lm(y~.-y2-y3, data=d)    ## adjusting for prognostic X, y2 is not included by use of the '-'
         f <-  summary(zz)
         
         zz1 <- lm(y~z, data=d)      ## not adjusting for prognostic X, only trt. indictor included
