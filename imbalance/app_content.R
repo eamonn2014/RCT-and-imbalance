@@ -337,7 +337,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                     
                                                     
                                                     h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
-                                                    div(plotOutput("diag3",  width=fig.width7, height=fig.height7)),
+                                                    div(plotOutput("diag3",  width=fig.width7, height=fig.height7)),  
                                                     
                                                     
                                                    
