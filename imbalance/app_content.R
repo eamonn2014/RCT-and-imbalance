@@ -122,7 +122,7 @@ attributed to differences in the covariates can be removed, this results in a mo
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
 We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, covariates not related to the outcome and collinear covariates. Secondly, 
                 imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. How can that be known with certainty? 
-              Power is therefore comprimised in the unadjusted analyses when prognostic covariates are measured. 
+              Power is therefore compromised in the unadjusted analyses when prognostic covariates are measured. 
          "), 
                 
                 h3("  "), 
@@ -225,34 +225,59 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   tabPanel("1 Power calculation", value=7,
                                          #  h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
 
-
+                                         
                                            fluidRow(
                                              column(width = 6, offset = 0, style='padding:1px;',
                                                     div( verbatimTextOutput("Power") ),
                                                     h4(paste("Table 1 Result of power calculation based on inputs")),
-                                                    
-                                                    # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+                                                     
                                                     h4(htmlOutput("textWithNumber3") ),
+                                                    h4(htmlOutput("textWithNumber1b") ),
                                              ) ,
 
 
                                              fluidRow(
                                                column(width = 5, offset = 0, style='padding:1px;',
-                                                     # div( verbatimTextOutput("A") )   ,
-                                                      #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7))
-                                                      #div( verbatimTextOutput("R1") )
+                                                   
                                                ))),
                                           
                                   ) ,
+                                  tabPanel( "2 Simulation",
+                                            h4(paste("Figure 1 Simulation results")),
+                                            
+                                            h4(htmlOutput("textWithNumber1a") ),        
+                                            fluidRow(
+                                              column(width = 6, offset = 0, style='padding:1px;',
+                                                    
+                                                     div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)),
+                                                     div(plotOutput("reg.plotxx",  width=fig.width7, height=fig.height7)),
+                                              ) ,
+                                              
+                                              
+                                              fluidRow(
+                                                column(width = 5, offset = 0, style='padding:1px;',
+                                                      
+                                                       div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
+                                                       div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
+                                                ))),
+                                            h4(paste("Table 2 Summary, sorted by smallest MSE estimate")),
+                                            h4(htmlOutput("textWithNumber99",) ),
+                                            div( verbatimTextOutput("zz") )  ,
+                                          
+                                            
+                                            
+                                            
+                                            width = 30 )     ,
                                   
-                                  tabPanel("2 Measured covariates prognostic", value=7, 
-                                           h4("All covariates are prognostic, that is related to the response by design, standard error of treatment effect (z) smaller if we adjust (right output)"),
+                                  tabPanel("3 Measured covariates prognostic", value=7, 
+                                           h4("Tables 3 One realisation ignoring, 4 adjusting and 5 correlation when all covariates are prognostic, that is related to the response by design,
+                                              standard error of treatment effect (z) smaller if we adjust (Table 4) "),
                                            
-                                           
+                                          
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
                                                       div( verbatimTextOutput("B") )     
-                                                     # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+                                                    
                                                       
                                                ) ,
                                                
@@ -260,21 +285,22 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                fluidRow(
                                                    column(width = 5, offset = 0, style='padding:1px;',
                                                           div( verbatimTextOutput("A") )   ,     
-                                                        #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
+                                                        
                                                         div( verbatimTextOutput("R1") )
                                                    ))),
-                                           h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
+                                           
                                            
                                   ) ,
                                   
-                                  tabPanel("3 Measured covariates non prognostic", value=3, 
-                                           h4("All covariates are not prognostic, that is not related to the response by design, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
+                                  tabPanel("4 Measured covariates non prognostic", value=3, 
+                                           h4("Tables 6  One realisation ignoring, 7 adjusting and 8 correlation when all covariates are not prognostic, 
+                                              that is not related to the response by design, standard error of treatment effect (z) only slightly larger if we adjust (Table 7)"),
                                            
                                            
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
                                                       div( verbatimTextOutput("D") )     
-                                                      # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+                                                   
                                                       
                                                ) ,
                                                
@@ -282,18 +308,19 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                fluidRow(
                                                    column(width = 5, offset = 0, style='padding:1px;',
                                                           div( verbatimTextOutput("C") )  ,      
-                                                          #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
+                                                           
                                                           div( verbatimTextOutput("R2") )
                                                    ))),
-                                           h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
+                                          
                                            
                                   ) ,
                                   
                            
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "4 Measured covariates mix of non prog and prognostic", 
-                                            h4("Covariates are a mix of prognostic and not prognostic by design, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
+                                  tabPanel( "5 Measured covariates mix of non prog and prognostic", 
+                                            h4("Tables 9  One realisation ignoring, 10 adjusting and 11 correlation when there are a mix of prognostic and not prognostic by design, 
+                                               standard error of treatment effect (z) only slightly larger if we adjust (Table 10)"),
                                             
                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
                                            
@@ -301,7 +328,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            fluidRow(
                                              column(width = 6, offset = 0, style='padding:1px;',
                                                     div( verbatimTextOutput("E") )     
-                                                    # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
+                                                   
                                                     
                                              ) ,
                                              
@@ -309,51 +336,46 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                              fluidRow(
                                                column(width = 5, offset = 0, style='padding:1px;',
                                                       div( verbatimTextOutput("F") ) ,       
-                                                      #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)) 
+                                                     
                                                       div( verbatimTextOutput("R3") )
                                                ))),
-                                           h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")), 
+                                           
                                            
                                            width = 30 )     ,
                                   
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "5 Measured correlated covariates",
+                                  tabPanel( "6 Measured correlated covariates",
                                     #        h4(paste("xxxxxxxxxxxxxxx")),
 
-                                            h4("Covariates are correlated with each other by design"),
+                                            h4("Tables 12  One realisation ignoring, 13 adjusting and 14 correlation whan covariates are correlated with each other by design"),
 
 
                                             fluidRow(
                                               column(width = 6, offset = 0, style='padding:1px;',
                                                      div( verbatimTextOutput("G") )
-                                                     # div(plotOutput("beta",  width=fig.width7, height=fig.height7)),
-
+ 
                                               ) ,
 
 
                                               fluidRow(
                                                 column(width = 5, offset = 0, style='padding:1px;',
                                                        div( verbatimTextOutput("H") ),
-                                                       #  div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7))
-                                                       div( verbatimTextOutput("R4") )
+                                                        div( verbatimTextOutput("R4") )
                                                 ))),
-                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
-
+ 
                                             width = 30 )     ,
 
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
-                                  tabPanel("6 Observations", value=3, 
-                                           
-                                         #  h5(paste("Using only one realisation we make some observations (to be more certain of findings requires numerous simulations).")), 
-                                         #  textInput('rcat2', 
-                                          #           div(h5(tags$span(style="color:blue",
-                                          #           ))), "999"),
+                                  tabPanel("7 One realisation, observation", value=3, 
+                                  
+                                         
+                                         h4("Table 15 Observations only from one realisation"),
                                            h4(htmlOutput("textWithNumber1") ),
                                            
-                                         #  div(plotOutput("preds2", width=fig.width1, height=fig.height3)),
+                                       
                                          div( verbatimTextOutput("summary1") )  ,
                                            
                                          h4("[1 v 2] We see adjusting for known measured prognostic covariates results in a more precise estimate. "),
@@ -362,7 +384,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                          h4("[5 v 6] We see adjusting for measured correlated covariates results in a more precise estimate than if we don't adjust for them."),
                                            fluidRow(
                                                column(width = 7, offset = 0, style='padding:1px;',
-                                          #            h4(paste("Figure 4. Plot of the predicted probabilities")), 
+                                          
                                                       
                                                )),
                                   ),
@@ -370,176 +392,43 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                         
                                
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel("7 Observed covariate balance", value=7, 
-                                           
+                                  tabPanel("8 Observed covariate balance", value=7, 
+                                           h4("Figure 2 Difference in baseline covariates across arms"),
                                            h4("Larger sample sizes does not mean better covariate balance (however that is defined). Precision becomes better so smaller differences are picked up."),
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
                                            
                                            fluidRow(
                                              column(width = 7, offset = 0, style='padding:1px;',
-                                                    #      h4(paste("Figure 3. xxxxxxxxxxxxxxx")), 
+                                      
                                                     
                                              )),
                                            
                                   ) ,
-                                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "8 Simulation",
-                                            h4(paste("Figure X Simulation results, Estimator and stndard error")),
-                                            
-                                          #  h4("First X1:Xn covariates only are prognostic, the remainder are not"),
-                                            
-                                            
-                                            fluidRow(
-                                              column(width = 6, offset = 0, style='padding:1px;',
-                                                   #  div( verbatimTextOutput("sim1") ),
-                                               #      div(plotOutput("reg.plot2",  width=fig.width7, height=fig.height7)),
-                                               #    div(plotOutput("reg.plot4",  width=fig.width7, height=fig.height7)),
-                                                   div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)),
-                                               div(plotOutput("reg.plotxx",  width=fig.width7, height=fig.height7)),
-                                              ) ,
-                                              
-                                              
-                                              fluidRow(
-                                                column(width = 5, offset = 0, style='padding:1px;',
-                                                    #   div( verbatimTextOutput("H") )
-                                                  #     div(plotOutput("reg.plot3",  width=fig.width7, height=fig.height7)),
-                                                  #  div(plotOutput("reg.plot5",  width=fig.width7, height=fig.height7)),
-                                                    div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
-                                                  div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
-                                                ))),
-                                          h4(paste("Table Summary, sorted by smallest MSE estimate")),
-                                          h4(htmlOutput("textWithNumber99",) ),
-                                          div( verbatimTextOutput("zz") )  ,
-                                          h4(paste("Same summary in text format")),
-                                          h4(htmlOutput("textWithNumber2",) ),
+                          
+                               
+                                  tabPanel("9 Data", value=3, 
                                            
                                         
-                                            
-                                            width = 30 )     ,
-                                  
-                                  
-                                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  
-                                  tabPanel("9 prognostic covariates data", value=3, 
-                                           h4("Data response and treatment used tabs 2 and 3"),
-                                           div( verbatimTextOutput("dat")),
-                                           
-                                           fluidRow(
-                                               column(width = 6, offset = 0, style='padding:1px;',
-                                                      
-                                                      #div( verbatimTextOutput("reg.summary4") )
-                                               ) ,
-                                               
-                                               fluidRow(
-                                                   column(width = 5, offset = 0, style='padding:1px;',
-                                                          
-                                                     #     div( verbatimTextOutput("reg.summary5")),
-                                                      #    div(plotOutput("predictl", width=fig.widthx, height=fig.heightx)),
-                                                          
-                                                   ))),
-                                           h4("xxxxxxxxxxxxxxxxxxxxx"),
-                                  ),
-                                  
-                                  # tabPanel("9 xxxxxxxx", value=3, 
-                                  #          
-                                  #          fluidRow(
-                                  #              column(width = 6, offset = 0, style='padding:1px;',
-                                  #                     h4("xxxxxxxxxxxxxxx"),
-                                  #                    # div( verbatimTextOutput("dat")),
-                                  #                     textInput('kints',
-                                  #                          div(h5(tags$span(style="color:blue",
-                                  #                                               ""))), ""), 
-                                  #                     
-                                  #                     #div(plotOutput("PP.plot", width=fig.width7, height=fig.height6)),
-                                  #                     h4("Figure xxxxxxxxxxxxxx"),
-                                  #                     br() , 
-                                  #                     
-                                  #                     h4(""),
-                                  #                     
-                                  #                     h4("Table xxxxxxxxxxxxx"),
-                                  #                     #div( verbatimTextOutput("predz"), width = 2), # 
-                                  #              ),
-                                  #              
-                                  #              fluidRow(
-                                  #                  
-                                  #                  
-                                  #                  h4("xxxxxxxxxxxx"),
-                                  #                  h4("yyyyyyyyyyyy"),
-                                  #                  br(), br(), br() ,  
-                                  #                  
-                                  #                  
-                                  #                  column(width = 5, offset = 0, style='padding:0px;',
-                                  #                         
-                                  #                       #  div(plotOutput("PP.plot2", width=fig.width7, height=fig.height6)),
-                                  #                         h4("Figure 9 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
-                                  #                         
-                                  #                  )))
-                                  #          
-                                  # ) ,
-                                  # 
-                                  
-                                  tabPanel("10 non prognostic covariate data", value=3, 
-                                           
-                                           #h5(paste("Checking assumptions")), 
-                                           #div(plotOutput("assumption", width=fig.width1, height=fig.height3)),
-                                           h4("Same data as tab 9 but different response (see tabs 4 and 5)"),
-                                           div( verbatimTextOutput("fake2")),
-                                           h4( "xxxxxxxxxxxx" ),
-                                           h4("Table  xxxxxxxxxxxxxxxxxxx"),
-                                         # div( verbatimTextOutput("assump")),  
-                                           
+                                           h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
+                                           div( verbatimTextOutput("ddd")),
+                                     
                                   ),
                                   
                                   
-                                  tabPanel("11 Mixture of prognostic and no prognostic covariates data", value=3, 
-                                           
-                                        #   div(plotOutput("ecdfs", width=fig.width1, height=fig.height3)),
-                                        h4("Same data as tab 8 and 9 but different response (see tabs 6 and 7)"), 
-                                        div( verbatimTextOutput("fake3")),
-                                         #  div(plotOutput("logitseries", width=fig.width1, height=fig.height3)),
-                                           
-                                           
-                                           h4("Figure 12 xxxxxxxxxxxxxxxxxxxxx"),  
-                                           
-                                           h4("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.")
-                                           
-                                  ),
-                                  
-                                  
-                                  tabPanel("12 Correlated covariates data", 
+                                  tabPanel("10 Correlated covariates data", 
                                            
                                            fluidRow(
                                                column(width = 9, offset = 0, style='padding:1px;',
-                                                      h4("Table 9 xxxxxxxxxxxx"),
+                                                #      h4("Table 9 xxxxxxxxxxxx"),
                                                     div( verbatimTextOutput("fake4")),
                                                ),
                                                
                                                column(width = 3, offset = 0, style='padding:1px;',
-                                                      h4("xxxx"),
-                                                      h4("xxxxxxxxxxxxx
-                                                  \n"),
+                                               #       h4("xxxx"),
+                                                #      h4("xxxxxxxxxxxxx
+                                                #  \n"),
                                                       
-                                                      
-                                                      
-                                                      #
-                                                      #
-                                                      #'ut adjusted estimation does not have to be robust to be a major improvement over unadjusted analysis.  Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist). '
-                                                      #Using observed imbalances to find covariates to adjust for is arbitrary and reduces power by maximizing co-linearity with treatment
-                                                      
-                                                      #
-                                                      #'randomisation entitles us to ignore covariates we have not measured.'
-                                                      # To me the goal of a parallel-group randomized clinical trial is to answer this question: do two patients starting out at the same point 
-                                                      # (same age, severity of disease, etc.), one on treatment A and one on treatment B, end up with the same expected outcomes? This is fundamentally a completely conditional model.
-                                                      
-                                                      
-                                                      ##                         
-                                                      
-                                                      
-                                                      
-                                                      
-                                                      
-                                                      
-                                                      tags$hr(),
+                                                             tags$hr(),
                                                       div(h4("References:")),  
                                                       tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
                                                       div(p(" ")),
@@ -665,6 +554,10 @@ server <- shinyServer(function(input, output   ) {
         fake3 <- data.frame(X=X, y=y, z=z)
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+        ddd <- cbind(fake[,c(1:K)], prog.response=fake$y, notprog.response= fake2$y, mixprog.response=fake3$y)
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # confidence interval
         zz <-   lapply(fake[1:K], function(x) 
             t.test(x ~ fake$z, paired = FALSE, na.action = na.pass))
@@ -748,7 +641,7 @@ server <- shinyServer(function(input, output   ) {
         
         return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                       
-                      placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX, Po=Po
+                      placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX, Po=Po, ddd=ddd
                       
                       )) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -759,6 +652,14 @@ server <- shinyServer(function(input, output   ) {
       return(mcmc()$Po)
 
     })
+    
+    
+    output$ddd <- renderPrint({        
+      
+      return(mcmc()$ddd)
+      
+    })
+    #~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # beta dist plot 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
@@ -1113,7 +1014,7 @@ server <- shinyServer(function(input, output   ) {
           coef(f2)["z", "Std. Error"],
           
           coef(f3)["z", "Estimate"],
-          coef(f3)["z", "Std. Error"],
+          coef(f3)["z", "Std. Error"], #8
           
           #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new
           coef(f4)["z", "Estimate"],
@@ -1123,32 +1024,47 @@ server <- shinyServer(function(input, output   ) {
           coef(f5)["z", "Std. Error"],
           
           # collect p values
-          coef(f)["z", "Pr(>|t|)"]  < alpha,
+          coef(f)["z", "Pr(>|t|)"]  < alpha,  #13
           coef(f1)["z", "Pr(>|t|)"] < alpha,
           coef(f2)["z", "Pr(>|t|)"] < alpha,
           coef(f3)["z", "Pr(>|t|)"] < alpha,
           coef(f4)["z", "Pr(>|t|)"] < alpha,
-          coef(f5)["z", "Pr(>|t|)"] < alpha,
+          coef(f5)["z", "Pr(>|t|)"] < alpha  , #18
           ## mse
-          mean((d$y-predict(zz))^2),
+          mean((d$y-predict(zz))^2),   #19
           mean((d$y-predict(zz1))^2),
           mean((d$y2-predict(zz2))^2),
           mean((d$y2-predict(zz3))^2),
           mean((d$y3-predict(zz4))^2),
-          mean((d$y3-predict(zz5))^2),
-          mean(quantile( (d$y-predict(zz))^2, .025)), 
+          mean((d$y3-predict(zz5))^2),   #24
+          
+          mean(quantile( (d$y-predict(zz))^2, .025)), #25
           mean(quantile( (d$y-predict(zz))^2, .975)), 
           mean(quantile( (d$y-predict(zz1))^2, .025)), 
           mean(quantile( (d$y-predict(zz1))^2, .975)),
-          mean(quantile( (d$y2-predict(zz2))^2, .025)), 
+          mean(quantile( (d$y2-predict(zz2))^2, .025)), #29
           mean(quantile( (d$y2-predict(zz2))^2, .975)), 
           mean(quantile( (d$y2-predict(zz3))^2, .025)), 
           mean(quantile( (d$y2-predict(zz3))^2, .975)),
           mean(quantile( (d$y3-predict(zz4))^2, .025)), 
           mean(quantile( (d$y3-predict(zz4))^2, .975)), 
           mean(quantile( (d$y3-predict(zz5))^2, .025)), 
-          mean(quantile( (d$y3-predict(zz5))^2, .975))
+          mean(quantile( (d$y3-predict(zz5))^2, .975)),   #36
            
+          f$sigma,  #37
+          f1$sigma,
+          f2$sigma,
+          f3$sigma,
+          f4$sigma,
+          f5$sigma ,   #42
+          
+          f$adj.r.squared,  #43
+          f1$adj.r.squared,
+          f2$adj.r.squared,
+          f3$adj.r.squared,
+          f4$adj.r.squared,
+          f5$adj.r.squared    #48
+         
           
         )
         
@@ -1248,7 +1164,15 @@ server <- shinyServer(function(input, output   ) {
           mean(quantile( (d$y-predict(zz))^2, .025)), 
           mean(quantile( (d$y-predict(zz))^2, .975)), 
           mean(quantile( (d$y-predict(zz1))^2, .025)), 
-          mean(quantile( (d$y-predict(zz1))^2, .975))
+          mean(quantile( (d$y-predict(zz1))^2, .975)),
+          
+          f$sigma,  #13
+          f1$sigma,
+          
+          f$adj.r.squared,  #44
+          f1$adj.r.squared  #45
+          
+         
           
         )
         
@@ -1515,266 +1439,261 @@ server <- shinyServer(function(input, output   ) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    
-    
-    
-    
-    
-    output$textWithNumber2 <- renderText({ 
-      
-      res <- simul()$res  # means
-      result <- simul()$result  # means
-      result2 <- simul2()$result  # means
-      
-      q1.result <- simul()$q1.result  # means
-      q2.result <- simul()$q2.result  # means
-      
-      q1.result2 <- simul2()$q1.result  # means
-      q2.result2 <- simul2()$q2.result  # means
-      
-      adjusting <- "adjusting"
-      ignoring <- "ignoring"
-      
-      HTML(paste0(  tags$hr(),
-                     
-                    "Mean and se ",
-                    tags$span(style="color:green",   adjusting)  ,
-                    " for true prognostic covariates (black lines) " 
-                    
-                    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    , tags$span(style="color:blue",  p3(result[1]))  ,
-                    
-                                         " 95%CI ("
-                     , tags$span(style="color:blue",  p2(q1.result[1]))  ,
-                     ", "
-                     , tags$span(style="color:blue",  p2(q2.result[1]))  ,
-                     " )",
-                    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    
-                     
-                    " ; "  
-                    , tags$span(style="color:red",  p3(result[2] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result[13] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result[19] )) ,
-                    " 95%CI ("
-                    , tags$span(style="color:purple",  p2(result[25] )) ,
-                    ", "
-                    , tags$span(style="color:purple",  p2(result[26] )) ,
-                    " )",
-                    
-                    
-                  br(), br(),
-                 
-                      
-                    
-                    " Mean and se ",
-                    tags$span(style="color:red",   ignoring) , 
-                    " true prognostic in analysis (red lines) "
-                    , tags$span(style="color:blue",  p3(result[3]  )),
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " 95%CI ("
-                  , tags$span(style="color:blue",  p2(q1.result[3]))  ,
-                  ", "
-                  , tags$span(style="color:blue",  p2(q2.result[3]))  ,
-                  " )",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  
-                    " ; "
-                    , tags$span(style="color:red",  p3(result[4] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result[14] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result[20] )) ,
-            
-                  " 95%CI ("
-                  , tags$span(style="color:purple",  p2(result[27] )) ,
-                  ", "
-                  , tags$span(style="color:purple",  p2(result[28] )) ,
-                  " )",
-                  
-                  
-                  
-                  
-                    br(), br(),
-                    "Mean and se ",
-                    tags$span(style="color:green",   adjusting)  ,
-                    " for non prognostic covariates (blue lines) "  
-                    , tags$span(style="color:blue",  p3(result[5]))  ,
-               
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " 95%CI ("
-                  , tags$span(style="color:blue",  p2(q1.result[5]))  ,
-                  ", "
-                  , tags$span(style="color:blue",  p2(q2.result[5]))  ,
-                  " )",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  
-                    " ; "  
-                    , tags$span(style="color:red",  p3(result[6] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result[15] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result[21] )) ,
-                  " 95%CI ("
-                  , tags$span(style="color:purple",  p2(result[29] )) ,
-                  ", "
-                  , tags$span(style="color:purple",  p2(result[30] )) ,
-                  " )",
-                    br(), br(),
-                    
-                    " Mean and se ",
-                    tags$span(style="color:red",   ignoring) , 
-                    "  non prognostic covariates (green lines) "
-                  
-                  
-                    , tags$span(style="color:blue",  p3(result[7]  )),
-                  
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " 95%CI ("
-                  , tags$span(style="color:blue",  p2(q1.result[7]))  ,
-                  ", "
-                  , tags$span(style="color:blue",  p2(q2.result[7]))  ,
-                  " )",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " ; "
-                  
-                    , tags$span(style="color:red",  p3(result[8] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result[16] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result[22] )) ,
-                  " 95%CI ("
-                  , tags$span(style="color:purple",  p2(result[31] )) ,
-                  ", "
-                  , tags$span(style="color:purple",  p2(result[32] )) ,
-                  " )",
-                    br(), br(),
-                    
-                    "Mean and se ",
-                    tags$span(style="color:green",   adjusting)  ,
-                    " for mix of prognostic and non prognostic covariates (grey lines) "  
-                    , tags$span(style="color:blue",  p3(result[9]))  ,
-                  
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " 95%CI ("
-                  , tags$span(style="color:blue",  p2(q1.result[9]))  ,
-                  ", "
-                  , tags$span(style="color:blue",  p2(q2.result[9]))  ,
-                  " )",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                    " ; "  
-                    , tags$span(style="color:red",  p3(result[10] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result[17] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result[23] )) ,
-                  " 95%CI ("
-                  , tags$span(style="color:purple",  p2(result[33] )) ,
-                  ", "
-                  , tags$span(style="color:purple",  p2(result[34] )) ,
-                  " )",
-                    br(), br(),
-                    
-                    " Mean and se ",
-                    tags$span(style="color:red",   ignoring) , 
-                    " mix of prognostic and non prognostic covariates (pink lines) "
-                    , tags$span(style="color:blue",  p3(result[11]  )),
-                    " ; ",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " 95%CI ("
-                  , tags$span(style="color:blue",  p2(q1.result[11]))  ,
-                  ", "
-                  , tags$span(style="color:blue",  p2(q2.result[11]))  ,
-                  " )",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  " ; "  
-                    , tags$span(style="color:red",  p3(result[12] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result[18] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result[24] )) ,
-                  " 95%CI ("
-                  , tags$span(style="color:purple",  p2(result[35] )) ,
-                  ", "
-                  , tags$span(style="color:purple",  p2(result[36] )) ,
-                  " )",
-                    br(), br(),
-                    "Mean and se ",
-                    tags$span(style="color:green",   adjusting)  ,
-                    " adjusting for true prognostic correlated covariates (yellow lines) "  
-                    , tags$span(style="color:blue",  p3(result2[1]))  ,
-                  
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " 95%CI ("
-                  , tags$span(style="color:blue",  p2(q1.result2[1]))  ,
-                  ", "
-                  , tags$span(style="color:blue",  p2(q2.result2[1]))  ,
-                  " )",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                    " ; "  
-                    , tags$span(style="color:red",  p3(result2[2] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result2[5] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result2[7] )) ,
-                  " 95%CI ("
-                  , tags$span(style="color:purple",  p2(result2[9] )) ,
-                  ", "
-                  , tags$span(style="color:purple",  p2(result2[10] )) ,
-                  " )",
-                    br(), br(),
-                    
-                    " Mean and se ",
-                    tags$span(style="color:red",   ignoring) , 
-                    "  true prognostic correlated covariates (purple lines) "
-                    , tags$span(style="color:blue",  p3(result2[3]  )),
-                  
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  " 95%CI ("
-                  , tags$span(style="color:blue",  p2(q1.result2[3]))  ,
-                  ", "
-                  , tags$span(style="color:blue",  p2(q2.result2[3]))  ,
-                  " )",
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  
-                  
-                    " ; "
-                    , tags$span(style="color:red",  p3(result2[4] )) ,
-                    " power "
-                    , tags$span(style="color:green",  p3(result2[6] )) ,
-                    " MSE "
-                    , tags$span(style="color:purple",  p2(result2[8] )) ,
-                  " 95%CI ("
-                  , tags$span(style="color:purple",  p2(result2[11] )) ,
-                  ", "
-                  , tags$span(style="color:purple",  p2(result2[12] )) ,
-                  " )",
-                    
-                    br(), br()
-                    # "Mean squared error (MSE: accuracy and precision) combines bias and
-                    # variance as (bias*bias+variance). It represents the total variation around the
-                    # true value, rather than the average estimated value. MSE gives an overall sense of the quality of the
-                    # estimator. As the MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator, 
-                    # this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
-                    # true sigma squared 
-                    # on the left input."
-      ))    
-      
-    })   
+    # output$textWithNumber2 <- renderText({ 
+    #   
+    #   res <- simul()$res  # means
+    #   result <- simul()$result  # means
+    #   result2 <- simul2()$result  # means
+    #   
+    #   q1.result <- simul()$q1.result  # means
+    #   q2.result <- simul()$q2.result  # means
+    #   
+    #   q1.result2 <- simul2()$q1.result  # means
+    #   q2.result2 <- simul2()$q2.result  # means
+    #   
+    #   adjusting <- "adjusting"
+    #   ignoring <- "ignoring"
+    #   
+    #   HTML(paste0(  tags$hr(),
+    #                  
+    #                 "Mean and se ",
+    #                 tags$span(style="color:green",   adjusting)  ,
+    #                 " for true prognostic covariates (black lines) " 
+    #                 
+    #                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #                 , tags$span(style="color:blue",  p3(result[1]))  ,
+    #                 
+    #                                      " 95%CI ("
+    #                  , tags$span(style="color:blue",  p2(q1.result[1]))  ,
+    #                  ", "
+    #                  , tags$span(style="color:blue",  p2(q2.result[1]))  ,
+    #                  " )",
+    #                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #                 
+    #                  
+    #                 " ; "  
+    #                 , tags$span(style="color:red",  p3(result[2] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result[13] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result[19] )) ,
+    #                 " 95%CI ("
+    #                 , tags$span(style="color:purple",  p2(result[25] )) ,
+    #                 ", "
+    #                 , tags$span(style="color:purple",  p2(result[26] )) ,
+    #                 " )",
+    #                 
+    #                 
+    #               br(), br(),
+    #              
+    #                   
+    #                 
+    #                 " Mean and se ",
+    #                 tags$span(style="color:red",   ignoring) , 
+    #                 " true prognostic in analysis (red lines) "
+    #                 , tags$span(style="color:blue",  p3(result[3]  )),
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " 95%CI ("
+    #               , tags$span(style="color:blue",  p2(q1.result[3]))  ,
+    #               ", "
+    #               , tags$span(style="color:blue",  p2(q2.result[3]))  ,
+    #               " )",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               
+    #                 " ; "
+    #                 , tags$span(style="color:red",  p3(result[4] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result[14] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result[20] )) ,
+    #         
+    #               " 95%CI ("
+    #               , tags$span(style="color:purple",  p2(result[27] )) ,
+    #               ", "
+    #               , tags$span(style="color:purple",  p2(result[28] )) ,
+    #               " )",
+    #               
+    #               
+    #               
+    #               
+    #                 br(), br(),
+    #                 "Mean and se ",
+    #                 tags$span(style="color:green",   adjusting)  ,
+    #                 " for non prognostic covariates (blue lines) "  
+    #                 , tags$span(style="color:blue",  p3(result[5]))  ,
+    #            
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " 95%CI ("
+    #               , tags$span(style="color:blue",  p2(q1.result[5]))  ,
+    #               ", "
+    #               , tags$span(style="color:blue",  p2(q2.result[5]))  ,
+    #               " )",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               
+    #                 " ; "  
+    #                 , tags$span(style="color:red",  p3(result[6] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result[15] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result[21] )) ,
+    #               " 95%CI ("
+    #               , tags$span(style="color:purple",  p2(result[29] )) ,
+    #               ", "
+    #               , tags$span(style="color:purple",  p2(result[30] )) ,
+    #               " )",
+    #                 br(), br(),
+    #                 
+    #                 " Mean and se ",
+    #                 tags$span(style="color:red",   ignoring) , 
+    #                 "  non prognostic covariates (green lines) "
+    #               
+    #               
+    #                 , tags$span(style="color:blue",  p3(result[7]  )),
+    #               
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " 95%CI ("
+    #               , tags$span(style="color:blue",  p2(q1.result[7]))  ,
+    #               ", "
+    #               , tags$span(style="color:blue",  p2(q2.result[7]))  ,
+    #               " )",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " ; "
+    #               
+    #                 , tags$span(style="color:red",  p3(result[8] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result[16] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result[22] )) ,
+    #               " 95%CI ("
+    #               , tags$span(style="color:purple",  p2(result[31] )) ,
+    #               ", "
+    #               , tags$span(style="color:purple",  p2(result[32] )) ,
+    #               " )",
+    #                 br(), br(),
+    #                 
+    #                 "Mean and se ",
+    #                 tags$span(style="color:green",   adjusting)  ,
+    #                 " for mix of prognostic and non prognostic covariates (grey lines) "  
+    #                 , tags$span(style="color:blue",  p3(result[9]))  ,
+    #               
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " 95%CI ("
+    #               , tags$span(style="color:blue",  p2(q1.result[9]))  ,
+    #               ", "
+    #               , tags$span(style="color:blue",  p2(q2.result[9]))  ,
+    #               " )",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #                 " ; "  
+    #                 , tags$span(style="color:red",  p3(result[10] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result[17] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result[23] )) ,
+    #               " 95%CI ("
+    #               , tags$span(style="color:purple",  p2(result[33] )) ,
+    #               ", "
+    #               , tags$span(style="color:purple",  p2(result[34] )) ,
+    #               " )",
+    #                 br(), br(),
+    #                 
+    #                 " Mean and se ",
+    #                 tags$span(style="color:red",   ignoring) , 
+    #                 " mix of prognostic and non prognostic covariates (pink lines) "
+    #                 , tags$span(style="color:blue",  p3(result[11]  )),
+    #                 " ; ",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " 95%CI ("
+    #               , tags$span(style="color:blue",  p2(q1.result[11]))  ,
+    #               ", "
+    #               , tags$span(style="color:blue",  p2(q2.result[11]))  ,
+    #               " )",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               " ; "  
+    #                 , tags$span(style="color:red",  p3(result[12] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result[18] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result[24] )) ,
+    #               " 95%CI ("
+    #               , tags$span(style="color:purple",  p2(result[35] )) ,
+    #               ", "
+    #               , tags$span(style="color:purple",  p2(result[36] )) ,
+    #               " )",
+    #                 br(), br(),
+    #                 "Mean and se ",
+    #                 tags$span(style="color:green",   adjusting)  ,
+    #                 " adjusting for true prognostic correlated covariates (yellow lines) "  
+    #                 , tags$span(style="color:blue",  p3(result2[1]))  ,
+    #               
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " 95%CI ("
+    #               , tags$span(style="color:blue",  p2(q1.result2[1]))  ,
+    #               ", "
+    #               , tags$span(style="color:blue",  p2(q2.result2[1]))  ,
+    #               " )",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #                 " ; "  
+    #                 , tags$span(style="color:red",  p3(result2[2] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result2[5] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result2[7] )) ,
+    #               " 95%CI ("
+    #               , tags$span(style="color:purple",  p2(result2[9] )) ,
+    #               ", "
+    #               , tags$span(style="color:purple",  p2(result2[10] )) ,
+    #               " )",
+    #                 br(), br(),
+    #                 
+    #                 " Mean and se ",
+    #                 tags$span(style="color:red",   ignoring) , 
+    #                 "  true prognostic correlated covariates (purple lines) "
+    #                 , tags$span(style="color:blue",  p3(result2[3]  )),
+    #               
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               " 95%CI ("
+    #               , tags$span(style="color:blue",  p2(q1.result2[3]))  ,
+    #               ", "
+    #               , tags$span(style="color:blue",  p2(q2.result2[3]))  ,
+    #               " )",
+    #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #               
+    #               
+    #                 " ; "
+    #                 , tags$span(style="color:red",  p3(result2[4] )) ,
+    #                 " power "
+    #                 , tags$span(style="color:green",  p3(result2[6] )) ,
+    #                 " MSE "
+    #                 , tags$span(style="color:purple",  p2(result2[8] )) ,
+    #               " 95%CI ("
+    #               , tags$span(style="color:purple",  p2(result2[11] )) ,
+    #               ", "
+    #               , tags$span(style="color:purple",  p2(result2[12] )) ,
+    #               " )",
+    #                 
+    #                 br(), br()
+    #                 # "Mean squared error (MSE: accuracy and precision) combines bias and
+    #                 # variance as (bias*bias+variance). It represents the total variation around the
+    #                 # true value, rather than the average estimated value. MSE gives an overall sense of the quality of the
+    #                 # estimator. As the MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator, 
+    #                 # this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
+    #                 # true sigma squared 
+    #                 # on the left input."
+    #   ))    
+    #   
+    # })   
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        
     output$textWithNumber99 <- renderText({ 
@@ -1798,31 +1717,31 @@ server <- shinyServer(function(input, output   ) {
     
     table.sim <- reactive({
         
-      res <- simul()$res  # 
-      result <- simul()$result  # 
-      result2 <- simul2()$result  # 
+      res <- simul()$res  
+      result <- simul()$result  
+      result2 <- simul2()$result  
       
-      q1.result <- simul()$q1.result  # 
-      q2.result <- simul()$q2.result  # 
+      q1.result <- simul()$q1.result  
+      q2.result <- simul()$q2.result  
       
-      q1.result2 <- simul2()$q1.result  # 
-      q2.result2 <- simul2()$q2.result  # 
+      q1.result2 <- simul2()$q1.result  
+      q2.result2 <- simul2()$q2.result  
     
       zz <- rbind(
-         (c( p3(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p3(result[2] ) ,  p2(result[13] ) ,  p5(result[19] ) ,   p2(result[25] ),   p2(result[26] ))) ,
-               (c( p3(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p3(result[4] ) ,  p2(result[14] ) ,  p5(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )) ),
-                     (c( p3(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p3(result[6] ) ,  p2(result[15] ) ,  p5(result[21] ) ,   p2(result[29] ) ,  p2(result[30] ))) ,
-                           (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p5(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ))) ,
-                                 (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p5(result[23] ) ,   p2(result[33] ) ,  p2(result[34] )) ),
-                                       (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p5(result[24] ) ,   p2(result[35] ) ,  p2(result[36] )) ),
-                                             (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p5(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ))),
-                                                   (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p5(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ))
-      )) 
+         (c( p3(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p3(result[2] ) ,  p2(result[13] ) ,  p5(result[19] ) ,   p2(result[25] ),   p2(result[26] )  ,   p2(result[37] )    ,   p2(result[43] )         )) ,
+               (c( p3(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p3(result[4] ) ,  p2(result[14] ) ,  p5(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )   , p2(result[38] )      ,    p2(result[44] )        )) ,
+                     (c( p3(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p3(result[6] ) ,  p2(result[15] ) ,  p5(result[21] ) ,   p2(result[29] ) ,  p2(result[30] )  , p2(result[39] )      ,     p2(result[45] )        )) ,
+                           (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p5(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p2(result[40] )      ,     p2(result[46] )         )) ,
+                                 (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p5(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p2(result[41] )      ,   p2(result[47] )             )) ,
+                                       (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p5(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p2(result[42] )      ,     p2(result[48] )         )) ,
+                                             (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p5(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p2(result2[13] )      ,  p2(result2[15] )         )) ,
+                                                   (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p5(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p2(result2[14] )      ,p2(result2[16] )          ))
+    ) 
       
    
       zz <- as.data.frame(zz)
       
-      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B", "MSE Lower 95%CI", "MSE Upper 95%CI")
+      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma","R2")
     
       zz <- data.frame(lapply(zz, function(x) as.numeric(as.character(x))))
       zz <- as.data.frame(zz)
@@ -1837,7 +1756,7 @@ server <- shinyServer(function(input, output   ) {
         " not adj. for correlated prognostic covariates")
       zz <- zz[order(zz$B),]
       
-      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","Mean Squared Error (MSE)", "MSE Lower 95%CI", "MSE Upper 95%CI")
+      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","MSE", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
       
  
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1850,7 +1769,7 @@ server <- shinyServer(function(input, output   ) {
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    output$textWithNumber1 <- renderText({ 
+    output$textWithNumber1 <- output$textWithNumber1 <- renderText({ 
       
       placebo <- mcmc()$placebo
       treated <- mcmc()$treated
@@ -1864,6 +1783,27 @@ server <- shinyServer(function(input, output   ) {
                     " patients, so in total "
                     , tags$span(style="color:red",  bigN  ),
                     " patients. Using only one realisation we make some observations. To be more certain of findings requires numerous simulations, see simulation tab.", 
+                    tags$hr()
+                    
+      ))    
+      
+    })  
+    
+    
+    output$textWithNumber1b <- output$textWithNumber1a <- output$textWithNumber1 <- renderText({ 
+      
+      placebo <- mcmc()$placebo
+      treated <- mcmc()$treated
+      bigN <- mcmc()$bigN
+      
+      HTML(paste0(  tags$hr(),
+                    "Randomised 1:1 we have  "  
+                    , tags$span(style="color:red",   placebo)  ,
+                    " placebo patients and  "  
+                    , tags$span(style="color:red",  treated ) ,
+                    " patients, so in total "
+                    , tags$span(style="color:red",  bigN  ),
+                    " patients. Using only one realisation we make some observations.", 
                     tags$hr()
                     
       ))    
@@ -1969,16 +1909,7 @@ server <- shinyServer(function(input, output   ) {
       abline(v = se., col = "darkgrey")                  
    
     })
-    
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
- 
-    
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   
-    
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # text 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
@@ -2011,8 +1942,6 @@ server <- shinyServer(function(input, output   ) {
     output$fake3 <- renderPrint({
       
       d <- mcmc()$fake3
-      
-      #d <- plyr::arrange(d, baseline, treatment)
       
       return(print(d, digits=4))
     })
