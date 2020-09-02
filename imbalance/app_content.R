@@ -121,7 +121,8 @@ may be related to the outcome, they are therefore not considered to be confoundi
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
 We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, covariates not related to the outcome and collinear covariates. Secondly, 
-                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. How could that be known?
+                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. How can that be known with certainty? 
+              Power is therefore comprimised in the unadjusted analyses when prognostic covariates are measured. 
          "), 
                 
                 h3("  "), 
@@ -383,7 +384,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ) ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "8 Simulation",
-                                            h4(paste("Figure X Simulation results")),
+                                            h4(paste("Figure X Simulation results, Estimator and stndard error")),
                                             
                                           #  h4("First X1:Xn covariates only are prognostic, the remainder are not"),
                                             
@@ -406,8 +407,13 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                     div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
                                                   div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
                                                 ))),
+                                          h4(paste("Table Summary, sorted by smallest MSE estimate")),
+                                          h4(htmlOutput("textWithNumber99",) ),
+                                          div( verbatimTextOutput("zz") )  ,
+                                          h4(paste("Same summary in text format")),
                                           h4(htmlOutput("textWithNumber2",) ),
-                                            h4(paste("Figures 1 & 2. xxxxxxxxxxxxxxx")),
+                                           
+                                        
                                             
                                             width = 30 )     ,
                                   
@@ -1075,28 +1081,25 @@ server <- shinyServer(function(input, output   ) {
       
       statfun <- function(d) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        zz <- lm(y~.-y2-y3, data=d)    ## adjusting for prognostic X, y2 is not included by use of the '-'
+        zz <- lm(y~.-y2-y3, data=d)     ## adjusting for prognostic X, y2 is not included by use of the '-'
         f <-  summary(zz)
         
-        zz1 <- lm(y~z, data=d)      ## not adjusting for prognostic X, only trt. indictor included
+        zz1 <- lm(y~z, data=d)          ## not adjusting for prognostic X, only trt. indictor included
         f1 <-  summary(zz1)
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         zz2 <- lm(y2~.-y-y3, data=d)    ## adjusting for  X which are not prognostic
         f2 <-  summary(zz2)
         
-        zz3 <- lm(y2~z, data=d)      ## not adjusting for X which are not prognostic
+        zz3 <- lm(y2~z, data=d)         ## not adjusting for X which are not prognostic
         f3 <-  summary(zz3)
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#some prognostic
         zz4 <- lm(y3~.-y-y2, data=d)    ## adjusting for some  X which are not prognostic
         f4 <-  summary(zz4)
         
-        zz5 <- lm(y3~z, data=d)      ## not adjusting for X which are not prognostic
+        zz5 <- lm(y3~z, data=d)         ## not adjusting for X which are not prognostic
         f5 <-  summary(zz5)
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        
-        
         cbind(
           
           #f$coefficients [,1]["z"],
@@ -1145,9 +1148,7 @@ server <- shinyServer(function(input, output   ) {
           mean(quantile( (d$y3-predict(zz4))^2, .975)), 
           mean(quantile( (d$y3-predict(zz5))^2, .025)), 
           mean(quantile( (d$y3-predict(zz5))^2, .975))
-          #,
-          #quantile( coef(f)["z", "Estimate"], .025) , 
-          #quantile( coef(f)["z", "Estimate"], .975) 
+           
           
         )
         
@@ -1169,13 +1170,9 @@ server <- shinyServer(function(input, output   ) {
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
-    
-    output$sim1 <- renderPrint({
+     output$sim1 <- renderPrint({
       return(simul()$result)
     })
-    
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
     
@@ -1518,6 +1515,11 @@ server <- shinyServer(function(input, output   ) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
+    
+    
+    
+    
+    
     output$textWithNumber2 <- renderText({ 
       
       res <- simul()$res  # means
@@ -1762,7 +1764,23 @@ server <- shinyServer(function(input, output   ) {
                   , tags$span(style="color:purple",  p2(result2[12] )) ,
                   " )",
                     
-                    br(), br(),
+                    br(), br()
+                    # "Mean squared error (MSE: accuracy and precision) combines bias and
+                    # variance as (bias*bias+variance). It represents the total variation around the
+                    # true value, rather than the average estimated value. MSE gives an overall sense of the quality of the
+                    # estimator. As the MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator, 
+                    # this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
+                    # true sigma squared 
+                    # on the left input."
+      ))    
+      
+    })   
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       
+    output$textWithNumber99 <- renderText({ 
+      
+      
+      HTML(
                     "Mean squared error (MSE: accuracy and precision) combines bias and
                     variance as (bias*bias+variance). It represents the total variation around the
                     true value, rather than the average estimated value. MSE gives an overall sense of the quality of the
@@ -1770,9 +1788,67 @@ server <- shinyServer(function(input, output   ) {
                     this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
                     true sigma squared 
                     on the left input."
-      ))    
+      )
       
-    })  
+    })  #
+    
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    table.sim <- reactive({
+        
+      res <- simul()$res  # 
+      result <- simul()$result  # 
+      result2 <- simul2()$result  # 
+      
+      q1.result <- simul()$q1.result  # 
+      q2.result <- simul()$q2.result  # 
+      
+      q1.result2 <- simul2()$q1.result  # 
+      q2.result2 <- simul2()$q2.result  # 
+    
+      zz <- rbind(
+         (c( p3(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p3(result[2] ) ,  p2(result[13] ) ,  p5(result[19] ) ,   p2(result[25] ),   p2(result[26] ))) ,
+               (c( p3(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p3(result[4] ) ,  p2(result[14] ) ,  p5(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )) ),
+                     (c( p3(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p3(result[6] ) ,  p2(result[15] ) ,  p5(result[21] ) ,   p2(result[29] ) ,  p2(result[30] ))) ,
+                           (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p5(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ))) ,
+                                 (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p5(result[23] ) ,   p2(result[33] ) ,  p2(result[34] )) ),
+                                       (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p5(result[24] ) ,   p2(result[35] ) ,  p2(result[36] )) ),
+                                             (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p5(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ))),
+                                                   (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p5(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ))
+      )) 
+      
+   
+      zz <- as.data.frame(zz)
+      
+      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B", "MSE Lower 95%CI", "MSE Upper 95%CI")
+    
+      zz <- data.frame(lapply(zz, function(x) as.numeric(as.character(x))))
+      zz <- as.data.frame(zz)
+      rownames(zz)<- c(
+        " adj. for true prognostic covariates", 
+        " not adj. for true prognostic covariates" ,
+        " adj. for non prognostic covariates", 
+        " not adj. for non prognostic covariates",
+        " adj. for some non prognostic covariates", 
+        " not adj. when some prognostic covariates", 
+        " adj. for correlated prognostic covariates", 
+        " not adj. for correlated prognostic covariates")
+      zz <- zz[order(zz$B),]
+      
+      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","Mean Squared Error (MSE)", "MSE Lower 95%CI", "MSE Upper 95%CI")
+      
+ 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+      return(list(  
+        
+       zz=zz
+        
+      )) 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$textWithNumber1 <- renderText({ 
       
@@ -1913,6 +1989,15 @@ server <- shinyServer(function(input, output   ) {
         
          
         return(print(d, digits=4))
+    })
+    
+    output$zz <- renderPrint({
+      
+      d <- table.sim()$zz
+      
+     # d <- plyr::arrange(d,  (d[,7])) 
+      
+      return(d)
     })
     
     output$fake2 <- renderPrint({
