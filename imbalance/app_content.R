@@ -1145,8 +1145,9 @@ server <- shinyServer(function(input, output   ) {
           mean(quantile( (d$y3-predict(zz4))^2, .975)), 
           mean(quantile( (d$y3-predict(zz5))^2, .025)), 
           mean(quantile( (d$y3-predict(zz5))^2, .975))
-          
-          
+          #,
+          #quantile( coef(f)["z", "Estimate"], .025) , 
+          #quantile( coef(f)["z", "Estimate"], .975) 
           
         )
         
@@ -1156,13 +1157,15 @@ server <- shinyServer(function(input, output   ) {
       library(plyr)
       res <- raply(simuls, statfun(simfun())) # run the model many times
       result <- apply(res,2,mean)
-      
+      q1.result <- apply(res,2, quantile, probs=c(0.025), na.rm=TRUE)
+      q2.result <- apply(res,2, quantile, probs=c(0.975), na.rm=TRUE)
       return(list(  
         
         res=res,
-        result=result  # means
-                    
-      )) 
+        result=result ,
+        q1.result=q1.result,
+        q2.result=q2.result
+        )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1513,8 +1516,12 @@ server <- shinyServer(function(input, output   ) {
     
     output$textWithNumber2 <- renderText({ 
       
+      res <- simul()$res  # means
       result <- simul()$result  # means
       result2 <- simul2()$result  # means
+      
+      q1.result <- simul()$q1.result  # means
+      q2.result <- simul()$q2.result  # means
       
       adjusting <- "adjusting"
       ignoring <- "ignoring"
@@ -1526,6 +1533,16 @@ server <- shinyServer(function(input, output   ) {
                     " for true prognostic covariates (black lines) " 
                     
                     , tags$span(style="color:red",  p3(result[1]))  ,
+                    
+                                         " 95%CI ("
+                     , tags$span(style="color:purple",  p3(q1.result[1]))  ,
+                     ", "
+                     , tags$span(style="color:purple",  p3(q2.result[1]))  ,
+                     " )",
+                     
+                    
+                    
+                    
                     " ; "  
                     , tags$span(style="color:red",  p3(result[2] )) ,
                     " power "
@@ -1547,6 +1564,14 @@ server <- shinyServer(function(input, output   ) {
                     tags$span(style="color:red",   ignoring) , 
                     " true prognostic in analysis (red lines) "
                     , tags$span(style="color:red",  p3(result[3]  )),
+                  
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p3(q1.result[3]))  ,
+                  ", "
+                  , tags$span(style="color:purple",  p3(q2.result[3]))  ,
+                  " )",
+                  
+                  
                     " ; "
                     , tags$span(style="color:red",  p3(result[4] )) ,
                     " power "
@@ -1568,6 +1593,13 @@ server <- shinyServer(function(input, output   ) {
                     tags$span(style="color:green",   adjusting)  ,
                     " for non prognostic covariates (blue lines) "  
                     , tags$span(style="color:red",  p3(result[5]))  ,
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p3(q1.result[5]))  ,
+                  ", "
+                  , tags$span(style="color:purple",  p3(q2.result[5]))  ,
+                  " )",
+                  
+                  
                     " ; "  
                     , tags$span(style="color:red",  p3(result[6] )) ,
                     " power "
@@ -1584,8 +1616,19 @@ server <- shinyServer(function(input, output   ) {
                     " Mean and se ",
                     tags$span(style="color:red",   ignoring) , 
                     "  non prognostic covariates (green lines) "
+                  
+                  
                     , tags$span(style="color:red",  p3(result[7]  )),
-                    " ; "
+                  
+                  
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p3(q1.result[7]))  ,
+                  ", "
+                  , tags$span(style="color:purple",  p3(q2.result[7]))  ,
+                  " )",
+                  
+                  " ; "
+                  
                     , tags$span(style="color:red",  p3(result[8] )) ,
                     " power "
                     , tags$span(style="color:blue",  p3(result[16] )) ,
@@ -1602,6 +1645,13 @@ server <- shinyServer(function(input, output   ) {
                     tags$span(style="color:green",   adjusting)  ,
                     " for mix of prognostic and non prognostic covariates (grey lines) "  
                     , tags$span(style="color:red",  p3(result[9]))  ,
+                  
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p3(q1.result[9]))  ,
+                  ", "
+                  , tags$span(style="color:purple",  p3(q2.result[9]))  ,
+                  " )",
+                  
                     " ; "  
                     , tags$span(style="color:red",  p3(result[10] )) ,
                     " power "
@@ -1619,7 +1669,13 @@ server <- shinyServer(function(input, output   ) {
                     tags$span(style="color:red",   ignoring) , 
                     " mix of prognostic and non prognostic covariates (pink lines) "
                     , tags$span(style="color:red",  p3(result[11]  )),
-                    " ; "
+                    " ; ",
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p3(q1.result[11]))  ,
+                  ", "
+                  , tags$span(style="color:purple",  p3(q2.result[11]))  ,
+                  " )"
+                  
                     , tags$span(style="color:red",  p3(result[12] )) ,
                     " power "
                     , tags$span(style="color:blue",  p3(result[18] )) ,
