@@ -122,7 +122,7 @@ attributed to differences in the covariates can be removed, this results in a mo
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
 We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, covariates not related to the outcome and collinear covariates. Secondly, 
                 imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. How can that be known with certainty? 
-              Power is therefore compromised in the unadjusted analyses when prognostic covariates are measured. 
+              Power is therefore compromised in the unadjusted analyses when there are prognostic covariates. 
          "), 
                 
                 h3("  "), 
@@ -276,8 +276,11 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                           
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
-                                                      div( verbatimTextOutput("B") )     
-                                                    
+                                                      div( verbatimTextOutput("B") )     ,
+                                                      
+                                                      
+                                                      h4("Figure 3 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                      div(plotOutput("diag",  width=fig.width7, height=fig.height7)),
                                                       
                                                ) ,
                                                
@@ -299,8 +302,10 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
-                                                      div( verbatimTextOutput("D") )     
+                                                      div( verbatimTextOutput("D") )     ,
                                                    
+                                                      h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                      div(plotOutput("diag1",  width=fig.width7, height=fig.height7)),
                                                       
                                                ) ,
                                                
@@ -327,7 +332,14 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                            fluidRow(
                                              column(width = 6, offset = 0, style='padding:1px;',
-                                                    div( verbatimTextOutput("E") )     
+                                                    div( verbatimTextOutput("E") )     ,
+                                                    
+                                                    
+                                                    
+                                                    h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                    div(plotOutput("diag3",  width=fig.width7, height=fig.height7)),
+                                                    
+                                                    
                                                    
                                                     
                                              ) ,
@@ -353,7 +365,12 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
 
                                             fluidRow(
                                               column(width = 6, offset = 0, style='padding:1px;',
-                                                     div( verbatimTextOutput("G") )
+                                                     div( verbatimTextOutput("G") ),
+                                                     
+                                                     h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                     div(plotOutput("diag4",  width=fig.width7, height=fig.height7)),
+                                                     
+                                                     
  
                                               ) ,
 
@@ -670,6 +687,99 @@ server <- shinyServer(function(input, output   ) {
 
     })
     
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # diagnostic
+    
+    output$diag <- renderPlot({         
+      
+      sample <- random.sample()
+    
+      fit <- reg1()$fit
+      d <- mcmc()$dat
+                  
+      y_hat=predict(fit)
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    #~~~~~~~~~~~~~~~~~~
+    output$diag1 <- renderPlot({         
+      
+      sample <- random.sample()
+    
+      fit <- reg2()$fit
+      d <- mcmc()$fake2
+      
+      y_hat=predict(fit)
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    output$diag3 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg3()$fit
+      d <- mcmc()$fake3
+      
+      y_hat=predict(fit)
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    output$diag4 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg4()$fit
+      d <- mcmc()$fake4
+      
+      y_hat=predict(fit)
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    
+    
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #  plot 1
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
@@ -745,7 +855,7 @@ server <- shinyServer(function(input, output   ) {
         x<- B
         stat2 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
         
-        return(list(  A=A, B=B, stat1=stat1, stat2=stat2, R=R)) 
+        return(list(  A=A, B=B, stat1=stat1, stat2=stat2, R=R, fit=ols2)) 
         
     })
     
@@ -785,7 +895,7 @@ server <- shinyServer(function(input, output   ) {
         x<- B
         stat4 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
 
-        return(list(  C=A, D=B,   stat4=stat4, stat3=stat3, R=R)) 
+        return(list(  C=A, D=B,   stat4=stat4, stat3=stat3, R=R, fit=ols2)) 
         
     })
     
@@ -826,7 +936,7 @@ server <- shinyServer(function(input, output   ) {
       x<- B
       stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
       
-      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R)) 
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R, fit=ols2))  
       
     })
     
@@ -868,7 +978,7 @@ server <- shinyServer(function(input, output   ) {
       x<- B
       stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
       
-      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R)) 
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R, fit=ols2)) 
       
     })
     
@@ -1780,7 +1890,7 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:red",   placebo)  ,
                     " placebo patients and  "  
                     , tags$span(style="color:red",  treated ) ,
-                    " patients, so in total "
+                    " treated patients, so in total "
                     , tags$span(style="color:red",  bigN  ),
                     " patients. Using only one realisation we make some observations. To be more certain of findings requires numerous simulations, see simulation tab.", 
                     tags$hr()
@@ -1801,7 +1911,7 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:red",   placebo)  ,
                     " placebo patients and  "  
                     , tags$span(style="color:red",  treated ) ,
-                    " patients, so in total "
+                    " treated patients, so in total "
                     , tags$span(style="color:red",  bigN  ),
                     " patients. Using only one realisation we make some observations.", 
                     tags$hr()
