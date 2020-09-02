@@ -121,7 +121,7 @@ may be related to the outcome, they are therefore not considered to be confoundi
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
 We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, covariates not related to the outcome and collinear covariates. Secondly, 
-                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting performs comparably ONLY when there are no prognostic covariates.
+                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. How could that be known?
          "), 
                 
                 h3("  "), 
@@ -144,11 +144,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   h4("User inputs"),
                                   div(
-                                      
-                                      
- 
-                                      
-                                      
+                            
                                       tags$head(
                                           tags$style(HTML('#ab1{background-color:orange}'))
                                       ),
@@ -165,23 +161,23 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                       
                                       tags$hr(),
                                       textInput('pow', 
-                                                div(h5(tags$span(style="color:blue", "power %"))), "80"),
+                                                div(h5(tags$span(style="color:blue", "Power (%)"))), "80"),
                                       
                                       textInput('sigma', 
-                                                div(h5(tags$span(style="color:blue", "residual variation"))), "2"),
+                                                div(h5(tags$span(style="color:blue", "Residual variation"))), "2"),
                                       tags$hr(), 
                                       textInput('theta', 
-                                                div(h5(tags$span(style="color:blue", "treatment effect"))), ".4"),
+                                                div(h5(tags$span(style="color:blue", "Treatment effect"))), ".4"),
                                       
                                       
                                       textInput('alpha', 
-                                                 div(h5(tags$span(style="color:blue", "alpha level two sided %"))), "5"),
+                                                 div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5"),
                                       
                                       textInput('simuls', 
-                                                div(h5(tags$span(style="color:blue", "Number of simulations"))), "99"),
+                                                div(h5(tags$span(style="color:blue", "Number of simulations (simulation tab only)"))), "99"),
                                       
                                       textInput('covar', 
-                                                div(h5(tags$span(style="color:blue", "covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
+                                                div(h5(tags$span(style="color:blue", "Covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
                                       
                                       #  textInput('n2y2', 
                                       # #      div(h5("Enter the true correlation (tab 2)")), ".8"),
@@ -249,7 +245,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ) ,
                                   
                                   tabPanel("2 Measured covariates prognostic", value=7, 
-                                           h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
+                                           h4("All covariates are prognostic, that is related to the response by design, standard error of treatment effect (z) smaller if we adjust (right output)"),
                                            
                                            
                                            fluidRow(
@@ -271,7 +267,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ) ,
                                   
                                   tabPanel("3 Measured covariates non prognostic", value=3, 
-                                           h4("All covariates are not prognostic, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
+                                           h4("All covariates are not prognostic, that is not related to the response by design, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
                                            
                                            
                                            fluidRow(
@@ -296,8 +292,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "4 Measured covariates mix of non prog and prognostic", 
-                                           h4(paste("xxxxxxxxxxxxxxx")),
-                                           
+                                            h4("Covariates are a mix of prognostic and not prognostic by design, standard error of treatment effect (z) only slightly larger if we adjust (right output)"),
+                                            
                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
                                            
                                            
@@ -322,9 +318,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "5 Measured correlated covariates",
-                                            h4(paste("xxxxxxxxxxxxxxx")),
+                                    #        h4(paste("xxxxxxxxxxxxxxx")),
 
-                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
+                                            h4("Covariates are correlated with each other by design"),
 
 
                                             fluidRow(
@@ -350,11 +346,11 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   tabPanel("6 Observations", value=3, 
                                            
-                                           h5(paste("Using only one realisation we make some observations (to be more certain of findings requires numerous simulations).")), 
+                                         #  h5(paste("Using only one realisation we make some observations (to be more certain of findings requires numerous simulations).")), 
                                          #  textInput('rcat2', 
                                           #           div(h5(tags$span(style="color:blue",
                                           #           ))), "999"),
-                                           h4(htmlOutput("textWithNumber1",) ),
+                                           h4(htmlOutput("textWithNumber1") ),
                                            
                                          #  div(plotOutput("preds2", width=fig.width1, height=fig.height3)),
                                          div( verbatimTextOutput("summary1") )  ,
@@ -387,7 +383,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ) ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "8 Simulation",
-                                            h4(paste("xxxxxxxxxxxxxxx")),
+                                            h4(paste("Figure X Simulation results")),
                                             
                                           #  h4("First X1:Xn covariates only are prognostic, the remainder are not"),
                                             
@@ -504,7 +500,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ),
                                   
                                   
-                                  tabPanel("12 correlated covariates data", 
+                                  tabPanel("12 Correlated covariates data", 
                                            
                                            fluidRow(
                                                column(width = 9, offset = 0, style='padding:1px;',
@@ -1136,8 +1132,22 @@ server <- shinyServer(function(input, output   ) {
           mean((d$y2-predict(zz2))^2),
           mean((d$y2-predict(zz3))^2),
           mean((d$y3-predict(zz4))^2),
-          mean((d$y3-predict(zz5))^2)
-
+          mean((d$y3-predict(zz5))^2),
+          mean(quantile( (d$y-predict(zz))^2, .025)), 
+          mean(quantile( (d$y-predict(zz))^2, .975)), 
+          mean(quantile( (d$y-predict(zz1))^2, .025)), 
+          mean(quantile( (d$y-predict(zz1))^2, .975)),
+          mean(quantile( (d$y2-predict(zz2))^2, .025)), 
+          mean(quantile( (d$y2-predict(zz2))^2, .975)), 
+          mean(quantile( (d$y2-predict(zz3))^2, .025)), 
+          mean(quantile( (d$y2-predict(zz3))^2, .975)),
+          mean(quantile( (d$y3-predict(zz4))^2, .025)), 
+          mean(quantile( (d$y3-predict(zz4))^2, .975)), 
+          mean(quantile( (d$y3-predict(zz5))^2, .025)), 
+          mean(quantile( (d$y3-predict(zz5))^2, .975))
+          
+          
+          
         )
         
       }
@@ -1234,7 +1244,11 @@ server <- shinyServer(function(input, output   ) {
 
           ## mse
           mean((d$y-predict(zz))^2),
-          mean((d$y-predict(zz1))^2)
+          mean((d$y-predict(zz1))^2),
+          mean(quantile( (d$y-predict(zz))^2, .025)), 
+          mean(quantile( (d$y-predict(zz))^2, .975)), 
+          mean(quantile( (d$y-predict(zz1))^2, .025)), 
+          mean(quantile( (d$y-predict(zz1))^2, .975))
           
         )
         
@@ -1366,27 +1380,27 @@ server <- shinyServer(function(input, output   ) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    output$textWithNumber2 <- renderText({ 
-      
-      result <- simul()$result  # means
-      
-      HTML(paste0(  tags$hr(),
-                    "Mean and se adjusting  "  
-                    , tags$span(style="color:red",  p3(result[1]))  ,
-                    " ; "  
-                    , tags$span(style="color:red",  p3(result[3] )) ,
-                    " and ignoring in analysis "
-                    , tags$span(style="color:red",  p3(result[2]  )),
-                    " ; "
-                    , tags$span(style="color:red",  p3(result[4] )) ,
-                    
-                    br(), br(),
-                    br(), br(),
-                    tags$hr()
-
-      ))    
-      
-    })  
+    # output$textWithNumber4 <- renderText({ 
+    #   
+    #   result <- simul()$result  # means
+    #   
+    #   HTML(paste0(  tags$hr(),
+    #                 "Mean and se adjusting  "  
+    #                 , tags$span(style="color:red",  p3(result[1]))  ,
+    #                 " ; "  
+    #                 , tags$span(style="color:red",  p3(result[3] )) ,
+    #                 " and ignoring in analysis "
+    #                 , tags$span(style="color:red",  p3(result[2]  )),
+    #                 " ; "
+    #                 , tags$span(style="color:red",  p3(result[4] )) ,
+    #                 
+    #                 br(), br(),
+    #                 br(), br(),
+    #                 tags$hr()
+    # 
+    #   ))    
+    #   
+    # })  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$reg.plotx <- renderPlot({         #means
       
@@ -1416,13 +1430,13 @@ server <- shinyServer(function(input, output   ) {
       lines( (d2), col = "red", lty=w, lwd=ww)  
       lines( (d3), col = "blue", lty=w, lwd=ww)    
       lines( (d4), col = "green", lty=w, lwd=ww)          
-      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d5), col = "grey", lty=w, lwd=ww)       
       lines( (d6), col = "pink", lty=w, lwd=ww)       
       lines( (d7), col = "yellow", lty=w, lwd=ww)       
       lines( (d8), col = "purple", lty=w, lwd=ww)     
       
 
-      abline(v = theta1, col = "grey")                    
+      abline(v = theta1, col = "darkgrey")                    
       
       # legend("topright",                                  # Add legend to density
       #        legend = c(" adj for true prognostic", 
@@ -1474,12 +1488,12 @@ server <- shinyServer(function(input, output   ) {
       lines( (d2), col = "red", lty=w, lwd=ww)  
       lines( (d3), col = "blue", lty=w, lwd=ww)    
       lines( (d4), col = "green", lty=w, lwd=ww)          
-      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d5), col = "grey", lty=w, lwd=ww)       
       lines( (d6), col = "pink", lty=w, lwd=ww)       
       lines( (d7), col = "yellow", lty=w, lwd=ww)       
       lines( (d8), col = "purple", lty=w, lwd=ww)     
       
-      abline(v = se., col = "grey")      
+      abline(v = se., col = "darkgrey")      
       legend("topright",                                  # Add legend to density
              legend = c(" adj. for true prognostic covariates", 
                         " not adj. for true prognostic covariates" ,
@@ -1491,7 +1505,7 @@ server <- shinyServer(function(input, output   ) {
                         " not adj. for correlated prognostic covariates"
                         
              ),
-             col = c("black", "red","blue","green","brown", "pink", "yellow", "purple"),
+             col = c("black", "red","blue","green","grey", "pink", "yellow", "purple"),
              lty = w, lwd=ww, bty = "n")
     })
     
@@ -1518,8 +1532,17 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:blue",  p3(result[13] )) ,
                     " MSE "
                     , tags$span(style="color:purple",  p2(result[19] )) ,
-                    br(), br(),
+                    " 95%CI ("
+                    , tags$span(style="color:purple",  p2(result[25] )) ,
+                    ", "
+                    , tags$span(style="color:purple",  p2(result[26] )) ,
+                    " )",
+                    
+                    
+                  br(), br(),
                  
+                      
+                    
                     " Mean and se ",
                     tags$span(style="color:red",   ignoring) , 
                     " true prognostic in analysis (red lines) "
@@ -1531,6 +1554,15 @@ server <- shinyServer(function(input, output   ) {
                     " MSE "
                     , tags$span(style="color:purple",  p2(result[20] )) ,
             
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p2(result[27] )) ,
+                  ", "
+                  , tags$span(style="color:purple",  p2(result[28] )) ,
+                  " )",
+                  
+                  
+                  
+                  
                     br(), br(),
                     "Mean and se ",
                     tags$span(style="color:green",   adjusting)  ,
@@ -1542,6 +1574,11 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:blue",  p3(result[15] )) ,
                     " MSE "
                     , tags$span(style="color:purple",  p2(result[21] )) ,
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p2(result[29] )) ,
+                  ", "
+                  , tags$span(style="color:purple",  p2(result[30] )) ,
+                  " )",
                     br(), br(),
                     
                     " Mean and se ",
@@ -1554,11 +1591,16 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:blue",  p3(result[16] )) ,
                     " MSE "
                     , tags$span(style="color:purple",  p2(result[22] )) ,
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p2(result[31] )) ,
+                  ", "
+                  , tags$span(style="color:purple",  p2(result[32] )) ,
+                  " )",
                     br(), br(),
                     
                     "Mean and se ",
                     tags$span(style="color:green",   adjusting)  ,
-                    " for mix of prognostic and non prognostic covariates (brown lines) "  
+                    " for mix of prognostic and non prognostic covariates (grey lines) "  
                     , tags$span(style="color:red",  p3(result[9]))  ,
                     " ; "  
                     , tags$span(style="color:red",  p3(result[10] )) ,
@@ -1566,6 +1608,11 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:blue",  p3(result[17] )) ,
                     " MSE "
                     , tags$span(style="color:purple",  p2(result[23] )) ,
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p2(result[33] )) ,
+                  ", "
+                  , tags$span(style="color:purple",  p2(result[34] )) ,
+                  " )",
                     br(), br(),
                     
                     " Mean and se ",
@@ -1578,6 +1625,11 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:blue",  p3(result[18] )) ,
                     " MSE "
                     , tags$span(style="color:purple",  p2(result[24] )) ,
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p2(result[35] )) ,
+                  ", "
+                  , tags$span(style="color:purple",  p2(result[36] )) ,
+                  " )",
                     br(), br(),
                     "Mean and se ",
                     tags$span(style="color:green",   adjusting)  ,
@@ -1589,6 +1641,11 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:blue",  p3(result2[5] )) ,
                     " MSE "
                     , tags$span(style="color:purple",  p2(result2[7] )) ,
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p2(result2[9] )) ,
+                  ", "
+                  , tags$span(style="color:purple",  p2(result2[10] )) ,
+                  " )",
                     br(), br(),
                     
                     " Mean and se ",
@@ -1601,6 +1658,11 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:blue",  p3(result2[6] )) ,
                     " MSE "
                     , tags$span(style="color:purple",  p2(result2[8] )) ,
+                  " 95%CI ("
+                  , tags$span(style="color:purple",  p2(result2[11] )) ,
+                  ", "
+                  , tags$span(style="color:purple",  p2(result2[12] )) ,
+                  " )",
                     
                     br(), br(),
                     "Mean squared error (MSE: accuracy and precision) combines bias and
@@ -1614,16 +1676,36 @@ server <- shinyServer(function(input, output   ) {
       
     })  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
+    output$textWithNumber1 <- renderText({ 
+      
+      placebo <- mcmc()$placebo
+      treated <- mcmc()$treated
+      bigN <- mcmc()$bigN
+      
+      HTML(paste0(  tags$hr(),
+                    "Randomised 1:1 we have  "  
+                    , tags$span(style="color:red",   placebo)  ,
+                    " placebo patients and  "  
+                    , tags$span(style="color:red",  treated ) ,
+                    " patients, so in total "
+                    , tags$span(style="color:red",  bigN  ),
+                    " patients. Using only one realisation we make some observations. To be more certain of findings requires numerous simulations, see simulation tab.", 
+                    tags$hr()
+                    
+      ))    
+      
+    })  
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$textWithNumber3 <- renderText({ 
       
-      power <- mcmc()$N  # means
+     # sample <- random.sample()
+      
+      power <- mcmc()$bigN  # means
      
       HTML(paste0(  tags$hr(),
                     
                     "Based on the study design dictated by inputs we will randomise ",
-                    tags$span(style="color:green",   N)  ,
+                    tags$span(style="color:green",   power)  ,
                     " patients in a 1:1 fashion" ,
                                         br(), br()
                     
@@ -1631,7 +1713,7 @@ server <- shinyServer(function(input, output   ) {
       ))    
       
     })  
-    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     
     
@@ -1676,12 +1758,12 @@ server <- shinyServer(function(input, output   ) {
       lines( (d2), col = "red", lty=w, lwd=ww)  
       lines( (d3), col = "blue", lty=w, lwd=ww)    
       lines( (d4), col = "green", lty=w, lwd=ww)          
-      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d5), col = "grey", lty=w, lwd=ww)       
       lines( (d6), col = "pink", lty=w, lwd=ww)       
       lines( (d7), col = "yellow", lty=w, lwd=ww)       
       lines( (d8), col = "purple", lty=w, lwd=ww)       
 
-      abline(v = theta1, col = "grey")                  
+      abline(v = theta1, col = "darkgrey")                  
       
     })
     
@@ -1719,40 +1801,19 @@ server <- shinyServer(function(input, output   ) {
       lines( (d2), col = "red", lty=w, lwd=ww)  
       lines( (d3), col = "blue", lty=w, lwd=ww)    
       lines( (d4), col = "green", lty=w, lwd=ww)          
-      lines( (d5), col = "brown", lty=w, lwd=ww)       
+      lines( (d5), col = "grey", lty=w, lwd=ww)       
       lines( (d6), col = "pink", lty=w, lwd=ww)       
       lines( (d7), col = "yellow", lty=w, lwd=ww)       
       lines( (d8), col = "purple", lty=w, lwd=ww)     
       
-      abline(v = se., col = "grey")                  
+      abline(v = se., col = "darkgrey")                  
    
     })
     
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    output$textWithNumber1 <- renderText({ 
-        
-        placebo <- mcmc()$placebo
-        treated <- mcmc()$treated
-        bigN <- mcmcm()$bigN
-        
-        HTML(paste0(  tags$hr(),
-                      "Randomised 1:1 we have  "  
-                      , tags$span(style="color:red",   placebo)  ,
-                      " placebo patients and  "  
-                      , tags$span(style="color:red",  treated ) ,
-                      " patients, so in total "
-                      , tags$span(style="color:red",  bigN  ),
-                      " patients.", 
-                      br(), br(),
-                       
-                      br(), br(),
-                      tags$hr()
 
-        ))    
-        
-    })  
     
     
 
@@ -1887,10 +1948,10 @@ server <- shinyServer(function(input, output   ) {
     # text 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
     
-    output$textWithNumber <- renderText({ 
-      
-        
-    })
+    # output$textWithNumber <- renderText({ 
+    #   
+    #     
+    # })
     
     
     output$assump <- renderPrint({
@@ -1900,12 +1961,12 @@ server <- shinyServer(function(input, output   ) {
     }) 
     
     
-    output$textWithNumber1 <- renderText({ 
-        
-       # A <- analysis()$f2     
-        
-        
-    })
+    # output$textWithNumber1 <- renderText({ 
+    #     
+    #    # A <- analysis()$f2     
+    #     
+    #     
+    # })
     
     output$dat <- renderPrint({
         
