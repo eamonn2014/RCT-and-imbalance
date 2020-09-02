@@ -1714,21 +1714,7 @@ server <- shinyServer(function(input, output   ) {
       
     })  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+      
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$reg.plotxx <- renderPlot({         
       
@@ -1813,167 +1799,21 @@ server <- shinyServer(function(input, output   ) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-
-    
-    
-
-    
-    
-    
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # simulations
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      
-      # #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # sim<- reactive({
-      #   
-      #   sample <- random.sample()
-      #   
-      #   K=sample$K
-      #   Kp=sample$Kp
-      #   pow=sample$pow
-      #   sigma=sample$sigma
-      #   theta=sample$theta        
-      #   alpha=sample$alpha    
-      #   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      #   
-      #   
-      #   
-      #  
-      #   
-      #   return(list(   
-      #                 
-      #   )) 
-      #   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # })
-      # 
-    
-    
-    
-    
-    
-    
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # non cummulative predicted probabilities plot run the analysis again
-    # not efficient I know
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    output$preds2 <- renderPlot({
-        
-      
-        
-    })
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # non cummulative predicted probabilities plot run the analysis again
-    # not efficient I know
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    output$preds <- renderPlot({
-        
-       
-        
-    })
-    
-
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~plots of predictions
-    
-    output$predicts <- renderPlot({   
-        
-         
-        
-    })
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # text 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
-    
-    output$PP.plot <- renderPlot({   
-        
-      
-        
-    }) 
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~baseline plots~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
-    output$PP.plot2 <- renderPlot({   
-        
-       
-        
-        
-    })
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # a plot of coef from series of logistic regression models. checking assumptions
-    
-    output$logitseries <- renderPlot({   
-        
-         
-        
-        
-    })
-    
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~assumption plot~~~~~~~~~~~~~~~~~~~~~~~~    
-    # on the fly plot harrell's PO assumption plot...
-    
-    output$assumption <- renderPlot({   
-        
-       
-        
-    }) 
-    
-    
-    assump <- reactive({
-        
-         
-        
-    })  
+ 
     
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~baseline predictions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    predz <- reactive({
-        
-       
-    })  
+   
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # text 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
-    
-    # output$textWithNumber <- renderText({ 
-    #   
-    #     
-    # })
-    
-    
-    output$assump <- renderPrint({
-        
-      #  return(print(assump()$s, digits=3))
-        
-    }) 
-    
-    
-    # output$textWithNumber1 <- renderText({ 
-    #     
-    #    # A <- analysis()$f2     
-    #     
-    #     
-    # })
-    
+ 
     output$dat <- renderPrint({
         
         d <- mcmc()$dat
         
-        #d <- plyr::arrange(d, baseline, treatment)
-        
+         
         return(print(d, digits=4))
     })
     
@@ -1981,8 +1821,7 @@ server <- shinyServer(function(input, output   ) {
       
       d <- mcmc()$fake2
       
-      #d <- plyr::arrange(d, baseline, treatment)
-      
+       
       return(print(d, digits=4))
     })
     
@@ -1999,87 +1838,14 @@ server <- shinyServer(function(input, output   ) {
       
       d <- mcmc()$fake4
       
-      #d <- plyr::arrange(d, baseline, treatment)
-      
+       
       return(print(d, digits=4))
     })
     
+ 
+ 
     
-    output$predz <- renderPrint({
-        
-        #return(print(predz()$p, digits=4))
-    })
-    
-    output$predt <- renderPrint({
-        
-        #return(print(predt()$pt, digits=4))
-    })
-    
-    
-    output$reg.summary1 <- renderPrint({
-        
-        #return( (analysis()$f2 ))
-        
-    })
-    
-    output$reg.summary3 <- renderPrint({
-        
-        #return(print(analysis()$sf1, digits=4))
-        
-    })
-    
-    output$reg.summary4 <- renderPrint({
-        
-        #return(print(lmx()$linear, digits=4))
-        
-    })
-    
-    output$reg.summary5 <- renderPrint({
-        
-      #  return(print(lmx()$an, digits=4))
-        
-    })
-    
-    output$reg.summaryp <- renderPrint({
-        
-       # return(print(predictz()$prob, digits=4))
-        
-    })
-    
-    output$reg.summaryc <- renderPrint({
-        
-        #return(print(predictz()$cprob, digits=4))
-        
-    })
-    
-    output$reg.summaryci <- renderPrint({
-        
-        #return(print(predictz()$plotci, digits=4))
-        
-    })
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    lmx <- reactive({
-        
-      
-    })
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    output$predictl <- renderPlot({   
-        
-       
-        
-        
-    })
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    output$ecdfs <- renderPlot({   
-        
-        
-        
-        
-    })
+ 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 })
 
