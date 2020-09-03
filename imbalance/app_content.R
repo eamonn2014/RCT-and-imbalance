@@ -306,8 +306,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       div( verbatimTextOutput("D") )     ,
                                                    
                                                       h4("Figure 4 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
-                                                      h5("The observed true outcome y is much wider as we have added plenty of noise to 
-                                                         the right hand side of the model that is not truly related to y"),
+                                                    #  h5("The observed true outcome y is much wider as we have added plenty of noise to 
+                                                     #    the right hand side of the model that is not truly related to y"),
                                                       div(plotOutput("diag1",  width=fig.width7, height=fig.height7)),
                                                       h4("Figure 4a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                       div(plotOutput("diag1u",  width=fig.width7, height=fig.height7)),
@@ -1998,8 +1998,26 @@ server <- shinyServer(function(input, output   ) {
       
     })  
     
+    output$textWithNumber1a <- renderText({ 
+      
+      placebo <- mcmc()$placebo
+      treated <- mcmc()$treated
+      bigN <- mcmc()$bigN
+      
+      HTML(paste0(  tags$hr(),
+                    "Randomised 1:1 we have  "  
+                    
+                    ,tags$span(style="color:red",  bigN  ),
+                    " total patients. Being randomised 1:1 for each simulation.", 
+                    tags$hr()
+                    
+                    
+                    
+      ))    
+      
+    })
     
-    output$textWithNumber1b <- output$textWithNumber1a <- output$textWithNumber1 <- renderText({ 
+    output$textWithNumber1b <-   output$textWithNumber1 <- renderText({ 
       
       placebo <- mcmc()$placebo
       treated <- mcmc()$treated
@@ -2014,6 +2032,8 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:red",  bigN  ),
                     " patients. Using only one realisation we make some observations.", 
                     tags$hr()
+                    
+                    
                     
       ))    
       
