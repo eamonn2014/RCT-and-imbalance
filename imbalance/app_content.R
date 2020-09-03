@@ -283,6 +283,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       div(plotOutput("diag",  width=fig.width7, height=fig.height7)),
                                                       h4("Figure 3a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                       div(plotOutput("diagu",  width=fig.width7, height=fig.height7)),
+                                                      h4("Figure 3b residual v linear predictor seperately for control and treated groups, multivariable model"),
+                                                      div(plotOutput("residual1",  width=fig.width7, height=fig.height7)),
                                                ) ,
                                                
                                                
@@ -311,6 +313,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       div(plotOutput("diag1",  width=fig.width7, height=fig.height7)),
                                                       h4("Figure 4a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                       div(plotOutput("diag1u",  width=fig.width7, height=fig.height7)),
+                                                    h4("Figure 4b residual v linear predictor seperately for control and treated groups, multivariable model"),
+                                                    div(plotOutput("residual2",  width=fig.width7, height=fig.height7)),
                                                ) ,
                                                
                                                
@@ -345,7 +349,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                     
                                                     h4("Figure 5a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                     div(plotOutput("diag3u",  width=fig.width7, height=fig.height7)),
-                                                   
+                                                    h4("Figure 5b residual v linear predictor seperately for control and treated groups, multivariable model"),
+                                                    div(plotOutput("residual3",  width=fig.width7, height=fig.height7)),
                                                     
                                              ) ,
                                              
@@ -377,6 +382,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                      
                                                      h4("Figure 6a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                      div(plotOutput("diag4u",  width=fig.width7, height=fig.height7)),
+                                                     h4("Figure 6b residual v linear predictor seperately for control and treated groups, multivariable model"),
+                                                     div(plotOutput("residual4",  width=fig.width7, height=fig.height7)),
  
                                               ) ,
 
@@ -742,6 +749,44 @@ server <- shinyServer(function(input, output   ) {
       
       
     })
+    
+    ## only on multivariable do this 
+    output$residual1 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg1()$fit
+      d <- mcmc()$dat
+      y <- d$y
+      z <- d$z
+      y_hat=predict(fit)
+    
+    r <- y - y_hat
+    par(mfrow=c(1,2), mar=c(3,3,2,2), mgp=c(1.7,.5,0), tck=-.01)
+    par(mfrow=c(1,2))
+    for (i in 0:1){
+      plot(range(y_hat), range(r), type="n", xlab=expression(paste("Linear predictor, ", hat(y))),
+           ylab="Residual, r", main=paste("z =", i), bty="l")
+      points(y_hat[z==i], r[z==i], pch=20+i)
+      abline(0, 0)
+    }
+    
+    })
+    
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #~~~~~~~~~~~~~~~~~~non prog
     output$diag1 <- renderPlot({         
       
@@ -786,6 +831,33 @@ server <- shinyServer(function(input, output   ) {
       
       
     })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    
+    ## only on multivariable do this 
+    output$residual2 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg2()$fit
+      d <- mcmc()$fake2
+      y <- d$y
+      z <- d$z
+      y_hat=predict(fit)
+      
+      r <- y - y_hat
+      par(mfrow=c(1,2), mar=c(3,3,2,2), mgp=c(1.7,.5,0), tck=-.01)
+      par(mfrow=c(1,2))
+      for (i in 0:1){
+        plot(range(y_hat), range(r), type="n", xlab=expression(paste("Linear predictor, ", hat(y))),
+             ylab="Residual, r", main=paste("z =", i), bty="l")
+        points(y_hat[z==i], r[z==i], pch=20+i)
+        abline(0, 0)
+      }
+      
+    })
+    
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$diag3 <- renderPlot({         
@@ -832,6 +904,30 @@ server <- shinyServer(function(input, output   ) {
       
     })
     
+    
+    ## only on multivariable do this 
+    output$residual3 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg3()$fit
+      d <- mcmc()$fake3
+      y <- d$y
+      z <- d$z
+      y_hat=predict(fit)
+      
+      r <- y - y_hat
+      par(mfrow=c(1,2), mar=c(3,3,2,2), mgp=c(1.7,.5,0), tck=-.01)
+      par(mfrow=c(1,2))
+      for (i in 0:1){
+        plot(range(y_hat), range(r), type="n", xlab=expression(paste("Linear predictor, ", hat(y))),
+             ylab="Residual, r", main=paste("z =", i), bty="l")
+        points(y_hat[z==i], r[z==i], pch=20+i)
+        abline(0, 0)
+      }
+      
+    })
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$diag4u <- renderPlot({         
       
@@ -874,6 +970,29 @@ server <- shinyServer(function(input, output   ) {
         
       }
       
+      
+    })
+    
+    ## only on multivariable do this 
+    output$residual4 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg4()$fit
+      d <- mcmc()$fake4
+      y <- d$y
+      z <- d$z
+      y_hat=predict(fit)
+      
+      r <- y - y_hat
+      par(mfrow=c(1,2), mar=c(3,3,2,2), mgp=c(1.7,.5,0), tck=-.01)
+      par(mfrow=c(1,2))
+      for (i in 0:1){
+        plot(range(y_hat), range(r), type="n", xlab=expression(paste("Linear predictor, ", hat(y))),
+             ylab="Residual, r", main=paste("z =", i), bty="l")
+        points(y_hat[z==i], r[z==i], pch=20+i)
+        abline(0, 0)
+      }
       
     })
     
