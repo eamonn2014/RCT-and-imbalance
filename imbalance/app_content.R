@@ -281,7 +281,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       
                                                       h4("Figure 3 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
                                                       div(plotOutput("diag",  width=fig.width7, height=fig.height7)),
-                                                      
+                                                      h4("Figure 3a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                      div(plotOutput("diagu",  width=fig.width7, height=fig.height7)),
                                                ) ,
                                                
                                                
@@ -305,8 +306,11 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       div( verbatimTextOutput("D") )     ,
                                                    
                                                       h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                      h5("The observed true outcome y is much wider as we have added plenty of noise to 
+                                                         the right hand side of the model that is not truly related to y"),
                                                       div(plotOutput("diag1",  width=fig.width7, height=fig.height7)),
-                                                      
+                                                      h4("Figure 4a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                      div(plotOutput("diag1u",  width=fig.width7, height=fig.height7)),
                                                ) ,
                                                
                                                
@@ -336,10 +340,11 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                     
                                                     
                                                     
-                                                    h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                    h4("Figure 5 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
                                                     div(plotOutput("diag3",  width=fig.width7, height=fig.height7)),  
                                                     
-                                                    
+                                                    h4("Figure 5a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                    div(plotOutput("diag3u",  width=fig.width7, height=fig.height7)),
                                                    
                                                     
                                              ) ,
@@ -367,10 +372,11 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                               column(width = 6, offset = 0, style='padding:1px;',
                                                      div( verbatimTextOutput("G") ),
                                                      
-                                                     h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                     h4("Figure 6 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
                                                      div(plotOutput("diag4",  width=fig.width7, height=fig.height7)),
                                                      
-                                                     
+                                                     h4("Figure 6a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                     div(plotOutput("diag4u",  width=fig.width7, height=fig.height7)),
  
                                               ) ,
 
@@ -386,12 +392,12 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
-                                  tabPanel("7 One realisation, observation", value=3, 
+                                  tabPanel("7 Observation from one realisation", value=3, 
                                   
-                                         
-                                         h4("Table 15 Observations only from one realisation"),
                                            h4(htmlOutput("textWithNumber1") ),
                                            
+                                         h4("Table 15 Observations only from one realisation"),
+                                          
                                        
                                          div( verbatimTextOutput("summary1") )  ,
                                            
@@ -423,7 +429,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ) ,
                           
                                
-                                  tabPanel("9 Data", value=3, 
+                                  tabPanel("9 Data used tabs 3,4 & 5", value=3, 
                                            
                                         
                                            h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
@@ -432,7 +438,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   ),
                                   
                                   
-                                  tabPanel("10 Correlated covariates data", 
+                                  tabPanel("10 Correlated data tab 6", 
                                            
                                            fluidRow(
                                                column(width = 9, offset = 0, style='padding:1px;',
@@ -562,7 +568,7 @@ server <- shinyServer(function(input, output   ) {
         fake <- data.frame(X=X, y=y, z=z)
         dat <- fake
 
-        # not prognostic
+        # not prognostic, reg2
         y <- a +  theta*z + rnorm(N,0, sigma)
         fake2 <- data.frame(X=X, y=y, z=z)
         
@@ -689,7 +695,7 @@ server <- shinyServer(function(input, output   ) {
     
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # diagnostic
+    # diagnostics
     
     output$diag <- renderPlot({         
       
@@ -697,35 +703,83 @@ server <- shinyServer(function(input, output   ) {
     
       fit <- reg1()$fit
       d <- mcmc()$dat
-                  
+      y <- d$y    
+      z <- d$z
       y_hat=predict(fit)
+      
+      
       
       par(mfrow=c(1,2))
       for(i in 0:1) {
         
-        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
-        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i, "N=", length(y[z==i])  ),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
         abline(0,1)
         
       }
       
       
     })
-    #~~~~~~~~~~~~~~~~~~
+    
+    output$diagu <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg1()$fit0
+      d <- mcmc()$dat
+      y <- d$y
+      z <- d$z
+      y_hat=predict(fit)
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i, "N=", length(y[z==i])  ),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    #~~~~~~~~~~~~~~~~~~non prog
     output$diag1 <- renderPlot({         
       
       sample <- random.sample()
     
       fit <- reg2()$fit
       d <- mcmc()$fake2
-      
+      y <- d$y
       y_hat=predict(fit)
+      z <- d$z
       
       par(mfrow=c(1,2))
       for(i in 0:1) {
         
-        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
-        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        plot( range(y_hat, y), range(y_hat, y), type='n' ,main=paste("z =", i, "N=", length(y[z==i])  ),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    
+    output$diag1u <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg2()$fit0
+      d <- mcmc()$fake2
+      y <- d$y
+      y_hat=predict(fit)
+      z <- d$z
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i, "N=", length(y[z==i])  ),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
         abline(0,1)
         
       }
@@ -740,14 +794,37 @@ server <- shinyServer(function(input, output   ) {
       
       fit <- reg3()$fit
       d <- mcmc()$fake3
-      
+      y <- d$y
       y_hat=predict(fit)
+      z <- d$z
       
       par(mfrow=c(1,2))
       for(i in 0:1) {
         
-        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
-        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i, "N=", length(y[z==i])  ),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    
+    output$diag3u <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg3()$fit0
+      d <- mcmc()$fake3
+      y <- d$y
+      y_hat=predict(fit)
+      z <- d$z
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i, "N=", length(y[z==i])  ),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
         abline(0,1)
         
       }
@@ -756,6 +833,27 @@ server <- shinyServer(function(input, output   ) {
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$diag4u <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg4()$fit0
+      d <- mcmc()$fake4
+      y <- d$y
+      y_hat=predict(fit)
+      z <- d$z
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
     
     output$diag4 <- renderPlot({         
       
@@ -763,14 +861,15 @@ server <- shinyServer(function(input, output   ) {
       
       fit <- reg4()$fit
       d <- mcmc()$fake4
-      
+      y <- d$y
       y_hat=predict(fit)
+      z <- d$z
       
       par(mfrow=c(1,2))
       for(i in 0:1) {
         
-        plot( range(y_hat, d$y), range(y_hat, d$y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
-        points(y_hat[z==i], d$y[z==i], pch=20+i)
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
         abline(0,1)
         
       }
@@ -855,7 +954,7 @@ server <- shinyServer(function(input, output   ) {
         x<- B
         stat2 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
         
-        return(list(  A=A, B=B, stat1=stat1, stat2=stat2, R=R, fit=ols2)) 
+        return(list(  A=A, B=B, stat1=stat1, stat2=stat2, R=R, fit=ols2, fit0=ols1)) 
         
     })
     
@@ -895,7 +994,7 @@ server <- shinyServer(function(input, output   ) {
         x<- B
         stat4 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
 
-        return(list(  C=A, D=B,   stat4=stat4, stat3=stat3, R=R, fit=ols2)) 
+        return(list(  C=A, D=B,   stat4=stat4, stat3=stat3, R=R, fit=ols2, fit0=ols1)) 
         
     })
     
@@ -936,7 +1035,7 @@ server <- shinyServer(function(input, output   ) {
       x<- B
       stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
       
-      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R, fit=ols2))  
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R, fit=ols2, fit0=ols1)) 
       
     })
     
@@ -978,7 +1077,7 @@ server <- shinyServer(function(input, output   ) {
       x<- B
       stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
       
-      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R, fit=ols2)) 
+      return(list(  A=A, B=B,   stat5=stat5, stat6=stat6, R=R, fit=ols2, fit0=ols1)) 
       
     })
     
