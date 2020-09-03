@@ -70,8 +70,8 @@ fig.width9 <- 1380
 fig.height9 <- 500
 
 
-fig.width7 <- 600
-fig.height7 <- 400
+fig.width7 <- 700
+fig.height7 <- 500
 ## convenience functions
 p0 <- function(x) {formatC(x, format="f", digits=1)}
 p1 <- function(x) {formatC(x, format="f", digits=1)}
@@ -87,6 +87,8 @@ options(width=200)
 options(scipen=999)
 w=1  # line type
 ww=3 # line thickness
+#Fact=2  # beta coefficients wll be +/- this many multiple of true trt effect
+
 
 # not used, but could use this for MSE
 calc.mse <- function(obs, pred, rsq = FALSE){
@@ -158,7 +160,10 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "No of covariates"))), "10"),
                                       
                                       textInput('Kp', 
-                                                div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab3 only)"))), "5"),
+                                                div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "5"),
+                                      
+                                      textInput('Fact', 
+                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, multiple of (+/-)treatment effect "))), "1.2"),
                                       
                                       tags$hr(),
                                       textInput('pow', 
@@ -176,6 +181,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                       
                                       textInput('simuls', 
                                                 div(h5(tags$span(style="color:blue", "Number of simulations (simulation tab only)"))), "99"),
+                                      
+                                      
                                       
                                       textInput('covar', 
                                                 div(h5(tags$span(style="color:blue", "Covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
@@ -243,14 +250,14 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                           
                                   ) ,
                                   tabPanel( "2 Simulation",
-                                            h4(paste("Figure 1 Simulation results")),
+                                           # h4(paste("Figure 1 Simulation results")) , 
                                             
                                             h4(htmlOutput("textWithNumber1a") ),        
                                             fluidRow(
                                               column(width = 6, offset = 0, style='padding:1px;',
                                                     
                                                      div(plotOutput("reg.plotx",  width=fig.width7, height=fig.height7)),
-                                                     div(plotOutput("reg.plotxx",  width=fig.width7, height=fig.height7)),
+                                                   #  div(plotOutput("reg.plotxx",  width=fig.width7, height=fig.height7)),
                                               ) ,
                                               
                                               
@@ -258,12 +265,12 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 column(width = 5, offset = 0, style='padding:1px;',
                                                       
                                                        div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
-                                                       div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
+                                                    #   div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
                                                 ))),
-                                            h4(paste("Table 2 Summary, sorted by smallest MSE estimate")),
-                                            h4(htmlOutput("textWithNumber99",) ),
+                                            h4(paste("Table 2 Summary, sorted by smallest mean squared error (MSE) estimate")),
                                             div( verbatimTextOutput("zz") )  ,
-                                          
+                                           h4(htmlOutput("textWithNumber99",) ),
+                                           
                                             
                                             
                                             
@@ -475,9 +482,30 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                
                                                
                                            )
-                                  )##end
+                                  ),##end
+                                  
+                                  tabPanel("11 Notes", value=3, 
+                                           
+                                           ## could do correlated covariates not related to the outcome?
+                                           h4("The first tab, shows the standard power calculation function in R for a ttest, using the random error, treatment effect, alpha and power to determine the sample size.  
+                                            The next tab, presents the results of simulation where we investigate (i) adjusting for true prognostic covariates (ia) ignoring them in the analysis. 
+                                            We investigate (ii) adjusting for covariates unrelated to the outcome (iia) ignoring them in the analysis.
+                                            We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia) ignoring them in the analysis.
+                                           We investigate (iv) adjusting for covariates related to the outcome and are correlated with each other (iva) ignoring them in the analysis.
+                                           Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.
+                                           The third tab presents one realisation from scenario (i),the fourth tab presents one realisation from scenario (ii), the fifth tab presents one realisation from scenario (iii)
+                                              the sixth tab presents one realisation from scenario (iv), the seventh tab presents a summary of the previous 4 tabs. Tabs 3 to 6 also present the correlation matrix from the multivariable
+                                              model and diagnostic plots. Tab 8 presents a plot of the difference in each covariate across the trial arms. The next two tabs present the data used in tabs 3,4 and 5 and then the correlated data."),
+                                           
+                                           
+                                           
+                                  )
+                                           
                                   
                                   
+                                  
+                                  
+                                  #####
                                   
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   END NEW   
@@ -518,6 +546,9 @@ server <- shinyServer(function(input, output   ) {
         simuls <- (as.numeric(unlist(strsplit(input$simuls,","))))    
         
         covar <- (as.numeric(unlist(strsplit(input$covar,","))))   
+        
+        Fact <- (as.numeric(unlist(strsplit(input$Fact,","))))
+        
         return(list(  
             K=K,  
             Kp=Kp,  
@@ -526,7 +557,8 @@ server <- shinyServer(function(input, output   ) {
             alpha=alpha/100, 
             theta=theta,
             simuls=simuls,
-            covar=covar
+            covar=covar,
+            Fact=Fact
         ))
         
     })
@@ -549,6 +581,7 @@ server <- shinyServer(function(input, output   ) {
         theta=sample$theta        
         alpha=sample$alpha    
         covar=sample$covar
+        Fact=sample$Fact
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         Po <- power.t.test( delta =theta, sd=sigma, sig.level=alpha,
@@ -568,7 +601,7 @@ server <- shinyServer(function(input, output   ) {
         # making up beta coefficients
         # b=1:K 
         # b= rep(1,K)                               
-        b <- round(sort(runif(K, -2.5,2.5)), digits=2)  # making up some beta coefficients
+        b <- round(sort(runif(K, -theta*Fact,theta*Fact)), digits=2)  # making up some beta coefficients, multiple of true trt effect
 
         #prognostic
         y <- a+ X %*% b + theta*z + rnorm(N,0, sigma)
@@ -1249,10 +1282,10 @@ server <- shinyServer(function(input, output   ) {
                          "[1] Multivariable adjusting for measured true prognostic covariates",
                          "[2] Bivariate no adjustment, measured prognostic covariates ignored",
                         
-                         "[3] Multivariable adjusting for measured non prognostic covariates",
-                         "[4] Bivariate no adjustment, measured non prognostic covariates ignored",
+                         "[3] Multivariable adjusting for measured covariates unrelated to outcome",
+                         "[4] Bivariate no adjustment, measured covariates unrelated to outcome ignored",
                          
-                         "[5] Multivariable adjusting for measured prognostic and non prognostic covariates",
+                         "[5] Multivariable adjusting for measured prognostic and covariates unrelated to outcome",
                          "[6] Bivariate no adjustment, measured covariates ignored",
                          
                          "[7] Multivariable adjusting for measured prognostic covariates that are correlated",
@@ -1276,14 +1309,17 @@ server <- shinyServer(function(input, output   ) {
       theta1=sample$theta        
       alpha=sample$alpha  
       covar=sample$covar
-
+      Fact=sample$Fact
+      
       simuls=sample$simuls
       
       N1 <- mcmc()$N # 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # simulate models many times collect estimate and SE
 
-      simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
+      b1 <- round(sort(runif(K1, -theta1*Fact,theta1*Fact)), digits=2) # making up some beta coefficients no bigger than trt effect, fixed for all simulations
+      
+      simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
         
         # X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
         # # Simulate a difference in two means with data SD of ?
@@ -1297,7 +1333,7 @@ server <- shinyServer(function(input, output   ) {
         }
         
         z <- sample(c(0,1), N, replace=T)              # treatment indicator
-        b <- round(sort(runif(K, -2.5,2.5)), digits=2)      # making up some beta coefficients
+        #b <- round(sort(runif(K, -theta ,theta)), digits=2)      # making up some beta coefficients no bigger than trt effect
         y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)  # linear predictor
         y2 <- a+           theta*z + rnorm(N,0, sigma)          # linear predictor
         y3 <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma)
@@ -1409,7 +1445,8 @@ server <- shinyServer(function(input, output   ) {
         res=res,
         result=result ,
         q1.result=q1.result,
-        q2.result=q2.result
+        q2.result=q2.result,
+        b=b
         )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
@@ -1430,15 +1467,21 @@ server <- shinyServer(function(input, output   ) {
       sigma1=sample$sigma
       theta1=sample$theta        
       alpha=sample$alpha  
-      
+      Fact=sample$Fact
       
       simuls=sample$simuls
+      
+      #K1=simul()$K
+      b1=simul()$b  #uisng this weird results
       
       N1 <- mcmc()$N # 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # simulate models many times collect estimate and SE
       
-      simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1) {
+      b1 <- round(sort(runif(K1, -theta1*Fact,theta1*Fact)), digits=2)
+     # b1 <- round(sort(runif(K, -theta1*Fact,theta1*Fact)), digits=2) # making up some beta coefficients no bigger than trt effect, fixed for all simulations
+      
+      simfun2<- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
         
         x <- Matrix(runif(K*K,-RR,RR), K)   # create a correlation matrix randomly , wont allow very high correlations
         
@@ -1457,11 +1500,11 @@ server <- shinyServer(function(input, output   ) {
         r = t(L) %*% matrix(rnorm(nvars*N, 0,1), nrow=nvars, ncol=N)  #2,2
         r = t(r)
         
-        r <- as.matrix(r)
+        r <- as.matrix(r)#
         rdata <- as.data.frame(r)
         XX<- as.matrix(rdata)
         z <- sample(c(0,1), N, replace=T)              # treatment indicator
-        b <- round(sort(runif(K, -2.5,2.5)), digits=2)      # making up some beta coefficients
+       # b <- round(sort(runif(K, -theta,theta)), digits=2)      # making up some beta coefficients no bigger than trt effect
         y <- a+ XX %*% b + theta*z + rnorm(N,0, sigma)
         data.frame(X=XX, y=y, z=z)
         
@@ -1469,7 +1512,7 @@ server <- shinyServer(function(input, output   ) {
       
       #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
       
-      statfun <- function(d) {
+      statfun2 <- function(d) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         zz <- lm(y~., data=d)    ## adjusting for prognostic X, y2 is not included by use of the '-'
         f <-  summary(zz)
@@ -1508,7 +1551,7 @@ server <- shinyServer(function(input, output   ) {
       
       
       library(plyr)
-      res <- raply(simuls, statfun(simfun())) # run the model many times
+      res <- raply(simuls, statfun2(simfun2())) # run the model many times
       result <- apply(res,2,mean)
       q1.result <- apply(res,2, quantile, probs=c(0.025), na.rm=TRUE)
       q2.result <- apply(res,2, quantile, probs=c(0.975), na.rm=TRUE)
@@ -1680,7 +1723,8 @@ server <- shinyServer(function(input, output   ) {
       dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
       dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
 
-      plot( (d1), xlim = dx, main="Density of treatment effect estimates", ylim=c(0,dz),lty=w, lwd=ww,
+      
+      plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=w, lwd=ww,
            xlab="Treatment effect", #Change the x-axis label
            ylab="Density") #y-axis label)                   # Plot density of x
       lines( (d2), col = "red", lty=w, lwd=ww)  
@@ -1689,24 +1733,22 @@ server <- shinyServer(function(input, output   ) {
       lines( (d5), col = "grey", lty=w, lwd=ww)       
       lines( (d6), col = "pink", lty=w, lwd=ww)       
       lines( (d7), col = "yellow", lty=w, lwd=ww)       
-      lines( (d8), col = "purple", lty=w, lwd=ww)     
+      lines( (d8), col = "purple", lty=w, lwd=ww)       
       
-
-      abline(v = theta1, col = "darkgrey")                    
-      
-      # legend("topright",                                  # Add legend to density
-      #        legend = c(" adj for true prognostic", 
-      #                   " not adj for true prognostic" ,
-      #                   " adj for non prognostic", 
-      #                   " not adj for non prognostic",
-      #                   " adj for some non prognostic", 
-      #                   " not adj when some prognostic",
-      #                   " adj for correlated prognostic", 
-      #                   " not adj for correlated prognostic"
-      #             ),
-      #        
-      #        col = c("black", "red","blue","green","brown", "pink", "yellow", "purple"),
-      #        lty = 1, bty = "n")
+      abline(v = theta1, col = "darkgrey")                
+      legend("topright",                                  # Add legend to density
+             legend = c(" adj. for true prognostic covariates", 
+                        " not adj. for true prognostic covariates" ,
+                        " adj. for covariates unrelated to outcome", 
+                        " not adj. for covariates unrelated to outcome",
+                        " adj. for mix of prognostic and unrelated to outcome", 
+                        " not adj. mix of prognostic and unrelated to outcome", 
+                        " adj. for correlated prognostic covariates", 
+                        " not adj. for correlated prognostic covariates"
+                        
+             ),
+             col = c("black", "red","blue","green","grey", "pink", "yellow", "purple"),
+             lty = w, lwd=ww, bty = "n", cex=.75)
     })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -1738,7 +1780,7 @@ server <- shinyServer(function(input, output   ) {
       dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
       dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
       
-      plot( (d1), xlim = dx, main="Density of standard error estimates", ylim=c(0,dz),lty=w, lwd=ww,
+      plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates, truth= ",p4(se.),""), ylim=c(0,dz),lty=w, lwd=ww,
             xlab="Standard error", #Change the x-axis label
             ylab="Density") #y-axis label)                   # Plot density of x
       lines( (d2), col = "red", lty=w, lwd=ww)  
@@ -1749,22 +1791,24 @@ server <- shinyServer(function(input, output   ) {
       lines( (d7), col = "yellow", lty=w, lwd=ww)       
       lines( (d8), col = "purple", lty=w, lwd=ww)     
       
-      abline(v = se., col = "darkgrey")      
-      legend("topright",                                  # Add legend to density
-             legend = c(" adj. for true prognostic covariates", 
-                        " not adj. for true prognostic covariates" ,
-                        " adj. for non prognostic covariates", 
-                        " not adj. for non prognostic covariates",
-                        " adj. for some non prognostic covariates", 
-                        " not adj. when some prognostic covariates", 
-                        " adj. for correlated prognostic covariates", 
-                        " not adj. for correlated prognostic covariates"
-                        
-             ),
-             col = c("black", "red","blue","green","grey", "pink", "yellow", "purple"),
-             lty = w, lwd=ww, bty = "n")
+      abline(v = se., col = "darkgrey")   
+      # legend("topright",                                  # Add legend to density
+      #        legend = c(" adj. for true prognostic covariates", 
+      #                   " not adj. for true prognostic covariates" ,
+      #                   " adj. for covariates unrelated to outcome", 
+      #                   " not adj. for covariates unrelated to outcome",
+      #                   " adj. for mix of prognostic and unrelated to outcome", 
+      #                   " not adj. mix of prognostic and unrelated to outcome", 
+      #                   " adj. for correlated prognostic covariates", 
+      #                   " not adj. for correlated prognostic covariates"
+      #                   
+      #        ),
+      #        col = c("black", "red","blue","green","grey", "pink", "yellow", "purple"),
+      #        lty = w, lwd=ww, bty = "n", cex=.75)
     })
     
+    
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     # output$textWithNumber2 <- renderText({ 
@@ -2056,14 +2100,14 @@ server <- shinyServer(function(input, output   ) {
       q2.result2 <- simul2()$q2.result  
     
       zz <- rbind(
-         (c( p3(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p3(result[2] ) ,  p2(result[13] ) ,  p5(result[19] ) ,   p2(result[25] ),   p2(result[26] )  ,   p2(result[37] )    ,   p2(result[43] )         )) ,
-               (c( p3(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p3(result[4] ) ,  p2(result[14] ) ,  p5(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )   , p2(result[38] )      ,    p2(result[44] )        )) ,
-                     (c( p3(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p3(result[6] ) ,  p2(result[15] ) ,  p5(result[21] ) ,   p2(result[29] ) ,  p2(result[30] )  , p2(result[39] )      ,     p2(result[45] )        )) ,
-                           (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p5(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p2(result[40] )      ,     p2(result[46] )         )) ,
-                                 (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p5(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p2(result[41] )      ,   p2(result[47] )             )) ,
-                                       (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p5(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p2(result[42] )      ,     p2(result[48] )         )) ,
-                                             (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p5(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p2(result2[13] )      ,  p2(result2[15] )         )) ,
-                                                   (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p5(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p2(result2[14] )      ,p2(result2[16] )          ))
+         (c( p3(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p3(result[2] ) ,  p2(result[13] ) ,  p2(result[19] ) ,   p2(result[25] ),   p2(result[26] )  ,   p2(result[37] )    ,   p2(result[43] )         )) ,
+               (c( p3(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p3(result[4] ) ,  p2(result[14] ) ,  p2(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )   , p2(result[38] )      ,    p2(result[44] )        )) ,
+                     (c( p3(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p3(result[6] ) ,  p2(result[15] ) ,  p2(result[21] ) ,   p2(result[29] ) ,  p2(result[30] )  , p2(result[39] )      ,     p2(result[45] )        )) ,
+                           (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p2(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p2(result[40] )      ,     p2(result[46] )         )) ,
+                                 (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p2(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p2(result[41] )      ,   p2(result[47] )             )) ,
+                                       (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p2(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p2(result[42] )      ,     p2(result[48] )         )) ,
+                                             (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p2(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p2(result2[13] )      ,  p2(result2[15] )         )) ,
+                                                   (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p2(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p2(result2[14] )      ,p2(result2[16] )          ))
     ) 
       
    
@@ -2084,7 +2128,7 @@ server <- shinyServer(function(input, output   ) {
         " not adj. for correlated prognostic covariates")
       zz <- zz[order(zz$B),]
       
-      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","MSE", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
+      colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","  MSE ", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
       
  
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2123,12 +2167,12 @@ server <- shinyServer(function(input, output   ) {
       treated <- mcmc()$treated
       bigN <- mcmc()$bigN
       
-      HTML(paste0(  tags$hr(),
-                    "Randomised 1:1 we have  "  
+      HTML(paste0(  #tags$hr(),
+                    "Figure 1 Simulation results, randomised 1:1, we have  "  
                     
                     ,tags$span(style="color:red",  bigN  ),
-                    " total patients. Being randomised 1:1 for each simulation.", 
-                    tags$hr()
+                    " total patients randomised 1:1 for each simulation. The covariate betas are fixed at the same values for all simulations, selected randomly between +/- multiples of treatment effect as dictated by input on left"
+                  #  tags$hr()
                     
                     
                     
@@ -2254,7 +2298,21 @@ server <- shinyServer(function(input, output   ) {
       lines( (d7), col = "yellow", lty=w, lwd=ww)       
       lines( (d8), col = "purple", lty=w, lwd=ww)     
       
-      abline(v = se., col = "darkgrey")                  
+      abline(v = se., col = "darkgrey")          
+      
+      # legend("topright",                                  # Add legend to density
+      #        legend = c(" adj. for true prognostic covariates", 
+      #                   " not adj. for true prognostic covariates" ,
+      #                   " adj. for covariates unrelated to outcome", 
+      #                   " not adj. for covariates unrelated to outcome",
+      #                   " adj. for mix of prognostic and unrelated to outcome", 
+      #                   " not adj. mix of prognostic and unrelated to outcome", 
+      #                   " adj. for correlated prognostic covariates", 
+      #                   " not adj. for correlated prognostic covariates"
+      #                   
+      #        ),
+      #        col = c("black", "red","blue","green","grey", "pink", "yellow", "purple"),
+      #        lty = w, lwd=ww, bty = "n", cex=.75)
    
     })
 
