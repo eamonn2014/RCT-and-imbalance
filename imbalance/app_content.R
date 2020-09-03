@@ -279,9 +279,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       div( verbatimTextOutput("B") )     ,
                                                       
                                                       
-                                                      h4("Figure 3 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                      h4("Figure 3 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
                                                       div(plotOutput("diag",  width=fig.width7, height=fig.height7)),
-                                                      h4("Figure 3a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                      h4("Figure 3a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                       div(plotOutput("diagu",  width=fig.width7, height=fig.height7)),
                                                ) ,
                                                
@@ -305,11 +305,11 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                column(width = 6, offset = 0, style='padding:1px;',
                                                       div( verbatimTextOutput("D") )     ,
                                                    
-                                                      h4("Figure 4 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                      h4("Figure 4 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
                                                       h5("The observed true outcome y is much wider as we have added plenty of noise to 
                                                          the right hand side of the model that is not truly related to y"),
                                                       div(plotOutput("diag1",  width=fig.width7, height=fig.height7)),
-                                                      h4("Figure 4a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                      h4("Figure 4a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                       div(plotOutput("diag1u",  width=fig.width7, height=fig.height7)),
                                                ) ,
                                                
@@ -340,10 +340,10 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                     
                                                     
                                                     
-                                                    h4("Figure 5 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                    h4("Figure 5 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
                                                     div(plotOutput("diag3",  width=fig.width7, height=fig.height7)),  
                                                     
-                                                    h4("Figure 5a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                    h4("Figure 5a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                     div(plotOutput("diag3u",  width=fig.width7, height=fig.height7)),
                                                    
                                                     
@@ -372,10 +372,10 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                               column(width = 6, offset = 0, style='padding:1px;',
                                                      div( verbatimTextOutput("G") ),
                                                      
-                                                     h4("Figure 6 Outcome v fitted linear predictor seperatley for control and treated groups, multivariable model"),
+                                                     h4("Figure 6 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
                                                      div(plotOutput("diag4",  width=fig.width7, height=fig.height7)),
                                                      
-                                                     h4("Figure 6a Outcome v fitted linear predictor seperatley for control and treated groups, bivariate model (note intercept and coef)"),
+                                                     h4("Figure 6a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                      div(plotOutput("diag4u",  width=fig.width7, height=fig.height7)),
  
                                               ) ,
