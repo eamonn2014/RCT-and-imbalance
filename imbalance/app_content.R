@@ -48,30 +48,12 @@ library(tidyverse)
 #options(mc.cores = parallel::detectCores())
 #rstan_options(auto_write = TRUE)
 options(max.print=1000000)    
-fig.width <- 400
-fig.height <- 300
+ 
 fig.width1 <- 1380
 fig.height1 <- 700
-fig.width2 <- 1400
-fig.height2 <- 300
-fig.width3 <- 1400  
-fig.height3 <- 600
-fig.width4 <- 1380
-fig.height4 <- 450
-fig.width5 <- 1380
-fig.height5 <- 225
-fig.width6 <- 400
-fig.height6 <- 550
-fig.width7 <- 600
-fig.widthx <- 593
-fig.heightx <- 268
-fig.height7 <- 600
-fig.width9 <- 1380
-fig.height9 <- 500
-
-
 fig.width7 <- 700
 fig.height7 <- 500
+
 ## convenience functions
 p0 <- function(x) {formatC(x, format="f", digits=1)}
 p1 <- function(x) {formatC(x, format="f", digits=1)}
@@ -79,16 +61,16 @@ p2 <- function(x) {formatC(x, format="f", digits=2)}
 p3 <- function(x) {formatC(x, format="f", digits=3)}
 p4 <- function(x) {formatC(x, format="f", digits=4)}
 p5 <- function(x) {formatC(x, format="f", digits=5)}
+
 logit <- function(p) log(1/(1/p-1))
 expit <- function(x) 1/(1/exp(x) + 1)
 inv_logit <- function(logit) exp(logit) / (1 + exp(logit))
 is.even <- function(x){ x %% 2 == 0 } # function to id. odd maybe useful
+
 options(width=200)
 options(scipen=999)
 w=1  # line type
 ww=3 # line thickness
-#Fact=2  # beta coefficients wll be +/- this many multiple of true trt effect
-
 
 # not used, but could use this for MSE
 calc.mse <- function(obs, pred, rsq = FALSE){
@@ -163,7 +145,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "5"),
                                       
                                       textInput('Fact', 
-                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, multiples selected randomly between -X*treatment effect and X*treatment effect "))), "1.2"),
+                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, here multiplicative factor is selected so betas are random between -X*treatment effect and X*treatment effect "))), "1.2"),
                                       
                                       tags$hr(),
                                       textInput('theta', 
@@ -178,32 +160,16 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "Power (%)"))), "80"),
                                       textInput('alpha', 
                                                  div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5"),
-                                      
+                                      tags$hr(),
                                       textInput('simuls', 
                                                 div(h5(tags$span(style="color:blue", "Number of simulations (simulation tab only)"))), "99"),
                                       tags$hr(), 
                                       
-                                      
+                                      tags$hr(),
                                       textInput('covar', 
                                                 div(h5(tags$span(style="color:blue", "Covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
                                       
-                                      #  textInput('n2y2', 
-                                      # #      div(h5("Enter the true correlation (tab 2)")), ".8"),
-                                      # div(h5(tags$span(style="color:blue", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"))), "0.8"),
-                                      # tags$hr(),
-                                      
-                                      # div(h5("References:")),  
-                                      # tags$a(href = "https://en.wikipedia.org/wiki/Bootstrapping_%28statistics%29", tags$span(style="color:blue", "[1] PRO"),),   
-                                      # div(p(" ")),
-                                      # tags$a(href = "https://projecteuclid.org/download/pdf_1/euclid.aos/1176345338",  tags$span(style="color:blue", "[2] PO"),),   
-                                      # div(p(" ")),
-                                      # tags$a(href = "https://projecteuclid.org/download/pdf_1/euclid.aos/1176344552", tags$span(style="color:blue", "[3] Krushke"),),
-                                      # div(p(" ")),
-                                      # tags$a(href = "https://blogs.sas.com/content/iml/2017/09/20/fishers-transformation-correlation.html", tags$span(style="color:blue", "[4] xxxxxx"),),  
-                                      # div(p(" ")),
-                                      # tags$a(href = "https://rdrr.io/cran/rms/man/predict.lrm.html", tags$span(style="color:blue", "prediction of model mean"),),  
-                                      # div(p(" ")),
-                                      # tags$hr()
+                                   
                                   )
                                   
                                   
@@ -315,8 +281,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       div( verbatimTextOutput("D") )     ,
                                                    
                                                       h4("Figure 4 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
-                                                    #  h5("The observed true outcome y is much wider as we have added plenty of noise to 
-                                                     #    the right hand side of the model that is not truly related to y"),
                                                       div(plotOutput("diag1",  width=fig.width7, height=fig.height7)),
                                                       h4("Figure 4a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
                                                       div(plotOutput("diag1u",  width=fig.width7, height=fig.height7)),
@@ -349,8 +313,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                              column(width = 6, offset = 0, style='padding:1px;',
                                                     div( verbatimTextOutput("E") )     ,
                                                     
-                                                    
-                                                    
                                                     h4("Figure 5 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
                                                     div(plotOutput("diag3",  width=fig.width7, height=fig.height7)),  
                                                     
@@ -375,7 +337,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "6 Measured correlated covariates",
-                                    #        h4(paste("xxxxxxxxxxxxxxx")),
 
                                             h4("Tables 12  One realisation ignoring, 13 adjusting and 14 correlation whan covariates are correlated with each other by design"),
 
@@ -422,12 +383,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            fluidRow(
                                                column(width = 7, offset = 0, style='padding:1px;',
                                           
-                                                      
                                                )),
                                   ),
                                   
-                        
-                               
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel("8 Observed covariate balance", value=7, 
                                            h4("Figure 2 Difference in baseline covariates across arms"),
@@ -436,8 +394,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                            fluidRow(
                                              column(width = 7, offset = 0, style='padding:1px;',
-                                      
-                                                    
+
                                              )),
                                            
                                   ) ,
@@ -445,7 +402,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                
                                   tabPanel("9 Data used tabs 3,4 & 5", value=3, 
                                            
-                                        
                                            h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
                                            div( verbatimTextOutput("ddd")),
                                      
@@ -456,14 +412,12 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                            fluidRow(
                                                column(width = 9, offset = 0, style='padding:1px;',
-                                                #      h4("Table 9 xxxxxxxxxxxx"),
+                                              
                                                     div( verbatimTextOutput("fake4")),
                                                ),
                                                
                                                column(width = 3, offset = 0, style='padding:1px;',
-                                               #       h4("xxxx"),
-                                                #      h4("xxxxxxxxxxxxx
-                                                #  \n"),
+                                        
                                                       
                                                              tags$hr(),
                                                       div(h4("References:")),  
@@ -501,11 +455,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                   )
                                            
-                                  
-                                  
-                                  
-                                  
-                                  #####
+                            
                                   
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   END NEW   
@@ -521,7 +471,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
 server <- shinyServer(function(input, output   ) {
     
     shinyalert("Welcome! \nExplore Adjusting for covariates in RCTs!",
-               "Better do it!", 
+               "Best to do it!", 
                type = "info")
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -597,10 +547,7 @@ server <- shinyServer(function(input, output   ) {
         
         z <- sample(c(0,1), N, replace=T)          # treatment indicator
         a <- 1                                     # intercept
-        
-        # making up beta coefficients
-        # b=1:K 
-        # b= rep(1,K)                               
+                            
         b <- round(sort(runif(K, -theta*Fact,theta*Fact)), digits=2)  # making up some beta coefficients, multiple of true trt effect
 
         #prognostic
@@ -807,19 +754,6 @@ server <- shinyServer(function(input, output   ) {
     })
     
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     #~~~~~~~~~~~~~~~~~~non prog
     output$diag1 <- renderPlot({         
       
@@ -842,6 +776,7 @@ server <- shinyServer(function(input, output   ) {
       
       
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$diag1u <- renderPlot({         
       
@@ -865,7 +800,7 @@ server <- shinyServer(function(input, output   ) {
       
     })
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     ## only on multivariable do this 
     output$residual2 <- renderPlot({         
@@ -890,8 +825,7 @@ server <- shinyServer(function(input, output   ) {
       
     })
     
-    
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$diag3 <- renderPlot({         
       
@@ -914,6 +848,7 @@ server <- shinyServer(function(input, output   ) {
       
       
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$diag3u <- renderPlot({         
       
@@ -937,6 +872,7 @@ server <- shinyServer(function(input, output   ) {
       
     })
     
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     ## only on multivariable do this 
     output$residual3 <- renderPlot({         
@@ -961,7 +897,7 @@ server <- shinyServer(function(input, output   ) {
       
     })
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$diag4u <- renderPlot({         
       
       sample <- random.sample()
@@ -983,7 +919,7 @@ server <- shinyServer(function(input, output   ) {
       
       
     })
-    
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$diag4 <- renderPlot({         
       
       sample <- random.sample()
@@ -1005,7 +941,7 @@ server <- shinyServer(function(input, output   ) {
       
       
     })
-    
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## only on multivariable do this 
     output$residual4 <- renderPlot({         
       
@@ -1030,7 +966,7 @@ server <- shinyServer(function(input, output   ) {
     })
     
     
-    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #  plot 1
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
@@ -1115,11 +1051,13 @@ server <- shinyServer(function(input, output   ) {
         
         return(reg1()$A)
     })
-    
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$B <- renderPrint({
         
         return(reg1()$B)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     output$R1 <- renderPrint({
       
       return(reg1()$R)
@@ -1155,11 +1093,14 @@ server <- shinyServer(function(input, output   ) {
         
         return(reg2()$C)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$D <- renderPrint({
         
         return(reg2()$D)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     output$R2 <- renderPrint({
       
       return(reg2()$R)
@@ -1196,11 +1137,14 @@ server <- shinyServer(function(input, output   ) {
       
       return(reg3()$A)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$E <- renderPrint({
       
       return(reg3()$B)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     output$R3 <- renderPrint({
       
       return(reg3()$R)
@@ -1238,20 +1182,20 @@ server <- shinyServer(function(input, output   ) {
       
       return(reg4()$A)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$G <- renderPrint({
       
       return(reg4()$B)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$R4 <- renderPrint({
       
       return(reg4()$R)
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
-    
+   
     output$summary1 <- renderPrint({
         
         stat1 <- reg1()$stat1 # ignoring true prog 
@@ -1428,8 +1372,6 @@ server <- shinyServer(function(input, output   ) {
           f3$adj.r.squared,
           f4$adj.r.squared,
           f5$adj.r.squared    #48
-         
-          
         )
         
       }
@@ -1448,7 +1390,7 @@ server <- shinyServer(function(input, output   ) {
         q2.result=q2.result,
         b1=b1
         )) 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      output$sim1 <- renderPrint({
@@ -1542,14 +1484,12 @@ server <- shinyServer(function(input, output   ) {
           
           f$adj.r.squared,  #44
           f1$adj.r.squared  #45
-          
-         
-          
+        
         )
         
       }
       
-      
+
       library(plyr)
       res <- raply(simuls, statfun2(simfun2())) # run the model many times
       result <- apply(res,2,mean)
@@ -1568,12 +1508,6 @@ server <- shinyServer(function(input, output   ) {
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-    
-    
-    
-    
-     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #  plot 2 not using
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
@@ -1807,9 +1741,7 @@ server <- shinyServer(function(input, output   ) {
       #        col = c("black", "red","blue","green","grey", "pink", "yellow", "purple"),
       #        lty = w, lwd=ww, bty = "n", cex=.75)
     })
-    
-    
-
+  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     # output$textWithNumber2 <- renderText({ 
@@ -2083,9 +2015,6 @@ server <- shinyServer(function(input, output   ) {
       )
       
     })  #
-    
-    
-    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     table.sim <- reactive({
@@ -2157,7 +2086,6 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:red",  bigN  ),
                     " patients. Using only one realisation we make some observations. To be more certain of findings requires numerous simulations, see simulation tab.", 
                     tags$hr()
-                    
       ))    
       
     })  
@@ -2174,9 +2102,7 @@ server <- shinyServer(function(input, output   ) {
                     ,tags$span(style="color:red",  bigN  ),
                     " total patients randomised 1:1 for each simulation. The covariate betas are fixed at the same values for all simulations, selected randomly between +/- multiples of treatment effect as dictated by input on left"
                   #  tags$hr()
-                    
-                    
-                    
+                  
       ))    
       
     })
@@ -2196,8 +2122,6 @@ server <- shinyServer(function(input, output   ) {
                     , tags$span(style="color:red",  bigN  ),
                     " patients. Using only one realisation we make some observations.", 
                     tags$hr()
-                    
-                    
                     
       ))    
       
@@ -2320,14 +2244,13 @@ server <- shinyServer(function(input, output   ) {
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # text 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
- 
-    
-    output$betas <- renderPrint({
+     output$betas <- renderPrint({
       
       d <- simul2()$betas
       return(print(d))
     })
-    
+     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     
     output$dat <- renderPrint({
         
         d <- mcmc()$dat
@@ -2335,6 +2258,7 @@ server <- shinyServer(function(input, output   ) {
          
         return(print(d, digits=4))
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$zz <- renderPrint({
       
@@ -2344,6 +2268,7 @@ server <- shinyServer(function(input, output   ) {
       
       return(d)
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$fake2 <- renderPrint({
       
@@ -2352,6 +2277,7 @@ server <- shinyServer(function(input, output   ) {
        
       return(print(d, digits=4))
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$fake3 <- renderPrint({
       
@@ -2359,6 +2285,7 @@ server <- shinyServer(function(input, output   ) {
       
       return(print(d, digits=4))
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     output$fake4 <- renderPrint({
       
@@ -2367,11 +2294,8 @@ server <- shinyServer(function(input, output   ) {
        
       return(print(d, digits=4))
     })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
- 
- 
-    
- 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 })
 
