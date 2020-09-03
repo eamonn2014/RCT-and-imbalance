@@ -163,25 +163,25 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "5"),
                                       
                                       textInput('Fact', 
-                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, selected randomly between -Fact*treatment effect and Fact*treatment effect "))), "1.2"),
+                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, multiples selected randomly between -X*treatment effect and X*treatment effect "))), "1.2"),
                                       
                                       tags$hr(),
-                                      textInput('pow', 
-                                                div(h5(tags$span(style="color:blue", "Power (%)"))), "80"),
+                                      textInput('theta', 
+                                                div(h5(tags$span(style="color:blue", "Treatment effect"))), ".4"),
                                       
                                       textInput('sigma', 
                                                 div(h5(tags$span(style="color:blue", "Residual variation"))), "2"),
                                       tags$hr(), 
-                                      textInput('theta', 
-                                                div(h5(tags$span(style="color:blue", "Treatment effect"))), ".4"),
+                                     
                                       
-                                      
+                                      textInput('pow', 
+                                                div(h5(tags$span(style="color:blue", "Power (%)"))), "80"),
                                       textInput('alpha', 
                                                  div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5"),
                                       
                                       textInput('simuls', 
                                                 div(h5(tags$span(style="color:blue", "Number of simulations (simulation tab only)"))), "99"),
-                                      
+                                      tags$hr(), 
                                       
                                       
                                       textInput('covar', 
@@ -270,8 +270,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                             h4(paste("Table 2 Summary, sorted by smallest mean squared error (MSE) estimate")),
                                             div( verbatimTextOutput("zz") )  ,
                                            h4(htmlOutput("textWithNumber99",) ),
-                                           
-                                            
+                                           h4(paste("Here are the true coefficients of the covariates used in the simulation: ")),
+                                           div( verbatimTextOutput("betas") )  ,
                                             
                                             
                                             width = 30 )     ,
@@ -1561,7 +1561,8 @@ server <- shinyServer(function(input, output   ) {
         res=res,
         result=result,  # means
         q1.result=q1.result,
-        q2.result=q2.result
+        q2.result=q2.result,
+        betas=b1
         
       )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2320,6 +2321,13 @@ server <- shinyServer(function(input, output   ) {
     # text 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
  
+    
+    output$betas <- renderPrint({
+      
+      d <- simul2()$betas
+      return(print(d))
+    })
+    
     output$dat <- renderPrint({
         
         d <- mcmc()$dat
