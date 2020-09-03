@@ -163,7 +163,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "5"),
                                       
                                       textInput('Fact', 
-                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, multiple of (+/-)treatment effect "))), "1.2"),
+                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, selected randomly between -Fact*treatment effect and Fact*treatment effect "))), "1.2"),
                                       
                                       tags$hr(),
                                       textInput('pow', 
@@ -1446,7 +1446,7 @@ server <- shinyServer(function(input, output   ) {
         result=result ,
         q1.result=q1.result,
         q2.result=q2.result,
-        b=b
+        b1=b1
         )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
@@ -1472,13 +1472,13 @@ server <- shinyServer(function(input, output   ) {
       simuls=sample$simuls
       
       #K1=simul()$K
-      b1=simul()$b  #uisng this weird results
+      b1=simul()$b1  #beta coefficient
       
       N1 <- mcmc()$N # 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # simulate models many times collect estimate and SE
       
-      b1 <- round(sort(runif(K1, -theta1*Fact,theta1*Fact)), digits=2)
+     # b1 <- round(sort(runif(K1, -theta1*Fact,theta1*Fact)), digits=2)
      # b1 <- round(sort(runif(K, -theta1*Fact,theta1*Fact)), digits=2) # making up some beta coefficients no bigger than trt effect, fixed for all simulations
       
       simfun2<- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
