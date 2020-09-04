@@ -139,13 +139,13 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                       ),
                                       
                                       textInput('K', 
-                                                div(h5(tags$span(style="color:blue", "No of covariates"))), "10"),
+                                                div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
                                       
                                       textInput('Kp', 
-                                                div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "5"),
+                                                div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "2"),
                                       
                                       textInput('Fact', 
-                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, here multiplicative factor is selected so betas are random between -X*treatment effect and X*treatment effect "))), ".9"),
+                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, here multiplicative factor is selected so betas are random between -X*treatment effect and X*treatment effect "))), "1"),
                                       
                                       tags$hr(),
                                       textInput('theta', 
@@ -1720,7 +1720,7 @@ server <- shinyServer(function(input, output   ) {
     })
   
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
+    # this code writes coloured text to app, nice idea, lots of code, but not very clear, the simple table is better
     # output$textWithNumber2 <- renderText({ 
     #   
     #   res <- simul()$res  # means
@@ -1990,9 +1990,8 @@ server <- shinyServer(function(input, output   ) {
                     on the left input."
       )
       
-    })  #
+    })  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     # table for simulation summary
     table.sim <- reactive({
         
