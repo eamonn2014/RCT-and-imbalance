@@ -145,19 +145,19 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "5"),
                                       
                                       textInput('Fact', 
-                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, here multiplicative factor is selected so betas are random between -X*treatment effect and X*treatment effect "))), "1.2"),
+                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, here multiplicative factor is selected so betas are random between -X*treatment effect and X*treatment effect "))), ".9"),
                                       
                                       tags$hr(),
                                       textInput('theta', 
-                                                div(h5(tags$span(style="color:blue", "Treatment effect"))), ".4"),
+                                                div(h5(tags$span(style="color:blue", "Treatment effect"))), ".223"),
                                       
                                       textInput('sigma', 
-                                                div(h5(tags$span(style="color:blue", "Residual variation"))), "2"),
+                                                div(h5(tags$span(style="color:blue", "Residual variation"))), ".85"),
                                       tags$hr(), 
                                      
                                       
                                       textInput('pow', 
-                                                div(h5(tags$span(style="color:blue", "Power (%)"))), "80"),
+                                                div(h5(tags$span(style="color:blue", "Power (%)"))), "90"),
                                       textInput('alpha', 
                                                  div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5"),
                                       tags$hr(),
@@ -165,7 +165,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "Number of simulations (simulation tab only)"))), "99"),
                                       tags$hr(), 
                                       
-                                      tags$hr(),
                                       textInput('covar', 
                                                 div(h5(tags$span(style="color:blue", "Covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
                                       
@@ -267,8 +266,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                         
                                                         div( verbatimTextOutput("R1") )
                                                    ))),
-                                           
-                                           
+
                                   ) ,
                                   
                                   tabPanel("4 Measured covariates non prognostic", value=3, 
@@ -295,12 +293,8 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                            
                                                           div( verbatimTextOutput("R2") )
                                                    ))),
-                                          
-                                           
+
                                   ) ,
-                                  
-                           
-                                  
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "5 Measured covariates mix of non prog and prognostic", 
                                             h4("Tables 9  One realisation ignoring, 10 adjusting and 11 correlation when there are a mix of prognostic and not prognostic by design, 
@@ -333,8 +327,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            
                                            
                                            width = 30 )     ,
-                                  
-                                  
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "6 Measured correlated covariates",
 
@@ -355,7 +347,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
  
                                               ) ,
 
-
                                               fluidRow(
                                                 column(width = 5, offset = 0, style='padding:1px;',
                                                        div( verbatimTextOutput("H") ),
@@ -364,7 +355,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
  
                                             width = 30 )     ,
 
-                                  
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
                                   tabPanel("7 Observation from one realisation", value=3, 
@@ -398,15 +388,13 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                              )),
                                            
                                   ) ,
-                          
-                               
+
                                   tabPanel("9 Data used tabs 3,4 & 5", value=3, 
                                            
                                            h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
                                            div( verbatimTextOutput("ddd")),
                                      
                                   ),
-                                  
                                   
                                   tabPanel("10 Correlated data tab 6", 
                                            
@@ -417,8 +405,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                ),
                                                
                                                column(width = 3, offset = 0, style='padding:1px;',
-                                        
-                                                      
+
                                                              tags$hr(),
                                                       div(h4("References:")),  
                                                       tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
@@ -431,7 +418,6 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                       div(p(" ")),
                 
                                                       tags$hr()
-                                                      
                                                )
                                                
                                                
@@ -450,14 +436,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            The third tab presents one realisation from scenario (i),the fourth tab presents one realisation from scenario (ii), the fifth tab presents one realisation from scenario (iii)
                                               the sixth tab presents one realisation from scenario (iv), the seventh tab presents a summary of the previous 4 tabs. Tabs 3 to 6 also present the correlation matrix from the multivariable
                                               model and diagnostic plots. Tab 8 presents a plot of the difference in each covariate across the trial arms. The next two tabs present the data used in tabs 3,4 and 5 and then the correlated data."),
-                                           
-                                           
-                                           
+
                                   )
-                                           
-                            
-                                  
-                                  
+
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   END NEW   
                               )
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -470,7 +451,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
 
 server <- shinyServer(function(input, output   ) {
     
-    shinyalert("Welcome! \nExplore Adjusting for covariates in RCTs!",
+    shinyalert("Welcome! \nAdjusting for covariates in RCTs!",
                "Best to do it!", 
                type = "info")
     
