@@ -96,7 +96,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                     direction = "bottom"
                 ),
                 
-                h2("Covariate adjustment in randomised controlled trials"), 
+                h2("Covariate adjustment in randomised controlled trials with a continuous response"), 
                 
                 h4("We investigate some misconceptions concerning randomised trials (RCTs) include (i)  there is no need for baseline covariates in the analysis, that is,
                 many randomised controlled trials are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, precision of the treatment effect estimate is improved when adjusting for baseline covariates 
@@ -145,7 +145,7 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                                 div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "2"),
                                       
                                       textInput('Fact', 
-                                                div(h5(tags$span(style="color:blue", "Covariate coefficients, here multiplicative factor is selected so betas are random between -X*treatment effect and X*treatment effect "))), "1"),
+                                                div(h5(tags$span(style="color:blue", "Covariate coefficients. Here a multiplicative factor is selected so that betas are randomly chosen between (-X*treatment effect) and (X*treatment effect)"))), "1"),
                                       
                                       tags$hr(),
                                       textInput('theta', 
@@ -550,11 +550,12 @@ server <- shinyServer(function(input, output   ) {
         ddd <- cbind(fake[,c(1:K)], prog.response=fake$y, notprog.response= fake2$y, mixprog.response=fake3$y)
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # let's get confidence interval of the diff od covariates across arms
+        # let's get confidence interval of the diff of covariates across arms
+        # function
         zz <-   lapply(fake[1:K], function(x) 
             t.test(x ~ fake$z, paired = FALSE, na.action = na.pass))
         
-        zzz <-   lapply(zz, function(x) 
+        zzz <-   lapply(zz, function(x)    ## execute the function
             x[4]
         )
         
@@ -562,7 +563,7 @@ server <- shinyServer(function(input, output   ) {
         ci <- t(zzz)
         conf<- as.data.frame(ci)
         
-        #  Mean diff
+        #  run the function again, and pull out the means
         mzz <-   lapply(zz, function(x) 
             (x[5])
         )
@@ -752,7 +753,6 @@ server <- shinyServer(function(input, output   ) {
       
     })
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     output$diag1u <- renderPlot({         
       
       sample <- random.sample()
@@ -776,7 +776,6 @@ server <- shinyServer(function(input, output   ) {
     })
     
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     ## only on multivariable do this 
     output$residual2 <- renderPlot({         
       
@@ -802,7 +801,6 @@ server <- shinyServer(function(input, output   ) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     output$diag3 <- renderPlot({         
       
       sample <- random.sample()
@@ -825,7 +823,6 @@ server <- shinyServer(function(input, output   ) {
       
     })
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     output$diag3u <- renderPlot({         
       
       sample <- random.sample()
@@ -849,7 +846,6 @@ server <- shinyServer(function(input, output   ) {
     })
     
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     ## only on multivariable do this 
     output$residual3 <- renderPlot({         
       
@@ -988,14 +984,11 @@ server <- shinyServer(function(input, output   ) {
                 lines(c(i,i), conf[i,c(1,2)], lwd=.8, col='red') 
             }
         }
-        
-            
- 
+
     })
     
     # here we run the individual regressions to present , prognostic covariates
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-    
     reg1 <- reactive({  
         
         d <- mcmc()$dat
@@ -1062,20 +1055,17 @@ server <- shinyServer(function(input, output   ) {
         return(list(  C=A, D=B,   stat4=stat4, stat3=stat3, R=R, fit=ols2, fit0=ols1)) 
         
     })
-    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$C <- renderPrint({
         
         return(reg2()$C)
     })
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     output$D <- renderPrint({
         
         return(reg2()$D)
     })
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
     output$R2 <- renderPrint({
       
       return(reg2()$R)
@@ -1256,7 +1246,7 @@ server <- shinyServer(function(input, output   ) {
         y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)              # linear predictor
         y2 <- a+           theta*z + rnorm(N,0, sigma)              # linear predictor
         y3 <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma) # linear predictor
-        
+     
         data.frame(X=X, y=y, z=z, y2=y2, y3=y3)
         
       }
@@ -1285,6 +1275,7 @@ server <- shinyServer(function(input, output   ) {
         zz5 <- lm(y3~z, data=d)         ## not adjusting some X  are prognostic
         f5 <-  summary(zz5)
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~collect estimates
+  
         cbind(
           
           #f$coefficients [,1]["z"],
@@ -1348,11 +1339,11 @@ server <- shinyServer(function(input, output   ) {
           f3$adj.r.squared,
           f4$adj.r.squared,
           f5$adj.r.squared    #48
+          
         )
         
       }
       
-     
       library(plyr)
       res <- raply(simuls, statfun(simfun())) # run the model many times
       # summarize
@@ -1372,10 +1363,11 @@ server <- shinyServer(function(input, output   ) {
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-     output$sim1 <- renderPrint({
-      return(simul()$result)
-    })
+         output$sim1 <- renderPrint({
+           
+          return(simul()$result)
+  
+             })
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
     # do the same as the first simulation code, but this time correlated covariates are created
@@ -2016,7 +2008,6 @@ server <- shinyServer(function(input, output   ) {
                                                    (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p2(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p2(result2[14] )      ,p2(result2[16] )          ))
     ) 
       
-   
       zz <- as.data.frame(zz)
       
       colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma","R2")
@@ -2036,7 +2027,6 @@ server <- shinyServer(function(input, output   ) {
       
       colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","  MSE ", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
       
- 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
       return(list(  
@@ -2105,8 +2095,6 @@ server <- shinyServer(function(input, output   ) {
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$textWithNumber3 <- renderText({ 
       
-     # sample <- random.sample()
-      
       power <- mcmc()$bigN  # means
      
       HTML(paste0(  tags$hr(),
@@ -2115,8 +2103,7 @@ server <- shinyServer(function(input, output   ) {
                     tags$span(style="color:green",   power)  ,
                     " patients in a 1:1 fashion" ,
                                         br(), br()
-                    
-           
+
       ))    
       
     })  
