@@ -60,7 +60,7 @@ fig.width1 <- 1380
 fig.height1 <- 700
 fig.width7 <- 700
 fig.height7 <- 500
-
+fig.width6 <- 680
 ## convenience functions
 p0 <- function(x) {formatC(x, format="f", digits=0)}
 p1 <- function(x) {formatC(x, format="f", digits=1)}
@@ -105,23 +105,18 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 
                 h2("Covariate adjustment in randomised controlled trials with a continuous response"), 
                 
-                
-                
-                
-                
-                h4("To quote Stephen Senn '1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups' [1]
-                
-                We will investigate the aforementioned statements and the misconceptions concerning randomised trials (RCTs) that there is no need for baseline covariates in the analysis.
-                Many randomised controlled trials are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
-                precision of the treatment effect estimate is improved when adjusting for baseline covariates 
-in a randomised controlled trial. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
+           
+                h4("To quote Stephen Senn it is a truisim that '1) randomised controlled trials don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups' [1]. These points are
+                misunderstood by many. We will also investigate misconceptions concerning RCTs one being that it is mistakenly thought there is no need for including baseline covariates in the analysis.
+                Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
+                precision of the treatment effect estimate is improved when adjusting for baseline covariates. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
 may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
 In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
               Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model. 
 We simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
-covariates not related to the outcome and collinear covariates. A further misconception is that imbalances in baseline covariates are problematic, this is not the case, we will look at this also.
+covariates not related to the outcome and collinear covariates. 
 
          "), 
                 
@@ -227,7 +222,7 @@ covariates not related to the outcome and collinear covariates. A further miscon
                                                ))),
                                           
                                   ) ,
-                                  tabPanel( "2 Simulation",
+                                  tabPanel( "2 Simulation - to adjust or not to adjust",
                                            # h4(paste("Figure 1 Simulation results")) , 
                                             
                                             h4(htmlOutput("textWithNumber1a") ),        
@@ -246,11 +241,12 @@ covariates not related to the outcome and collinear covariates. A further miscon
                                                     #   div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
                                                 ))),#
                                            
-                                           h4(paste("Here we perform simulations investigating the effect on the treatment effect estimate and standard error of the treatment effect estimate when there are
-                                           covariates that are prognostic, unrelated to the outcome and when there are correlated covariate both adjusting for and not adjusting for the covariates for each scenario.
-                                           The default number of simualions 
-                                           is set at 99 in order for results to appear quickly. It is advisable to increase this number.
-                                                    The left panel shows the distribution of the treatment effect estimates, the right panel the standard error estimates. The true value is shown
+                                           h4(paste("Here we perform simulations investigating the treatment effect estimate and associated standard error when there are
+                                           covariates that are prognostic, covariates unrelated to the outcome, a mix of prognostic and covariates unrelated to the outcome and finally 
+                                           when there are correlated covariates. For each scenario we adjusting for and do not adjusting for the covariates.
+                                           The default number of simulations 
+                                           is set at 99 in order so that the results to appear quickly. It is advisable to increase this number.
+                                                    The left panel shows the distribution of the treatment effect estimates, the right panel the associated standard error estimates. The true value is shown
                                                     by the grey vertical lines. The same covariates are used for all investigations except for the correlated covartiate investigation. 
                                                     Correlations are capped at +/- 0.37")),
                                            
@@ -264,27 +260,32 @@ covariates not related to the outcome and collinear covariates. A further miscon
                                             width = 30 )     ,
                                   
                                   tabPanel("3 Measured covariates prognostic", value=7, 
-                                           h4("Tables 3 One realisation ignoring, 4 adjusting and 5 correlation when all covariates are prognostic, that is related to the response by design,
-                                              standard error of treatment effect (z) smaller if we adjust (Table 4) "),
-                                           
-                                          
+                                         
+                                           #h4("It appears the standard error of the treatment effect (variable z) is smaller if we adjust"),
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
-                                                      div( verbatimTextOutput("B") )     ,
+                                                    
+                                                      h4("Table 3 Linear model, one realisation ignoring prognostic covariates (treatment is variable z)"),
+                                                      
+                                                        div( verbatimTextOutput("B") )     ,
                                                       
                                                       
                                                       h4("Figure 3 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
-                                                      div(plotOutput("diag",  width=fig.width7, height=fig.height7)),
+                                                      div(plotOutput("diag",  width=fig.width6, height=fig.height7)),
                                                       h4("Figure 3a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
-                                                      div(plotOutput("diagu",  width=fig.width7, height=fig.height7)),
+                                                      div(plotOutput("diagu",  width=fig.width6, height=fig.height7)),
                                                       h4("Figure 3b residual v linear predictor seperately for control and treated groups, multivariable model"),
-                                                      div(plotOutput("residual1",  width=fig.width7, height=fig.height7)),
+                                                      div(plotOutput("residual1",  width=fig.width6, height=fig.height7)),
                                                ) ,
                                                
                                                
                                                fluidRow(
                                                    column(width = 6, offset = 0, style='padding:1px;',
+                                                          h4("Table 4 Linear model, adjusting for prognostic covarites"),
+                                                          
                                                           div( verbatimTextOutput("A") )   ,     
+                                                          h4("Table 5 Correlations between covariates"),
+                                                          
                                                           div( verbatimTextOutput("R1") ),
                                                           h4("  True betas of covariates"),
                                                           div( verbatimTextOutput("betaz") ) 
@@ -294,87 +295,90 @@ covariates not related to the outcome and collinear covariates. A further miscon
 
                                   ) ,
                                   
-                                  tabPanel("4 Measured covariates non prognostic", value=3, 
-                                           h4("Tables 6  One realisation ignoring, 7 adjusting and 8 correlation when all covariates are not prognostic, 
-                                              that is not related to the response by design, standard error of treatment effect (z) only slightly larger if we adjust (Table 7)"),
+                                  tabPanel("3a Measured covariates non prognostic", value=3, 
+                                           
                                            
                                            
                                            fluidRow(
                                                column(width = 6, offset = 0, style='padding:1px;',
+                                                      h4("Table 6 Linear model, one realisation ignoring covariates that are not prognostic (treatment is variable z)"),
                                                       div( verbatimTextOutput("D") )     ,
                                                    
                                                       h4("Figure 4 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
-                                                      div(plotOutput("diag1",  width=fig.width7, height=fig.height7)),
+                                                      div(plotOutput("diag1",  width=fig.width6, height=fig.height7)),
                                                       h4("Figure 4a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
-                                                      div(plotOutput("diag1u",  width=fig.width7, height=fig.height7)),
+                                                      div(plotOutput("diag1u",  width=fig.width6, height=fig.height7)),
                                                     h4("Figure 4b residual v linear predictor seperately for control and treated groups, multivariable model"),
-                                                    div(plotOutput("residual2",  width=fig.width7, height=fig.height7)),
+                                                    div(plotOutput("residual2",  width=fig.width6, height=fig.height7)),
                                                ) ,
                                                
                                                
                                                fluidRow(
                                                    column(width = 5, offset = 0, style='padding:1px;',
+                                                          h4("Table 7 Linear model, adjusting for all covariates that are not prognostic"),
                                                           div( verbatimTextOutput("C") )  ,      
-                                                           
+                                                          h4("Table 8 Correlations between covariates"),
                                                           div( verbatimTextOutput("R2") )
                                                    ))),
 
                                   ) ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "5 Measured covariates mix of non prog and prognostic", 
-                                            h4("Tables 9  One realisation ignoring, 10 adjusting and 11 correlation when there are a mix of prognostic and not prognostic by design, 
-                                               standard error of treatment effect (z) only slightly larger if we adjust (Table 10)"),
+                                  tabPanel( "3b Measured covariates mix of non prog and prognostic", 
+                                     
                                             
                                            h4("First X1:Xn covariates only are prognostic, the remainder are not"),
                                            
                                            
                                            fluidRow(
                                              column(width = 6, offset = 0, style='padding:1px;',
+                                                    h4("Table 9 Linear model, one realisation ignoring all covariates some of which are prognostic (treatment is variable z)"),
                                                     div( verbatimTextOutput("E") )     ,
                                                     
                                                     h4("Figure 5 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
-                                                    div(plotOutput("diag3",  width=fig.width7, height=fig.height7)),  
+                                                    div(plotOutput("diag3",  width=fig.width6, height=fig.height7)),  
                                                     
                                                     h4("Figure 5a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
-                                                    div(plotOutput("diag3u",  width=fig.width7, height=fig.height7)),
+                                                    div(plotOutput("diag3u",  width=fig.width6, height=fig.height7)),
                                                     h4("Figure 5b residual v linear predictor seperately for control and treated groups, multivariable model"),
-                                                    div(plotOutput("residual3",  width=fig.width7, height=fig.height7)),
+                                                    div(plotOutput("residual3",  width=fig.width6, height=fig.height7)),
                                                     
                                              ) ,
                                              
                                              
                                              fluidRow(
                                                column(width = 5, offset = 0, style='padding:1px;',
+                                                      h4("Table 10 Linear model, adjusting for all covariates some of which are prognostic"),
                                                       div( verbatimTextOutput("F") ) ,       
-                                                     
+                                                      h4("Table 11 Correlations between covariates"),
                                                       div( verbatimTextOutput("R3") )
                                                ))),
                                            
                                            
                                            width = 30 )     ,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel( "6 Measured correlated covariates",
-
-                                            h4("Tables 12  One realisation ignoring, 13 adjusting and 14 correlation whan covariates are correlated with each other by design, correlations are capped at +/- 0.37"),
-
+                                  tabPanel( "3c Measured correlated covariates",
 
                                             fluidRow(
                                               column(width = 6, offset = 0, style='padding:1px;',
+                                                     
+                                                     h4("Table 12 Linear model, one realisation ignoring all prognostic covariates that have some correlation with each other (treatment is variable z)"),
                                                      div( verbatimTextOutput("G") ),
                                                      
                                                      h4("Figure 6 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
-                                                     div(plotOutput("diag4",  width=fig.width7, height=fig.height7)),
+                                                     div(plotOutput("diag4",  width=fig.width6, height=fig.height7)),
                                                      
                                                      h4("Figure 6a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
-                                                     div(plotOutput("diag4u",  width=fig.width7, height=fig.height7)),
+                                                     div(plotOutput("diag4u",  width=fig.width6, height=fig.height7)),
                                                      h4("Figure 6b residual v linear predictor seperately for control and treated groups, multivariable model"),
-                                                     div(plotOutput("residual4",  width=fig.width7, height=fig.height7)),
+                                                     div(plotOutput("residual4",  width=fig.width6, height=fig.height7)),
  
                                               ) ,
 
                                               fluidRow(
                                                 column(width = 5, offset = 0, style='padding:1px;',
+                                                       h4("Table 13 Linear model, adjusting for all prognostic covariates that have some correlation with each other"),
                                                        div( verbatimTextOutput("H") ),
+                                                       h4("Table 14 Correlations between covariates"),
                                                         div( verbatimTextOutput("R4") ),
                                                        h4("  True betas of covariates"),
                                                        div( verbatimTextOutput("betazz") ) 
@@ -384,7 +388,7 @@ covariates not related to the outcome and collinear covariates. A further miscon
 
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
-                                  tabPanel("7 Observation from one realisation", value=3, 
+                                  tabPanel("3d Observations based on one realisation", value=3, 
                                   
                                            h4(htmlOutput("textWithNumber1") ),
                                            
@@ -404,9 +408,9 @@ covariates not related to the outcome and collinear covariates. A further miscon
                                   ),
                                   
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                  tabPanel("8 Observed covariate balance", value=7, 
-                                           h4("Figure 2 Difference in baseline covariates across arms"),
-                                           h4("Larger sample sizes does not mean better covariate balance. Precision becomes better so smaller differences are picked up."),
+                                  tabPanel("3e Observed covariate balance", value=7, 
+                                           h4("Figure 7 Difference in baseline covariates across arms. Larger sample sizes does not mean better covariate balance. Precision improves so smaller differences are picked up."),
+                                           
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
                                            
                                            h4("Imagine a trial recruiting 100 patients randomised 1:1 and the standard deviation of the covarites is 1. The standard error of the 
@@ -430,48 +434,9 @@ covariates not related to the outcome and collinear covariates. A further miscon
                                              )),
                                            
                                   ) ,
-
-                                  tabPanel("9 Data used tabs 3,4 & 5", value=3, 
-                                           
-                                           h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
-                                           div( verbatimTextOutput("ddd")),
-                                     
-                                  ),
                                   
-                                  tabPanel("10 Correlated data tab 6", 
-                                           
-                                           fluidRow(
-                                               column(width = 9, offset = 0, style='padding:1px;',
-                                              
-                                                    div( verbatimTextOutput("fake4")),
-                                               ),
-                                               
-                                               # column(width = 3, offset = 0, style='padding:1px;',
-                                               # 
-                                               #               tags$hr(),
-                                               #        div(h4("References:")),  
-                                               #        
-                                               #        tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn"),),   
-                                               #        div(p(" ")),
-                                               #        tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
-                                               #        div(p(" ")),
-                                               #        tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[2]  Frank Harrell twitter"),),   
-                                               #        div(p(" ")),
-                                               #        tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Data discourse"),),  
-                                               #        div(p(" ")),
-                                               #        tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[4] Data discourse"),),  
-                                               #        div(p(" ")),
-                                               # 
-                                               #        tags$hr()
-                                               # )
-                                               
-                                               
-                                           )
-                                  ),##end
-                                  
-                                  
-                                  tabPanel("11 Balance does not get better when clinical trials get larger", 
-                                           
+                                  tabPanel("4 Balance does not get better when clinical trials get larger", 
+                                           h4("Figure 8 Investigating covariate balance, enter desired values in boxes."),
                                            fluidRow(
                                              column(3,
                                                     textInput('NN', 
@@ -480,34 +445,55 @@ covariates not related to the outcome and collinear covariates. A further miscon
                                              column(3,
                                                     textInput('sdsd', 
                                                               div(h5(tags$span(style="color:blue", "Residual variation"))), "1")),
-                                           
-                                           
-                                           column(3,
-                                                  textInput('alpha2', 
-                                                            div(h5(tags$span(style="color:blue", "Two sided alpha level"))), "0.05")),
-                                  ),
+                                             
+                                             
+                                             column(3,
+                                                    textInput('alpha2', 
+                                                              div(h5(tags$span(style="color:blue", "Two sided alpha level"))), "0.05")),
+                                           ),
                                            
                                            
                                            div(plotOutput("norm.plot", width=fig.width, height=fig.height)),
-                                  
-                                                                    h4("'The reason is that in parallel group trials, 
+                                           
+                                           h4("'The reason is that in parallel group trials, 
                                   other things being equal, the standard error is inversely proportional to the square root of the sample size. 
                                   The larger the sample size the narrower the confidence interval. 
                                   Thus the (reduced) allowance for uncertainty about the distribution of prognostic factors has already consumed the benefit of 
                                   having a larger sample size by posting a narrower confidence interval.
                                      There is no further benefit to attribute to it.' [1]")
-                                  
+                                           
                                            
                                   ),
+
+                                  tabPanel("5 Data used tabs 3,4 & 5", value=3, 
+                                           
+                                           h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
+                                           div( verbatimTextOutput("ddd")),
+                                     
+                                  ),
+                                  
+                                  tabPanel("6 Correlated data tab 6", 
+                                           
+                                           fluidRow(
+                                               column(width = 9, offset = 0, style='padding:1px;',
+                                              
+                                                    div( verbatimTextOutput("fake4")),
+                                               ),
+                                              
+                                           )
+                                  ),
+                                  
+                                  
+                             
                                   
                                   tabPanel("check", value=3, 
                                            
                                           # h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
-                                           div( verbatimTextOutput("ttests")),
+                                           div( verbatimTextOutput("ttests2")),
                                            
                                   ),
                 
-                                  tabPanel("12 Notes", value=3, 
+                                  tabPanel("7 Notes", value=3, 
                                            
                                            ## could do correlated covariates not related to the outcome?
                                            h4("The first tab, shows the standard power calculation function in R for a ttest, using the random error, treatment effect, alpha and power to determine the sample size.  
@@ -657,9 +643,26 @@ server <- shinyServer(function(input, output   ) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # let's get confidence interval of the diff of covariates across arms
         # function
-        zz <-   lapply(fake[1:K], function(x) 
+        l <- zz <-   lapply(fake[1:K], function(x) 
             t.test(x ~ fake$z, paired = FALSE, na.action = na.pass, var.equal = TRUE))
         
+        dfx <- data.frame(matrix(unlist(l), nrow=length(l), byrow=T))  # dataset to export ttests
+        names(dfx) <- c("t stat","df","p-value","lower 95%CI","upper 95%CI","mean placebo", "mean treated","null","Std err" ,"alt","method","dataset")
+       
+        
+        # round_df <- function(x, digits) {
+        #   # round all numeric variables
+        #   # x: data frame 
+        #   # digits: number of digits to round
+        #   numeric_columns <- sapply(x, mode) == 'numeric'
+        #   x[numeric_columns] <-  round(x[numeric_columns], digits)
+        #   x
+        # }
+        # 
+        # dfx <- round_df(dfx, 3)
+        
+        #df <- zz$X.1[2][[1]][[1]]
+
         zzz <-   lapply(zz, function(x)    ## execute the function
             x[4]
         )
@@ -745,15 +748,24 @@ server <- shinyServer(function(input, output   ) {
                       
                       placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX, Po=Po, ddd=ddd,
                       
-                      betas=b,
+                      betas=b,  dfx=dfx, #df=df,
                       
                       zz=zz)) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     
-    output$ttests   <- renderPrint({        
+    output$ttests   <- renderPrint({      # not used  
       
       return(mcmc()$zz)
+      
+    })
+    
+    output$ttests2   <- renderPrint({        
+      
+      d <- mcmc()$dfx
+      
+      return(print(d, digits=4))
+      
       
     })
     
@@ -1081,10 +1093,12 @@ server <- shinyServer(function(input, output   ) {
         conf <- mcmc()$conf
         K <- mcmc()$K
         
+        #dff <- mcmc()$df
+        
         # plot
-        par(mar=c(3,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
+        par(mar=c(4,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
         plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
-             ylab="Estimate Mean difference", xaxs="i",  type="n", 
+             ylab="Estimate Mean difference", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
              main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
              placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.96 X standard error of difference ",p3(se.*qnorm(.975)),""))
         #axis(2, seq(-5,5,1))
@@ -1093,8 +1107,10 @@ server <- shinyServer(function(input, output   ) {
         abline(0, 0, col="pink", lty=w, lwd=.5)
         abline(se., 0, col="pink" , lty=w, lwd=.5)
         abline(-se., 0, col="pink" , lty=w, lwd=.5)
-        abline(qnorm(.975)*se., 0, col="pink" , lty=w, lwd=.5)
-        abline(qnorm(.975)*-se., 0, col="pink" , lty=w, lwd=.5)
+        #abline(qt(.975, df=dff)*se., 0, col="pink" , lty=w, lwd=.5)
+        #abline(qt(.975, df=dff)*-se., 0, col="pink" , lty=w, lwd=.5)
+        abline(2*se., 0, col="pink" , lty=w, lwd=.5)
+        abline(2*-se., 0, col="pink" , lty=w, lwd=.5)
         
         for (i in 1:K){
             if (prod(conf[i,c(1,2)]) < 0 ) {
@@ -1361,7 +1377,7 @@ server <- shinyServer(function(input, output   ) {
           X <- array(rnorm(N*K, 0, 1), c(N,K))  
         }
         
-        z <- sample(c(0,1), N, replace=T)                           # treatment indicator
+        z <- sample(c(0,1), N, replace=T)                           # treatment indicators
         y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)              # linear predictor
         y2 <- a+           theta*z + rnorm(N,0, sigma)              # linear predictor
         y3 <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma) # linear predictor
@@ -1788,6 +1804,9 @@ server <- shinyServer(function(input, output   ) {
       sigma1=sample$sigma
       N1 <- mcmc()$N # 
       
+      n1 <- mcmc()$placebo
+      n2 <- mcmc()$treated
+      
       d1 <-  density(res[,2] )
       d2 <-  density(res[,4] )
       d3 <-  density(res[,6] )
@@ -1797,8 +1816,13 @@ server <- shinyServer(function(input, output   ) {
       d7 <-  density(res2[,2] )
       d8 <-  density(res2[,4] )
       
-      se. <-  sqrt((2*(sigma1^2 + sigma1^2)) /N1)  
-      se. <-  sqrt((sigma1^2+sigma1^2) / (N1/2) )  #ditto
+      #se. <-  sqrt((2*(sigma1^2 + sigma1^2)) /N1)  
+      #se. <-  sqrt((sigma1^2+sigma1^2) / (N1/2) )  #ditto
+      
+      # we may have imbalance in numbers, otherwise the se will not be exactly correct and this maybe seen in plot
+      se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
+      
+      
       
       dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
       dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
@@ -2252,10 +2276,11 @@ server <- shinyServer(function(input, output   ) {
       bigN <- mcmc()$bigN
       
       HTML(paste0(  #tags$hr(),
-                    "Figure 1 Simulation results, randomised 1:1, we have  "  
+                    "Figure 1 Simulation results. Randomised 1:1, we have  "  
                     
                     ,tags$span(style="color:red",  bigN  ),
-                    " total patients randomised 1:1 for each simulation. The covariate betas are fixed at the same values for all simulations, selected randomly between +/- multiples of treatment effect as dictated by input on left"
+                    " total patients randomised 1:1 for each simulation. The true covariate coefficients are fixed at the same values for all simulations
+                      and are selected randomly between +/- multiples of the treatment effect, as dictated by the input on left. The true covariate coefficients are printed at the bottom."
                   #  tags$hr()
                   
       ))    
