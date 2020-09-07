@@ -29,8 +29,7 @@
 #' 1/2 So the first is true(ish) of unobserved covariates. The second  covers the fact that given observed  imbalance/balance in one covariate there may be imbalance/balance in another. So what?!
 #
 # Stop obsessing about balance
-# 1) RCTs don't deliver balance even if they are very large 2)
-## valid inference does not depend on having balanced groups
+# 1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,6 +54,8 @@ library(tidyverse)
 #rstan_options(auto_write = TRUE)
 options(max.print=1000000)    
  
+fig.width <- 1200
+fig.height <- 500
 fig.width1 <- 1380
 fig.height1 <- 700
 fig.width7 <- 700
@@ -108,20 +109,20 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 
                 
                 
-                h4("To quote Stephen Senn '1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups'.[1]
+                h4("To quote Stephen Senn '1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups' [1]
                 
-                We investigate some misconceptions concerning randomised trials (RCTs) include (i) there is no need for baseline covariates in the analysis, that is,
-                many randomised controlled trials are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
+                We will investigate the aforementioned statements and the misconceptions concerning randomised trials (RCTs) that there is no need for baseline covariates in the analysis.
+                Many randomised controlled trials are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates 
 in a randomised controlled trial. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
 may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
-We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
-covariates not related to the outcome and collinear covariates. Secondly, 
-                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. 
-                How can that be known with certainty? 
-              Power is therefore compromised in the unadjusted analyses when there are prognostic covariates. 
+In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
+              Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model. 
+We simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
+covariates not related to the outcome and collinear covariates. A further misconception is that imbalances in baseline covariates are problematic, this is not the case, we will look at this also.
+
          "), 
                 
                 h3("  "), 
@@ -142,7 +143,7 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                   br(),  
                                   tags$style(".well {background-color:#b6aebd ;}"), 
                                   
-                                  h4("User inputs"),
+                                 # h4("User inputs"),
                                   div(
                             
                                       tags$head(
@@ -191,7 +192,6 @@ covariates not related to the outcome and collinear covariates. Secondly,
                     
                     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~tab panels
                     mainPanel(width=9,
-                              
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                               navbarPage(       
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
@@ -208,18 +208,16 @@ covariates not related to the outcome and collinear covariates. Secondly,
                             .navbar-default .navbar-nav > li > a[data-value='t2'] {color: blue;background-color: lightblue;}
                             .navbar-default .navbar-nav > li > a[data-value='t3'] {color: green;background-color: lightgreen;}
                    ")),
-                                  
                                   tabPanel("1 Power calculation", value=7,
-                                         #  h4("All covariates are prognostic, standard error of treatment effect (z) smaller if we adjust (right output)"),
-
-                                         
+                                           
+                                           
                                            fluidRow(
                                              column(width = 6, offset = 0, style='padding:1px;',
                                                     div( verbatimTextOutput("Power") ),
                                                     h4(paste("Table 1 Result of power calculation based on inputs")),
-                                                     
+                                                    h4(paste("The first step is to perform a sample size calculation, based on the user inputs.")),
                                                     h4(htmlOutput("textWithNumber3") ),
-                                                    h4(htmlOutput("textWithNumber1b") ),
+                                                  #  h4(htmlOutput("textWithNumber1b") ),
                                              ) ,
 
 
@@ -246,7 +244,16 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                                       
                                                        div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
                                                     #   div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
-                                                ))),
+                                                ))),#
+                                           
+                                           h4(paste("Here we perform simulations investigating the effect on the treatment effect estimate and standard error of the treatment effect estimate when there are
+                                           covariates that are prognostic, unrelated to the outcome and when there are correlated covariate both adjusting for and not adjusting for the covariates for each scenario.
+                                           The default number of simualions 
+                                           is set at 99 in order for results to appear quickly. It is advisable to increase this number.
+                                                    The left panel shows the distribution of the treatment effect estimates, the right panel the standard error estimates. The true value is shown
+                                                    by the grey vertical lines. The same covariates are used for all investigations except for the correlated covartiate investigation. 
+                                                    Correlations are capped at +/- 0.37")),
+                                           
                                             h4(paste("Table 2 Summary, sorted by smallest mean squared error (MSE) estimate")),
                                             div( verbatimTextOutput("zz") )  ,
                                            h4(htmlOutput("textWithNumber99",) ),
@@ -276,11 +283,14 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                                
                                                
                                                fluidRow(
-                                                   column(width = 5, offset = 0, style='padding:1px;',
+                                                   column(width = 6, offset = 0, style='padding:1px;',
                                                           div( verbatimTextOutput("A") )   ,     
-                                                        
-                                                        div( verbatimTextOutput("R1") )
+                                                          div( verbatimTextOutput("R1") ),
+                                                          h4("  True betas of covariates"),
+                                                          div( verbatimTextOutput("betaz") ) 
                                                    ))),
+                                           
+                                         
 
                                   ) ,
                                   
@@ -345,7 +355,7 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel( "6 Measured correlated covariates",
 
-                                            h4("Tables 12  One realisation ignoring, 13 adjusting and 14 correlation whan covariates are correlated with each other by design"),
+                                            h4("Tables 12  One realisation ignoring, 13 adjusting and 14 correlation whan covariates are correlated with each other by design, correlations are capped at +/- 0.37"),
 
 
                                             fluidRow(
@@ -365,7 +375,9 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                               fluidRow(
                                                 column(width = 5, offset = 0, style='padding:1px;',
                                                        div( verbatimTextOutput("H") ),
-                                                        div( verbatimTextOutput("R4") )
+                                                        div( verbatimTextOutput("R4") ),
+                                                       h4("  True betas of covariates"),
+                                                       div( verbatimTextOutput("betazz") ) 
                                                 ))),
  
                                             width = 30 )     ,
@@ -434,36 +446,36 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                                     div( verbatimTextOutput("fake4")),
                                                ),
                                                
-                                               column(width = 3, offset = 0, style='padding:1px;',
-
-                                                             tags$hr(),
-                                                      div(h4("References:")),  
-                                                      
-                                                      tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn"),),   
-                                                      div(p(" ")),
-                                                      tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
-                                                      div(p(" ")),
-                                                      tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[2]  Frank Harrell twitter"),),   
-                                                      div(p(" ")),
-                                                      tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Data discourse"),),  
-                                                      div(p(" ")),
-                                                      tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[4] Data discourse"),),  
-                                                      div(p(" ")),
-                
-                                                      tags$hr()
-                                               )
+                                               # column(width = 3, offset = 0, style='padding:1px;',
+                                               # 
+                                               #               tags$hr(),
+                                               #        div(h4("References:")),  
+                                               #        
+                                               #        tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn"),),   
+                                               #        div(p(" ")),
+                                               #        tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
+                                               #        div(p(" ")),
+                                               #        tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[2]  Frank Harrell twitter"),),   
+                                               #        div(p(" ")),
+                                               #        tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Data discourse"),),  
+                                               #        div(p(" ")),
+                                               #        tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[4] Data discourse"),),  
+                                               #        div(p(" ")),
+                                               # 
+                                               #        tags$hr()
+                                               # )
                                                
                                                
                                            )
                                   ),##end
                                   
                                   
-                                  tabPanel("4 Take home messages", 
+                                  tabPanel("11 Balance does not get better when clinical trials get larger", 
                                            
                                            fluidRow(
                                              column(3,
                                                     textInput('NN', 
-                                                              div(h5(tags$span(style="color:blue", "Sample size in each group (1:1 randomisation"))), "50")),
+                                                              div(h5(tags$span(style="color:blue", "Sample size in each group (1:1 randomisation)"))), "50")),
                                              
                                              column(3,
                                                     textInput('sdsd', 
@@ -476,11 +488,26 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                   ),
                                            
                                            
-                                           div(plotOutput("norm.plot", width=fig.width, height=fig.height))
+                                           div(plotOutput("norm.plot", width=fig.width, height=fig.height)),
+                                  
+                                                                    h4("'The reason is that in parallel group trials, 
+                                  other things being equal, the standard error is inversely proportional to the square root of the sample size. 
+                                  The larger the sample size the narrower the confidence interval. 
+                                  Thus the (reduced) allowance for uncertainty about the distribution of prognostic factors has already consumed the benefit of 
+                                  having a larger sample size by posting a narrower confidence interval.
+                                     There is no further benefit to attribute to it.' [1]")
+                                  
+                                           
+                                  ),
+                                  
+                                  tabPanel("check", value=3, 
+                                           
+                                          # h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
+                                           div( verbatimTextOutput("ttests")),
                                            
                                   ),
                 
-                                  tabPanel("11 Notes", value=3, 
+                                  tabPanel("12 Notes", value=3, 
                                            
                                            ## could do correlated covariates not related to the outcome?
                                            h4("The first tab, shows the standard power calculation function in R for a ttest, using the random error, treatment effect, alpha and power to determine the sample size.  
@@ -493,6 +520,28 @@ covariates not related to the outcome and collinear covariates. Secondly,
                                               the sixth tab presents one realisation from scenario (iv), the seventh tab presents a summary of the previous 4 tabs. Tabs 3 to 6 also present the correlation matrix from the multivariable
                                               model and diagnostic plots. Tab 8 presents a plot of the difference in each covariate across the trial arms. The next two tabs present the data used in tabs 3,4 and 5 and then the correlated data."),
 
+                                           
+                                           
+                                           column(width = 3, offset = 0, style='padding:1px;',
+                                                  
+                                                  tags$hr(),
+                                                  div(h4("References:")),  
+                                                  
+                                                  tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn"),),   
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[2]  Frank Harrell twitter"),),   
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Data discourse"),),  
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[4] Data discourse"),),  
+                                                  div(p(" ")),
+                                                  
+                                                  tags$hr()
+                                           )
+                                           
+                                           
                                   )
 
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   END NEW   
@@ -609,7 +658,7 @@ server <- shinyServer(function(input, output   ) {
         # let's get confidence interval of the diff of covariates across arms
         # function
         zz <-   lapply(fake[1:K], function(x) 
-            t.test(x ~ fake$z, paired = FALSE, na.action = na.pass))
+            t.test(x ~ fake$z, paired = FALSE, na.action = na.pass, var.equal = TRUE))
         
         zzz <-   lapply(zz, function(x)    ## execute the function
             x[4]
@@ -694,10 +743,24 @@ server <- shinyServer(function(input, output   ) {
         
         return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                       
-                      placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX, Po=Po, ddd=ddd
+                      placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX, Po=Po, ddd=ddd,
                       
-                      )) 
+                      betas=b,
+                      
+                      zz=zz)) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    })
+    
+    output$ttests   <- renderPrint({        
+      
+      return(mcmc()$zz)
+      
+    })
+    
+    output$betazz  <- output$betaz <- renderPrint({        
+      
+      return(mcmc()$betas)
+      
     })
     
     output$Power <- renderPrint({        
@@ -1023,15 +1086,15 @@ server <- shinyServer(function(input, output   ) {
         plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
              ylab="Estimate Mean difference", xaxs="i",  type="n", 
              main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
-             placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.5 X standard error of difference"))
+             placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.96 X standard error of difference ",p3(se.*qnorm(.975)),""))
         #axis(2, seq(-5,5,1))
         # axis(1, seq(1,K,10))
         points(1:K, doff[,1], pch=20)
-        abline(0, 0, col="pink", lty=w, lwd=ww)
-        abline(se., 0, col="pink" , lty=w, lwd=ww)
-        abline(-se., 0, col="pink" , lty=w, lwd=ww)
-        abline(1.5*se., 0, col="pink" , lty=w, lwd=ww)
-        abline(1.5*-se., 0, col="pink" , lty=w, lwd=ww)
+        abline(0, 0, col="pink", lty=w, lwd=.5)
+        abline(se., 0, col="pink" , lty=w, lwd=.5)
+        abline(-se., 0, col="pink" , lty=w, lwd=.5)
+        abline(qnorm(.975)*se., 0, col="pink" , lty=w, lwd=.5)
+        abline(qnorm(.975)*-se., 0, col="pink" , lty=w, lwd=.5)
         
         for (i in 1:K){
             if (prod(conf[i,c(1,2)]) < 0 ) {
@@ -2134,7 +2197,7 @@ server <- shinyServer(function(input, output   ) {
             bty="n",yaxt="n",lwd=2,  #xaxt="n", 
             col='red',
             ylab='',xlab='Distribution of differences under the null', 
-            main=paste0("Sampling distribution of the null distribution, mean difference between the two groups of covariates. 
+            main=paste0("Sampling distribution of the null, mean difference between the two groups of covariates. 
        We have = ",p0(n1)," in each group and alpha two-sided = ",alpha,". Under the null diff = ",mu1 ,", SE = ",p4(se1),", critical value = +/- ", p4(crit),""
             )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2223,9 +2286,9 @@ server <- shinyServer(function(input, output   ) {
       
       power <- mcmc()$bigN  # means
      
-      HTML(paste0(  tags$hr(),
+      HTML(paste0(  #tags$hr(),
                     
-                    "Based on the study design dictated by inputs we will randomise ",
+                    "Based on the study design dictated by user inputs we will randomise ",
                     tags$span(style="color:green",   power)  ,
                     " patients in a 1:1 fashion" ,
                                         br(), br()
