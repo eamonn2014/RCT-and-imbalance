@@ -30,6 +30,8 @@
 #
 # Stop obsessing about balance
 # 1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups
+#https://twitter.com/f2harrell/status/1303002649080532995
+#Unadjusted estimates are biased in comparison with adjusted estimates from nonlinear models, a fact well studied for decades.  Some do not call this 'bias' but the damage is the same. Literature is summarized in my ANCOVA chapter in http://hbiostat.org/doc/bbr.pdf
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -116,7 +118,7 @@ This should be considered more often as sample sizes can be reduced. As Frank Ha
 In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
               Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model. 
 We simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
-covariates not related to the outcome and collinear covariates. 
+covariates not related to the outcome and collinear or correlated covariates. 
 
          "), 
                 
@@ -186,7 +188,7 @@ covariates not related to the outcome and collinear covariates.
                     ),
                     
                     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~tab panels
-                    mainPanel(width=9,
+                    mainPanel(width=9, #eight=4,
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                               navbarPage(       
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
@@ -243,9 +245,9 @@ covariates not related to the outcome and collinear covariates.
                                            
                                            h4(paste("Here we perform simulations investigating the treatment effect estimate and associated standard error when there are
                                            covariates that are prognostic, covariates unrelated to the outcome, a mix of prognostic and covariates unrelated to the outcome and finally 
-                                           when there are correlated covariates. For each scenario we adjusting for and do not adjusting for the covariates.
+                                           when there are correlated covariates. For each scenario we adjust and also do not adjust for the covariates.
                                            The default number of simulations 
-                                           is set at 99 in order so that the results to appear quickly. It is advisable to increase this number.
+                                           is set at a lowly 99 so that results appear quickly. It is advisable to increase this number.
                                                     The left panel shows the distribution of the treatment effect estimates, the right panel the associated standard error estimates. The true value is shown
                                                     by the grey vertical lines. The same covariates are used for all investigations except for the correlated covartiate investigation. 
                                                     Correlations are capped at +/- 0.37")),
@@ -413,13 +415,7 @@ covariates not related to the outcome and collinear covariates.
                                            
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
                                            
-                                           h4("Imagine a trial recruiting 100 patients randomised 1:1 and the standard deviation of the covarites is 1. The standard error of the 
-                                              difference is therefore the square root of (4/50). So we can simulate the difference for any number of measured covariates and or sample size.
-                                              But we don't have to, the proportion of 'significant differences' is simply found using the distribution of the normal distribution.
-                                              So it does not matter how many covariates we have measured. Increasing the sample size just means we have more precision in the
-                                              estimation of the difference, so the standard error of the covarite difference will be smaller. Testing at 5 % level when in truth there is no
-                                              difference since we have randomised we expect to see 5% of the covarites picked up as significant.
-                                             "),
+                                   
                                            
                                            
                                            # covariates <- 10
@@ -460,7 +456,13 @@ covariates not related to the outcome and collinear covariates.
                                   The larger the sample size the narrower the confidence interval. 
                                   Thus the (reduced) allowance for uncertainty about the distribution of prognostic factors has already consumed the benefit of 
                                   having a larger sample size by posting a narrower confidence interval.
-                                     There is no further benefit to attribute to it.' [1]")
+                                     There is no further benefit to attribute to it.' [1]"),
+                                           h4(" "),
+                                           h4("Imagine a trial recruiting 100 patients randomised 1:1 and the standard deviation of the covarites is 1. The standard error of the 
+                                              difference is therefore the square root of (4/50). So we can simulate the difference for any number of measured covariates and or sample size.
+                                              But we don't have to, the proportion of 'significant differences' is simply found using the normal distribution.
+                                              So it does not matter how many covariates we have measured. On average 5% of the covarites picked up as 'significant'.
+                                             ")
                                            
                                            
                                   ),
@@ -506,7 +508,6 @@ covariates not related to the outcome and collinear covariates.
                                               the sixth tab presents one realisation from scenario (iv), the seventh tab presents a summary of the previous 4 tabs. Tabs 3 to 6 also present the correlation matrix from the multivariable
                                               model and diagnostic plots. Tab 8 presents a plot of the difference in each covariate across the trial arms. The next two tabs present the data used in tabs 3,4 and 5 and then the correlated data."),
 
-                                           
                                            
                                            column(width = 3, offset = 0, style='padding:1px;',
                                                   
