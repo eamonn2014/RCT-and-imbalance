@@ -461,7 +461,7 @@ covariates not related to the outcome and collinear or correlated covariates.
                                            h4("Imagine a trial recruiting 100 patients randomised 1:1 and the standard deviation of the covarites is 1. The standard error of the 
                                               difference is therefore the square root of (4/50). So we can simulate the difference for any number of measured covariates and or sample size.
                                               But we don't have to, the proportion of 'significant differences' is simply found using the normal distribution.
-                                              So it does not matter how many covariates we have measured. On average 5% of the covarites picked up as 'significant'.
+                                              So it does not matter how many covariates we have measured. On average 5% of the covariates will be picked up as 'significant' at the 5% level.
                                              ")
                                            
                                            
@@ -2223,7 +2223,7 @@ server <- shinyServer(function(input, output   ) {
             col='red',
             ylab='',xlab='Distribution of differences under the null', 
             main=paste0("Sampling distribution of the null, mean difference between the two groups of covariates. 
-       We have = ",p0(n1)," in each group and alpha two-sided = ",alpha,". Under the null diff = ",mu1 ,", SE = ",p4(se1),", critical value = +/- ", p4(crit),""
+       We have = ",p0(n1)," in each group and alpha two-sided = ",alpha,". Under the null, diff = ",mu1 ,", SE = ",p4(se1),", critical value = +/- ", p4(crit),""
             )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # type 1 error upper
