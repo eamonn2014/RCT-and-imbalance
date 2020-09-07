@@ -81,19 +81,35 @@ imb <- function(N, K) {  # sample size and number of covariates
   sweep(r, 2, K, "/")
 
 #######################################################
+  
+  # simpler approach after seeing Frank Harrell code!! of course  5% are going to be >1.96
+
+  # sd=1, n=50 per group
+  
+  covariates <- 10
+  A <- rnorm(covariates, 0, sqrt(4/50))    # differences
+  mean(abs(A) > (1.96*sqrt(4/50)))
+
+
 
 
 
   
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
 
 

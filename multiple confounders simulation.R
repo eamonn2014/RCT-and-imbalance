@@ -57,7 +57,7 @@ set.seed(987897)
     N <-ceiling(Po$n)*2
   #  N <- 1000                                  # patients
 
-    K <- 100                                   # variables
+    K <- 10                                 # variables
     X <- array(runif(N*K , -1,1), c(N,K))  
     z <- sample(c(0,1), N, replace=T)          # treatment indicator
     a <- 1                                     # intercept
@@ -115,23 +115,95 @@ set.seed(987897)
  
  
  
-
+ #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
  # analyzing when Xs are prognostic, related to outcome.
+
+ y <- a+ X %*% b + theta*z + rnorm(N,0, sigma)
+ fake <- data.frame(X=X, y=y, z=z)
  ols2 <- lm(y~X+z,fake)
  ols1 <- lm(y~z,fake)
  summary(ols2)
  summary(ols1)
+
+ # MSE calculations
+ RSS <- c(crossprod(ols2$residuals))  # squares all residuals and sums
+ (MSE <-RSS / length(ols2$residuals))  # so average of the squared residuals
+ ## another way
+ (MSE <- mean((fake$y-predict(ols2))^2))  # average of the squared residuals
+ 
+ 
+ RMSE <- sqrt(MSE)
+ #Pearson estimated residual variance (as returned by summary.lm):
+    
+
+    RSS / ols2$df.residual  # variance of residual error
+ 
+ 
+ 
+ 
+ 
+ 
+ y_hat=predict(ols2)
+ 
+  
+ 
+ 
+ par(mfrow=c(1,2))
+ for(i in 0:1) {
+    
+    plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i),  
+          xlab="y", ylab="predictions")
+    points(y_hat[z==i], y[z==i], pch=20+i)
+    abline(0,1)
+    
+ }
+ 
+ 
+ 
+ #pred v residual
+ 
+ 
+ r <- y - y_hat
+ par(mfrow=c(1,2), mar=c(3,3,2,2), mgp=c(1.7,.5,0), tck=-.01)
+ par(mfrow=c(1,2))
+ for (i in 0:1){
+    plot(range(y_hat), range(r), type="n", xlab=expression(paste("Linear predictor, ", hat(y))),
+         ylab="Residual, r", main=paste("z =", i), bty="l")
+    points(y_hat[z==i], r[z==i], pch=20+i)
+    abline(0, 0)
+ }
+ 
+ 
+ 
+ #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
  
  # analyzing when X not related to outcome.
  
  y <- a +  theta*z + rnorm(N,0, sigma)
- fake2 <- data.frame(X=X, y=y, z=z)
+ d <- data.frame(X=X, y=y, z=z)
  
- ols1 <- lm(y~z,fake2)
- ols2 <- lm(y~X+z,fake2)
+ ols2 <- lm(y~X+z,d)
+ ols1 <- lm(y~z,d)
  summary(ols2)
  summary(ols1)
-
+ 
+ 
+ y_hat=predict(ols1)
+ 
+ par(mfrow=c(1,2))
+ for(i in 0:1) {
+    
+    plot( range(y_hat, y), range(y_hat, y), type='n' , 
+          main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+    points(y_hat[z==i], d$y[z==i], pch=20+i)
+    abline(0,1)
+    
+ }
+ #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+ 
+ 
+ 
+ 
  # xs related to outcome
  #     adjusting for xs...good
  #    not adjusting for xs...big SE!...not good!!!!!!!!!!!!!!!!!!!!
@@ -140,6 +212,35 @@ set.seed(987897)
  #    adjusting for xs good
  #   not adjusting for xs good
    
+ y_hat=predict(ols2)
+ 
+ par(mfrow=c(1,2))
+ for(i in 0:1) {
+    
+    plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i),  xlab="y", ylab="predictions")
+    points(y_hat[z==i], y[z==i], pch=20+i)
+    abline(0,1)
+   
+ }
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
  
  
  
@@ -200,14 +301,8 @@ set.seed(987897)
  summary(ols2)
  summary(ols1)
  
- 
- 
- 
- 
- 
- 
- 
- 
+ x <- cov2cor(vcov(ols2))
+ round(x,2)
  
  
  
@@ -340,7 +435,11 @@ set.seed(987897)
     
     cbind(
        f$coefficients [, 1],
-       coef(f)[, "Std. Error"]
+       coef(f)[, "Std. Error"], 
+       
+          mean((d$y-predict(zz))^2) 
+       
+       
     )
     
  }

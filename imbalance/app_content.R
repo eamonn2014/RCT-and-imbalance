@@ -27,6 +27,12 @@
 #' ·
 #' 22 Aug 2019
 #' 1/2 So the first is true(ish) of unobserved covariates. The second  covers the fact that given observed  imbalance/balance in one covariate there may be imbalance/balance in another. So what?!
+#
+# Stop obsessing about balance
+# 1) RCTs don't deliver balance even if they are very large 2)
+## valid inference does not depend on having balanced groups
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/2
@@ -55,7 +61,7 @@ fig.width7 <- 700
 fig.height7 <- 500
 
 ## convenience functions
-p0 <- function(x) {formatC(x, format="f", digits=1)}
+p0 <- function(x) {formatC(x, format="f", digits=0)}
 p1 <- function(x) {formatC(x, format="f", digits=1)}
 p2 <- function(x) {formatC(x, format="f", digits=2)}
 p3 <- function(x) {formatC(x, format="f", digits=3)}
@@ -98,14 +104,23 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 
                 h2("Covariate adjustment in randomised controlled trials with a continuous response"), 
                 
-                h4("We investigate some misconceptions concerning randomised trials (RCTs) include (i)  there is no need for baseline covariates in the analysis, that is,
-                many randomised controlled trials are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, precision of the treatment effect estimate is improved when adjusting for baseline covariates 
+                
+                
+                
+                
+                h4("To quote Stephen Senn '1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups'.[1]
+                
+                We investigate some misconceptions concerning randomised trials (RCTs) include (i) there is no need for baseline covariates in the analysis, that is,
+                many randomised controlled trials are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
+                precision of the treatment effect estimate is improved when adjusting for baseline covariates 
 in a randomised controlled trial. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
 may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'.
-We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, covariates not related to the outcome and collinear covariates. Secondly, 
-                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. How can that be known with certainty? 
+We perform simulation for a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
+covariates not related to the outcome and collinear covariates. Secondly, 
+                imbalances in baseline covariates are problematic, this is not the case. In short, not adjusting is permissable ONLY when there are no prognostic covariates. 
+                How can that be known with certainty? 
               Power is therefore compromised in the unadjusted analyses when there are prognostic covariates. 
          "), 
                 
@@ -379,8 +394,23 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   tabPanel("8 Observed covariate balance", value=7, 
                                            h4("Figure 2 Difference in baseline covariates across arms"),
-                                           h4("Larger sample sizes does not mean better covariate balance (however that is defined). Precision becomes better so smaller differences are picked up."),
+                                           h4("Larger sample sizes does not mean better covariate balance. Precision becomes better so smaller differences are picked up."),
                                            div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
+                                           
+                                           h4("Imagine a trial recruiting 100 patients randomised 1:1 and the standard deviation of the covarites is 1. The standard error of the 
+                                              difference is therefore the square root of (4/50). So we can simulate the difference for any number of measured covariates and or sample size.
+                                              But we don't have to, the proportion of 'significant differences' is simply found using the distribution of the normal distribution.
+                                              So it does not matter how many covariates we have measured. Increasing the sample size just means we have more precision in the
+                                              estimation of the difference, so the standard error of the covarite difference will be smaller. Testing at 5 % level when in truth there is no
+                                              difference since we have randomised we expect to see 5% of the covarites picked up as significant.
+                                             "),
+                                           
+                                           
+                                           # covariates <- 10
+                                           # A <- rnorm(covariates, 0, sqrt(4/50))    # differences
+                                           # mean(abs(A) > (1.96*sqrt(4/50)))
+                                           
+                                           
                                            
                                            fluidRow(
                                              column(width = 7, offset = 0, style='padding:1px;',
@@ -408,6 +438,9 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
 
                                                              tags$hr(),
                                                       div(h4("References:")),  
+                                                      
+                                                      tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn"),),   
+                                                      div(p(" ")),
                                                       tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[1] Frank Harrell twitter"),),   
                                                       div(p(" ")),
                                                       tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[2]  Frank Harrell twitter"),),   
@@ -424,6 +457,29 @@ We perform simulation for a 1:1 RCT with a continuous response, estimating treat
                                            )
                                   ),##end
                                   
+                                  
+                                  tabPanel("4 Take home messages", 
+                                           
+                                           fluidRow(
+                                             column(3,
+                                                    textInput('NN', 
+                                                              div(h5(tags$span(style="color:blue", "Sample size in each group (1:1 randomisation"))), "50")),
+                                             
+                                             column(3,
+                                                    textInput('sdsd', 
+                                                              div(h5(tags$span(style="color:blue", "Residual variation"))), "1")),
+                                           
+                                           
+                                           column(3,
+                                                  textInput('alpha2', 
+                                                            div(h5(tags$span(style="color:blue", "Two sided alpha level"))), "0.05")),
+                                  ),
+                                           
+                                           
+                                           div(plotOutput("norm.plot", width=fig.width, height=fig.height))
+                                           
+                                  ),
+                
                                   tabPanel("11 Notes", value=3, 
                                            
                                            ## could do correlated covariates not related to the outcome?
@@ -2036,6 +2092,76 @@ server <- shinyServer(function(input, output   ) {
       )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
+    
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    output$norm.plot <- renderPlot({ 
+ 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #Select true population parameters and probability of errors
+      mu1 <- 0  
+      sd1 <-  as.numeric(unlist(strsplit(input$sdsd,",")))
+      n1 <- n2 <- as.numeric(unlist(strsplit(input$NN,",")))
+      alpha = as.numeric(unlist(strsplit(input$alpha2,","))) # "Alpha, Type I assertion",
+      
+      # --------------------------------------------------------------------------
+      crit1 <- qnorm(1-as.numeric(alpha/2))
+      
+      x <- seq(mu1-6*sd1, mu1+6*sd1, 0.1)
+      
+      se1 <- sqrt((sd1^2/n1) + (sd1^2/n2))
+      
+     # crit <- mu1 + crit1 * se1
+      
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # plotting limits
+      upper <- mu1+6*se1
+      lower <- mu1-6*se1
+      gap=0.001
+      # z of distibution alpha tresholds
+      crit <-  mu1 + crit1 * se1  # how many ses above mean
+      crit2 <- mu1 - crit1 * se1  # how many ses below mean
+      # ranges for polygons, remember this is not N(0,1)
+      xx <-    seq( crit,  upper,  by=gap)
+      xxxx <-  seq( lower, crit2,  by=gap)
+      xxxxx <- seq( crit2, crit,   by=gap)
+      # co-ordinates for placement of text
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #  the distribution of null true effect 0 (null), 
+      curve(dnorm(x, mean =mu1, sd= se1), xlim=c(lower, upper),
+            bty="n",yaxt="n",lwd=2,  #xaxt="n", 
+            col='red',
+            ylab='',xlab='Distribution of differences under the null', 
+            main=paste0("Sampling distribution of the null distribution, mean difference between the two groups of covariates. 
+       We have = ",p0(n1)," in each group and alpha two-sided = ",alpha,". Under the null diff = ",mu1 ,", SE = ",p4(se1),", critical value = +/- ", p4(crit),""
+            )) 
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # type 1 error upper
+      polygon(x=c(crit,                                 xx, upper),
+              y=c(0,    dnorm(mean=mu1, sd=se1 ,        xx),    0),
+              col="red")
+      
+      # null distribution
+      polygon(x=c(crit2,                               xxxxx,  crit),
+              y=c(0,   dnorm(mean=mu1, sd=se1 ,        xxxxx),    0),
+              col=rgb(1,0,0,alpha=0.3))
+      
+      # type 1 error lower
+      polygon(x=c(lower,                               xxxx, crit2),
+              y=c(0,   dnorm(mean=mu1, sd=se1 ,        xxxx),    0),
+              col="red")
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # the value 97.5 when we have standard error
+      pnorm(crit, 0, se1)
+      #  the value at .975
+      qnorm(.975,0,se1) 
+      
+    }) 
+    
+    
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     output$textWithNumber1 <- output$textWithNumber1 <- renderText({ 
       
