@@ -105,11 +105,11 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                     direction = "bottom"
                 ),
                 
-                h2("Covariate adjustment in randomised controlled trials with a continuous response"), 
+                h2("Covariate adjustment in randomised controlled trials (RCTs) with a continuous response"), 
                 
            
-                h4("To quote Stephen Senn it is a truisim that '1) randomised controlled trials don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups' [1]. These points are
-                misunderstood by many. We will also investigate misconceptions concerning RCTs one being that it is mistakenly thought there is no need for including baseline covariates in the analysis.
+                h4("Stephen Senn's truisims '1) randomised controlled trials don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups' do not seem 
+                to be common knowledge [1]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
 may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
@@ -459,9 +459,9 @@ covariates not related to the outcome and collinear or correlated covariates.
                                      There is no further benefit to attribute to it.' [1]"),
                                            h4(" "),
                                            h4("Imagine a trial recruiting 100 patients randomised 1:1 and the standard deviation of the covarites is 1. The standard error of the 
-                                              difference is therefore the square root of (4/50). So we can simulate the difference for any number of measured covariates and or sample size.
+                                              difference is therefore the square root of (4/100) = 0.2. So we can simulate the difference for any number of measured covariates and or sample size.
                                               But we don't have to, the proportion of 'significant differences' is simply found using the normal distribution.
-                                              So it does not matter how many covariates we have measured. On average 5% of the covariates will be picked up as 'significant' at the 5% level.
+                                              So it does not matter how many covariates we have measured. On average 5% of the covariates will be picked up as 'significant' at the 5% level (randomisation assures the null is true).
                                              ")
                                            
                                            
@@ -1099,7 +1099,7 @@ server <- shinyServer(function(input, output   ) {
         # plot
         par(mar=c(4,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
         plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
-             ylab="Estimate Mean difference", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
+             ylab="Estimate Mean difference", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
              main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
              placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.96 X standard error of difference ",p3(se.*qnorm(.975)),""))
         #axis(2, seq(-5,5,1))
