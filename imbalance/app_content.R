@@ -13,7 +13,7 @@
 # To me the goal of a parallel-group randomized clinical trial is to answer this question: do two patients starting out at the same point 
 # (same age, severity of disease, etc.), one on treatment A and one on treatment B, end up with the same expected outcomes? This is fundamentally a completely conditional model.
 
-
+# https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/
 ##https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2
 #' Can you reconcile these two points?
 #'   
@@ -33,6 +33,21 @@
 #https://twitter.com/f2harrell/status/1303002649080532995
 #Unadjusted estimates are biased in comparison with adjusted estimates from nonlinear models, a fact well studied for decades.  Some do not call this 'bias' but the damage is the same. Literature is summarized in my ANCOVA chapter in http://hbiostat.org/doc/bbr.pdf
 
+# scenarios investigated
+# y	prognostic		      adj
+# y	prognostic		      not adj
+# y	unrelated		        adj
+# y	unrelated		        not adj
+# y	mix prog		        adj
+# y	mix prog	         	not adj
+# y	correlated prog		  adj
+# y	correlated prog		  not adjusted
+# n	correlated not prog	adj                <----no
+# n	correlated not prog	not adjusted       <----no
+# y	imbalances prog		  adj
+# y	imbalances prog		  not adjusted
+# y	imbalances not prog	adj
+# y	imbalances not prog	not adjusted
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -79,8 +94,9 @@ is.even <- function(x){ x %% 2 == 0 } # function to id. odd maybe useful
 
 options(width=200)
 options(scipen=999)
-w=1  # line type
+w=4  # line type
 ww=3 # line thickness
+wz=1
 
 # not used, but could use this for MSE
 calc.mse <- function(obs, pred, rsq = FALSE){
@@ -182,6 +198,36 @@ covariates not related to the outcome and collinear or correlated covariates.
                                   textInput('covar', 
                                             div(h5(tags$span(style="color:blue", "Covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
                                   
+                                  ###
+                                  
+                                    
+                                           radioButtons("dist",                "Distribution type:",
+                                                        
+                                                        c(
+                                                        "All"                   = "All",
+                                                          "adjust for prognostic"                   = "A",
+                                                          "not adjustment for prognostic"            = "An",
+                                                          
+                                                          "adjust for non prognostic"                   = "B",
+                                                          "no adjustment for prognostic"            = "Bn",
+                                                          
+                                                          "adjust for mix of prognostic"                   = "C",
+                                                          "no adjustment for mix of prognostic"            = "Cn",  
+                                                          
+                                                          "adjust for correlated prognostic"                   = "D",
+                                                          "no adjustment for correlated prognostic"            = "Dn",  
+                                                          
+                                                          "adjust for imbalanced prognostic"                   = "E",
+                                                          "no adjustment for imbalanced prognostic"            = "En",
+                                                          
+                                                          "adjust for imbalanced non prognostic"                   = "F",
+                                                          "no adjustment for imbalanced nonnprognostic"            = "Fn"
+                                                        ), selected = "All"
+                                           ),
+                                           
+                                    
+                                  
+                                  ####
                                   
                                 )
                                 
@@ -2255,6 +2301,8 @@ server <- shinyServer(function(input, output   ) {
   # })  
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # collect simulation trt effect estimates from simulation and plot!
+  
+  
   output$reg.plotx <- renderPlot({         #means
     
     # Get the  data
@@ -2283,21 +2331,53 @@ server <- shinyServer(function(input, output   ) {
     dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
     
     
-    plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=w, lwd=ww,
+    
+    
+    if (input$dist %in% "All") {
+
+    plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,
          xlab="Treatment effect", #Change the x-axis label
          ylab="Density") #y-axis label)                   # Plot density of x
-    lines( (d2), col = "red", lty=w, lwd=ww)  
-    lines( (d3), col = "blue", lty=w, lwd=ww)    
-    lines( (d4), col = "green", lty=w, lwd=ww)          
-    lines( (d5), col = "grey", lty=w, lwd=ww)       
-    lines( (d6), col = "pink", lty=w, lwd=ww)       
-    lines( (d7), col = "yellow", lty=w, lwd=ww)       
+    lines( (d2), col = "black", lty=w, lwd=ww)  
+    lines( (d3), col = "red", lty=wz, lwd=ww)    
+    lines( (d4), col = "red", lty=w, lwd=ww)          
+    lines( (d5), col = "blue", lty=wz, lwd=ww)       
+    lines( (d6), col = "blue", lty=w, lwd=ww)       
+    lines( (d7), col = "purple", lty=wz, lwd=ww)       
     lines( (d8), col = "purple", lty=w, lwd=ww)       
     
-    lines( (d9), col = "grey", lty=4, lwd=ww)       
-    lines( (d10), col = "pink", lty=4, lwd=ww)       
-    lines( (d11), col = "yellow", lty=4, lwd=ww)       
-    lines( (d12), col = "purple", lty=4, lwd=ww)  
+    lines( (d9), col = "green", lty=wz, lwd=ww)       
+    lines( (d10), col = "green", lty=w, lwd=ww)       
+    lines( (d11), col = "grey", lty=wz, lwd=ww)       
+    lines( (d12), col = "grey", lty=w, lwd=ww)  
+    
+    
+    }
+    
+    else if (input$dist %in% "A") {
+      
+      
+      plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      lines( (d2), col = "black", lty=w, lwd=ww)  
+    
+      
+      
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     abline(v = theta1, col = "darkgrey")                
     legend("topright",                                  # Add legend to density
@@ -2315,10 +2395,21 @@ server <- shinyServer(function(input, output   ) {
                       " not adj. imbalanced covariates unrelated to outcome"
                       
            ),
-           col = c("black", "red","blue","green","grey", "pink", "yellow", "purple", "grey", "pink", "yellow", "purple"),
-           lty = c(w, w,w,w,w,w,w,w,4,4,4,4)           ,lwd=ww
+           col = c("black", "black","red","red","blue", "blue", "purple", "purple", "green", "green", "grey", "grey"),
+           lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w)           ,lwd=ww
                           , bty = "n", cex=1)
   })
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -2365,22 +2456,21 @@ server <- shinyServer(function(input, output   ) {
     dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y                  ))
     dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
     
-    plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates, truth= ",p4(se.),""), ylim=c(0,dz),lty=w, lwd=ww,
+    plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates, truth= ",p4(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
           xlab="Standard error", #Change the x-axis label
           ylab="Density") #y-axis label)                   # Plot density of x
-    lines( (d2), col = "red", lty=w, lwd=ww)  
-    lines( (d3), col = "blue", lty=w, lwd=ww)    
-    lines( (d4), col = "green", lty=w, lwd=ww)          
-    lines( (d5), col = "grey", lty=w, lwd=ww)       
-    lines( (d6), col = "pink", lty=w, lwd=ww)       
-    lines( (d7), col = "yellow", lty=w, lwd=ww)       
-    lines( (d8), col = "purple", lty=w, lwd=ww)   
+    lines( (d2), col = "black", lty=w, lwd=ww)  
+    lines( (d3), col = "red", lty=wz, lwd=ww)    
+    lines( (d4), col = "red", lty=w, lwd=ww)          
+    lines( (d5), col = "blue", lty=wz, lwd=ww)       
+    lines( (d6), col = "blue", lty=w, lwd=ww)       
+    lines( (d7), col = "purple", lty=wz, lwd=ww)       
+    lines( (d8), col = "purple", lty=w, lwd=ww)       
     
-    
-    lines( (d9), col = "grey", lty=4, lwd=ww)       
-    lines( (d10), col = "pink", lty=4, lwd=ww)       
-    lines( (d11), col = "yellow", lty=4, lwd=ww)       
-    lines( (d12), col = "purple", lty=4, lwd=ww)  
+    lines( (d9), col = "green", lty=wz, lwd=ww)       
+    lines( (d10), col = "green", lty=w, lwd=ww)       
+    lines( (d11), col = "grey", lty=wz, lwd=ww)       
+    lines( (d12), col = "grey", lty=w, lwd=ww)  
     
     abline(v = se., col = "darkgrey")   
     legend("topright",                                  # Add legend to density
@@ -2398,8 +2488,8 @@ server <- shinyServer(function(input, output   ) {
                       " not adj. imbalanced covariates unrelated to outcome"
                       
            ),
-           col = c("black", "red","blue","green","grey", "pink", "yellow", "purple", "grey", "pink", "yellow", "purple"),
-           lty = c(w, w,w,w,w,w,w,w,4,4,4,4)           ,lwd=ww
+           col = c("black", "black","red","red","blue", "blue", "purple", "purple", "green", "green", "grey", "grey"),
+           lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w)           ,lwd=ww
            , bty = "n", cex=1)
   })
   
@@ -2756,6 +2846,7 @@ server <- shinyServer(function(input, output   ) {
       (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p2(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p2(result[40] )      ,     p2(result[46] )         )) ,
       (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p2(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p2(result[41] )      ,   p2(result[47] )           )) ,
       (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p2(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p2(result[42] )      ,     p2(result[48] )         )) ,
+      
       (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p2(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p2(result2[13] )      ,  p2(result2[15] )         )) ,
       (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p2(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p2(result2[14] )      ,p2(result2[16] )          )),
       
