@@ -382,12 +382,42 @@ covariates not related to the outcome and collinear or correlated covariates.
                                                        div( verbatimTextOutput("H") ),
                                                        h4("Table 14 Correlations between covariates"),
                                                         div( verbatimTextOutput("R4") ),
-                                                       h4("  True betas of covariates"),
+                                                       h4("True betas of covariates"),
                                                        div( verbatimTextOutput("betazz") ) 
                                                 ))),
  
                                             width = 30 )     ,
-
+                                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                  tabPanel( "3d Measured imbalanced covariates",
+                                            
+                                            fluidRow(
+                                              column(width = 6, offset = 0, style='padding:1px;',
+                                                     
+                                                     h4("Table 15 Linear model, one realisation ignoring all prognostic covariates that may be imbalanced (treatment is variable z)"),
+                                                     div( verbatimTextOutput("J") ),
+                                                     
+                                                     h4("Figure 7 Outcome v fitted linear predictor seperately for control and treated groups, multivariable model"),
+                                                     div(plotOutput("diag5",  width=fig.width6, height=fig.height7)),
+                                                     
+                                                     h4("Figure 7a Outcome v fitted linear predictor seperately for control and treated groups, bivariate model (note intercept and coef)"),
+                                                     div(plotOutput("diag5u",  width=fig.width6, height=fig.height7)),
+                                                     h4("Figure 7b residual v linear predictor seperately for control and treated groups, multivariable model"),
+                                                     div(plotOutput("residual5",  width=fig.width6, height=fig.height7)),
+                                                     
+                                              ) ,
+                                              
+                                              fluidRow(
+                                                column(width = 5, offset = 0, style='padding:1px;',
+                                                       h4("Table 16 Linear model, adjusting for all prognostic covariates that may be imbalanced"),
+                                                       div( verbatimTextOutput("I") ),
+                                                       h4("Table 17 Correlations between covariates"),
+                                                       div( verbatimTextOutput("R5") ),
+                                                       h4("True betas of covariates"),
+                                                       div( verbatimTextOutput("betazzz") ) 
+                                                ))),
+                                            
+                                            width = 30 )     ,
+                                  
                                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                   
                                   tabPanel("3d Observations based on one realisation", value=3, 
@@ -610,7 +640,7 @@ server <- shinyServer(function(input, output   ) {
         Po <- power.t.test( delta =theta, sd=sigma, sig.level=alpha,
                             power=pow, type="two.sample", alternative=c("two.sided"))
 
-        N <-ceiling(Po$n)*2
+        MM <- N <-ceiling(Po$n)*2
         
         # allow covariates to have different distibution
         if (covar==1) {  
@@ -731,14 +761,68 @@ server <- shinyServer(function(input, output   ) {
         y <- a+ XX %*% b + theta*z + rnorm(N,0, sigma)
         fake4 <- data.frame(X=rdata, y=y, z=z)
    
+        ####################################################################
+        # unbalanced covariates start new section
+        ####################################################################
+        X <- NULL
+        # in case MM is odd
+  
+        if (is.even(MM)) {
+            
+            N2=MM/2
+            N1=N2 } else {
+            
+            N1=(MM-1)/2
+            N2=N1+1   
+            
+        }
         
+        X1 <- array(rnorm(N1*K, 0,  1), c(N1,K))  
+        X2 <- array(rnorm(N2*K, .3, 1), c(N2,K))   ##imbalance compared to above
+        XY <- X <- rbind(X1,X2)
+        
+        z <- rep(0:1, c(N1,N2))  #assign 1 so we maintain shift in arms
+        
+        a <- 1                                     # intercept
+        
+        # b coefficient generated earlier 
+        y <- a+ X %*% b + theta*z + rnorm(MM,0, sigma)  # note I use M here
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        fake5 <- data.frame(X=X, y=y, z=z)
+        head(fake5)
+        
+        ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # analyse when covariates associated with y
+        ols2 <- lm(y~X+z,fake5)
+        ols1 <- lm(y~z,fake5)
+        summary(ols2)
+        summary(ols1)
+        
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # create y covariates not associated with y
+        y <- a +  theta*z + rnorm(MM,0, sigma)    # note I use M here
+        fake6 <- data.frame(X=X, y=y, z=z)
+      
+        
+        ols2 <- lm(y~X+z,fake6)
+        ols1 <- lm(y~z,fake6)
+        summary(ols2)
+        summary(ols1)
+        b
+        
+        ####################################################################
+        # end unbalanced covariates
+        ####################################################################
+        
+
         return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                       
                       placebo=placebo, treated=treated, bigN=bigN, fake4=fake4, XX=XX, Po=Po, ddd=ddd,
                       
                       betas=b,  dfx=dfx, #df=df,
                       
-                      zz=zz)) 
+                      zz=zz, fake5=fake5, fake6=fake6, XY=XY)) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
     
@@ -757,7 +841,7 @@ server <- shinyServer(function(input, output   ) {
       
     })
     
-    output$betazz  <- output$betaz <- renderPrint({        
+    output$betazzz  <- output$betazz  <- output$betaz <- renderPrint({        
       
       return(mcmc()$betas)
       
@@ -1057,6 +1141,122 @@ server <- shinyServer(function(input, output   ) {
       
     })
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #imbalance
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    output$diag5u <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg5()$fit0
+      d <- mcmc()$fake5
+      y <- d$y
+      y_hat=predict(fit)
+      z <- d$z
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$diag5 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg5()$fit
+      d <- mcmc()$fake5
+      y <- d$y
+      y_hat=predict(fit)
+      z <- d$z
+      
+      par(mfrow=c(1,2))
+      for(i in 0:1) {
+        
+        plot( range(y_hat, y), range(y_hat, y), type='n' , main=paste("z =", i),  xlab="Linear predictor", ylab="Outcome, y")
+        points(y_hat[z==i], y[z==i], pch=20+i)
+        abline(0,1)
+        
+      }
+      
+      
+    })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## only on multivariable do this 
+    output$residual5 <- renderPlot({         
+      
+      sample <- random.sample()
+      
+      fit <- reg5()$fit
+      d <- mcmc()$fake5
+      y <- d$y
+      z <- d$z
+      y_hat=predict(fit)
+      
+      r <- y - y_hat
+      par(mfrow=c(1,2), mar=c(3,3,2,2), mgp=c(1.7,.5,0), tck=-.01)
+      par(mfrow=c(1,2))
+      for (i in 0:1){
+        plot(range(y_hat), range(r), type="n", xlab=expression(paste("Linear predictor, ", hat(y))),
+             ylab="Residual, r", main=paste("z =", i), bty="l")
+        points(y_hat[z==i], r[z==i], pch=20+i)
+        abline(0, 0)
+      }
+      
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #  plot  of the difference in covarites across arms
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
@@ -1284,6 +1484,56 @@ server <- shinyServer(function(input, output   ) {
       
       return(reg4()$R)
     })
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # imbalanced data
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+    reg5<- reactive({  
+      
+      d <- mcmc()$fake5
+      
+      X <- mcmc()$XY  #have to bring X through , as model will fail without this
+      
+      ols2 <- lm(y~X+z,data=d)
+      ols1 <- lm(y~z,d)
+      
+      
+      xx <- cov2cor(vcov(ols2))
+      R <- round(xx,6)
+      
+      A<-summary(ols2)
+      B<-summary(ols1)
+      
+      #get stats so we can compare together
+      x<- A
+      stat5 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+      x<- B
+      stat6 <- t(cbind(c(x$coefficients["z",], sigma=x$sigma, r2= x$adj.r.squared)))
+      
+      return(list(  A=A, B=B,   stat7=stat5, stat8=stat6, fit=ols2, fit0=ols1, R=R)) 
+      
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$I <- renderPrint({
+      
+      return(reg5()$A)
+    })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    output$J <- renderPrint({
+      
+      return(reg5()$B)
+    })
+    ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    output$R5 <- renderPrint({
+      
+      return(reg5()$R)
+    })
+    
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # create a table to summarise individual realisations
     output$summary1 <- renderPrint({
@@ -1597,7 +1847,146 @@ server <- shinyServer(function(input, output   ) {
       )) 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~NEW
+         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+         # do the same as the first simulation code, but this time imbalanced covariates are created
+         simul3 <- reactive({
+           
+           sample <- random.sample()
+           # need to rename to avoid recursive issues
+           K1=sample$K
+           Kp=sample$Kp
+           pow=sample$pow
+           sigma1=sample$sigma
+           theta1=sample$theta        
+           alpha=sample$alpha  
+           Fact=sample$Fact
+           
+           simuls=sample$simuls
+           
+           b1=simul()$b1  #cal in same beta coefficient as first simulation
+           
+           N1 <- mcmc()$N # total
+           #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           # simulate models many times collect estimate and SE
+           
+           simfun2<- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
+             
+             MM = N
+             
+             if (is.even(MM)) {
+               
+               N2=MM/2
+               N1=N2 } else {
+                 
+                 N1=(MM-1)/2
+                 N2=N1+1   
+                 
+               }
+             
+             if (covar==1) {  
+               X1 <- array(runif(N1*K , -1,1), c(N1,K))  
+               X2 <- array(runif(N2*K , -.8,1.2), c(N2,K))   ##imbalance compared to above
+               XY <- X <- rbind(X1,X2)
+             } else {
+               X1 <- array(rnorm(N1*K, 0,  1), c(N1,K))  
+               X2 <- array(rnorm(N2*K, .3, 1), c(N2,K))   ##imbalance compared to above
+               XY <- X <- rbind(X1,X2)
+             }
+             
+             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          
+             z <- rep(0:1, c(N1,N2))  #assign 1 so we maintain shift in arms
+             
+             a <- 1                                     # intercept
+             
+             # b coefficient generated earlier 
+             y <- a+ X %*% b + theta*z + rnorm(MM,0, sigma)  # note I use M here
+             
+             # #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             # fake5 <- data.frame(X=X, y=y, z=z)
+             # head(fake5)
+             
+             ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             # analyse when covariates associated with y
+             # ols2 <- lm(y~X+z,fake5)
+             # ols1 <- lm(y~z,fake5)
+             # summary(ols2)
+             # summary(ols1)
+             
+             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             # create y covariates not associated with y
+             y <- a +  theta*z + rnorm(MM,0, sigma)    # note I use M here
+             # fake6 <- data.frame(X=X, y=y, z=z)
+             # 
+             # 
+             # ols2 <- lm(y~X+z,fake6)
+             # ols1 <- lm(y~z,fake6)
+             # summary(ols2)
+             # summary(ols1)
+             # b
+             # 
+             
+             
+             data.frame(X=XY, y=y, z=z, y2=y2)
+             
+           }
+           
+           #https://stackoverflow.com/questions/5251507/how-to-succinctly-write-a-formula-with-many-variables-from-a-data-frame
+           
+           statfun2 <- function(d) {
+             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+             zz <- lm(y~., data=d)       ## adjusting for all X and z
+             f <-  summary(zz)
+             
+             zz1 <- lm(y~z, data=d)      ## ignoring covariates
+             f1 <-  summary(zz1)
+             
+             cbind(
+               
+               coef(f)["z", "Estimate"],
+               coef(f)["z", "Std. Error"],
+               coef(f1)["z", "Estimate"],
+               coef(f1)["z", "Std. Error"], 
+               coef(f)["z", "Pr(>|t|)"]  < alpha,
+               coef(f1)["z", "Pr(>|t|)"]  < alpha,
+               
+               ## mse
+               mean((d$y-predict(zz))^2),
+               mean((d$y-predict(zz1))^2),
+               mean(quantile( (d$y-predict(zz))^2, .025)), 
+               mean(quantile( (d$y-predict(zz))^2, .975)), 
+               mean(quantile( (d$y-predict(zz1))^2, .025)), 
+               mean(quantile( (d$y-predict(zz1))^2, .975)),
+               
+               f$sigma,  #13
+               f1$sigma,
+               
+               f$adj.r.squared,  #44
+               f1$adj.r.squared  #45
+               
+             )
+             
+           }
+           
+           
+           library(plyr)
+           res <- raply(simuls, statfun2(simfun2())) # run the model many times
+           result <- apply(res,2,mean)
+           q1.result <- apply(res,2, quantile, probs=c(0.025), na.rm=TRUE)
+           q2.result <- apply(res,2, quantile, probs=c(0.975), na.rm=TRUE)
+           
+           return(list(  
+             
+             res=res,
+             result=result,  # means
+             q1.result=q1.result,
+             q2.result=q2.result,
+             betas=b1
+             
+           )) 
+           #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #  plot 2 not using
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
