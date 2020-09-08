@@ -201,27 +201,27 @@ covariates not related to the outcome and collinear or correlated covariates.
                                   ###
                                   
                                     
-                                           radioButtons("dist",                "Distribution type:",
+                                           radioButtons("dist",                "Present the following only:",
                                                         
                                                         c(
                                                         "All"                   = "All",
-                                                          "adjust for prognostic"                   = "A",
-                                                          "not adjustment for prognostic"            = "An",
+                                                          "prognostic"                   = "d1",
                                                           
-                                                          "adjust for non prognostic"                   = "B",
-                                                          "no adjustment for prognostic"            = "Bn",
                                                           
-                                                          "adjust for mix of prognostic"                   = "C",
-                                                          "no adjustment for mix of prognostic"            = "Cn",  
+                                                          "non prognostic"                   = "d3",
+                                                         
                                                           
-                                                          "adjust for correlated prognostic"                   = "D",
-                                                          "no adjustment for correlated prognostic"            = "Dn",  
+                                                          "mix of prognostic"                   = "d5",
+                                                         
                                                           
-                                                          "adjust for imbalanced prognostic"                   = "E",
-                                                          "no adjustment for imbalanced prognostic"            = "En",
+                                                          "correlated prognostic"                   = "d7",
+                                                           
                                                           
-                                                          "adjust for imbalanced non prognostic"                   = "F",
-                                                          "no adjustment for imbalanced nonnprognostic"            = "Fn"
+                                                          "imbalanced prognostic"                   = "d9",
+                                                         
+                                                          
+                                                          "mbalanced non prognostic"                   = "d11"
+                                                         
                                                         ), selected = "All"
                                            ),
                                            
@@ -2354,7 +2354,7 @@ server <- shinyServer(function(input, output   ) {
     
     }
     
-    else if (input$dist %in% "A") {
+    else if (input$dist %in% "d1") {  #remove
       
       
       plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,
@@ -2366,18 +2366,60 @@ server <- shinyServer(function(input, output   ) {
       
     }
     
+    else if (input$dist %in% "d3") {  #remove
+      
+ 
+      plot((d3), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,col="red",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      lines( (d4), col = "red", lty=w, lwd=ww)          
+      
+      
+      
+    }
     
+    else if (input$dist %in% "d5") {
+      
+      plot((d5), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="blue",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+          
+      lines( (d6), col = "blue", lty=w, lwd=ww)       
+     
+      
+      
+    }
     
+    else if (input$dist %in% "d7") {
+      
+      plot((d7), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="purple",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      
+      lines( (d8), col = "purple", lty=w, lwd=ww)     
     
+    }
+      else if (input$dist %in% "d9") {
+        
+        plot((d9), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="green",
+             xlab="Treatment effect", #Change the x-axis label
+             ylab="Density") #y-axis label)                   # Plot density of x
+        
+        lines( (d10), col = "green", lty=w, lwd=ww)     
+        
+      }
     
-    
-    
-    
-    
-    
-    
-    
-    
+    else if (input$dist %in% "d11") {
+      
+      plot((d11), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="grey",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      
+      lines( (d12), col = "grey", lty=w, lwd=ww)     
+      
+    }
+      
+
     
     abline(v = theta1, col = "darkgrey")                
     legend("topright",                                  # Add legend to density
