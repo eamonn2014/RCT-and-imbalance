@@ -434,7 +434,8 @@ covariates not related to the outcome and collinear or correlated covariates.
                                        h4("[1 v 2] We see adjusting for known measured prognostic covariates results in a more precise estimate. "),
                                        h4("[3 v 4] We see adjusting for measured non prognostic covariates we do not lose much precision."),
                                        h4("[5 v 6] We see adjusting for measured covariates results in a more precise estimate."),
-                                       h4("[5 v 6] We see adjusting for measured correlated covariates results in a more precise estimate than if we don't adjust for them."),
+                                       h4("[7 v 8] We see adjusting for measured correlated covariates results in a more precise estimate than if we don't adjust for them."),
+                                       h4("[9 v 10] We see adjusting for measured imbalanced prognostic covariates we do not lose much precision."),
                                        fluidRow(
                                          column(width = 7, offset = 0, style='padding:1px;',
                                                 
@@ -453,6 +454,21 @@ covariates not related to the outcome and collinear or correlated covariates.
                                        # covariates <- 10
                                        # A <- rnorm(covariates, 0, sqrt(4/50))    # differences
                                        # mean(abs(A) > (1.96*sqrt(4/50)))
+                                       
+                                       
+                                       
+                                       fluidRow(
+                                         column(width = 7, offset = 0, style='padding:1px;',
+                                                
+                                         )),
+                                       
+                              ) ,
+                              
+                              #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                              tabPanel("3t Observed covariate imbalance", value=7, 
+                                       h4("Figure 8 Difference in baseline covariates across arms.up."),
+                                       div(plotOutput("reg.ploti", width=fig.width1, height=fig.height1)),
+                                        
                                        
                                        
                                        
@@ -812,6 +828,36 @@ server <- shinyServer(function(input, output   ) {
     summary(ols2)
     summary(ols1)
     b
+    ####################################################################
+    
+    f99 <- fake5
+    f99$y <- NULL
+    l <- zz <-   lapply(f99[1:K], function(x) 
+      t.test(x ~ fake5$z, paired = FALSE, na.action = na.pass, var.equal = TRUE))
+    
+    # dfx <- data.frame(matrix(unlist(l), nrow=length(l), byrow=T))  # dataset to export ttests
+    # names(dfx) <- c("t stat","df","p-value","lower 95%CI","upper 95%CI","mean placebo", "mean treated","null","Std err" ,"alt","method","dataset")
+    # 
+    # check covariate distribution
+    zzz <-   lapply(zz, function(x)    ## execute the function
+      x[4]
+    )
+    
+    zzz<- as.data.frame(zzz)
+    ci <- t(zzz)
+    conf1<- as.data.frame(ci)
+    
+    #  run the function again, and pull out the means
+    mzz <-   lapply(zz, function(x) 
+      (x[5])
+    )
+    
+    mzz<- as.data.frame(mzz)
+    ci <- t(mzz)
+    r<- as.data.frame(ci)
+    
+    doff1 <- as.vector( r["mean in group 0"] - r["mean in group 1"] )
+    
     
     ####################################################################
     # end unbalanced covariates
@@ -824,7 +870,7 @@ server <- shinyServer(function(input, output   ) {
                   
                   betas=b,  dfx=dfx, #df=df,
                   
-                  zz=zz, fake5=fake5, fake6=fake6, XY=XY)) 
+                  zz=zz, fake5=fake5, fake6=fake6, XY=XY, conf1=conf1, doff1=doff1, N1i=N1, N2i=N2)) 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   })
   
@@ -1239,7 +1285,49 @@ server <- shinyServer(function(input, output   ) {
   
   
   
-  
+  output$reg.ploti <- renderPlot({         
+ 
+    sample <- random.sample()
+    sigma1=sample$sigma
+   
+    placebo <- mcmc()$N1i
+    treated <- mcmc()$N2i
+    bigN <- mcmc()$bigN
+    
+    se. <-  sqrt((sigma1^2/placebo+sigma1^2/treated)  )  #ditto
+    
+    doff <- mcmc()$doff1
+    conf <- mcmc()$conf1
+    K <- mcmc()$K
+    
+    #dff <- mcmc()$df
+    
+    # plot
+    par(mar=c(4,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
+    plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
+         ylab="Estimate Mean difference", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
+         main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
+             placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.96 X standard error of difference ",p3(se.*qnorm(.975)),""))
+    #axis(2, seq(-5,5,1))
+    # axis(1, seq(1,K,10))
+    points(1:K, doff[,1], pch=20)
+    abline(0, 0, col="pink", lty=w, lwd=.5)
+    abline(se., 0, col="pink" , lty=w, lwd=.5)
+    abline(-se., 0, col="pink" , lty=w, lwd=.5)
+    #abline(qt(.975, df=dff)*se., 0, col="pink" , lty=w, lwd=.5)
+    #abline(qt(.975, df=dff)*-se., 0, col="pink" , lty=w, lwd=.5)
+    abline(2*se., 0, col="pink" , lty=w, lwd=.5)
+    abline(2*-se., 0, col="pink" , lty=w, lwd=.5)
+    
+    for (i in 1:K){
+      if (prod(conf[i,c(1,2)]) < 0 ) {
+        lines(c(i,i), conf[i,c(1,2)], lwd=.8, col='blue') 
+      } else {
+        lines(c(i,i), conf[i,c(1,2)], lwd=.8, col='red') 
+      }
+    }
+    
+  })
   
   
   
@@ -1553,11 +1641,21 @@ server <- shinyServer(function(input, output   ) {
     stat7 <- reg4()$stat5  # ignoring correlated prog covariates
     stat8 <- reg4()$stat6  # adj for correlated prog covariates
     
+    
+    stat9 <- reg5()$stat7  # ignoring correlated prog covariates
+    stat10 <- reg5()$stat8  # adj for correlated prog covariates
+    
+    
+    
+    
+    
+    
+    
     # placebo <- mcmc()$placebo
     # treated <- mcmc()$treated
     # bigN <- mcmcm()$bigN
     
-    d <- rbind(stat1, stat2, stat3, stat4, stat5, stat6, stat7, stat8)
+    d <- rbind(stat1, stat2, stat3, stat4, stat5, stat6, stat7, stat8, stat9, stat10)
     
     d<- data.frame(d)
     
@@ -1574,7 +1672,10 @@ server <- shinyServer(function(input, output   ) {
       "[6] Bivariate no adjustment, measured covariates ignored",
       
       "[7] Multivariable adjusting for measured prognostic covariates that are correlated",
-      "[8] Bivariate no adjustment, measured correlated covariates ignored"
+      "[8] Bivariate no adjustment, measured correlated covariates ignored",
+      
+      "[9] Multivariable adjusting for imbalanced prognostic covariates ",
+      "[10 Bivariate no adjustment, imblanced prognostic covariates ignored"
     )
     
     return(print(d, digits=4))
@@ -1945,7 +2046,6 @@ server <- shinyServer(function(input, output   ) {
       zz1 <- lm(y~z, data=d)          ## not adjusting for imbalance prog X, only trt. indicator included
       f1 <-  summary(zz1)
       
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~mix
       zz2 <- lm(y2~.-y, data=d)    ## adjusting for X which are not prog but imbalanced
       f2 <-  summary(zz2)
       
@@ -1955,7 +2055,6 @@ server <- shinyServer(function(input, output   ) {
       
       cbind(
         
-        #f$coefficients [,1]["z"],
         coef(f)["z", "Estimate"],
         coef(f)["z", "Std. Error"],
         
@@ -1967,10 +2066,9 @@ server <- shinyServer(function(input, output   ) {
         
         coef(f3)["z", "Estimate"],
         coef(f3)["z", "Std. Error"], #8
+
         
-        
-        
-        # collect p values
+        # collect p values for power
         coef(f)["z", "Pr(>|t|)"]  < alpha,  #9
         coef(f1)["z", "Pr(>|t|)"] < alpha,
         coef(f2)["z", "Pr(>|t|)"] < alpha,
@@ -2004,7 +2102,6 @@ server <- shinyServer(function(input, output   ) {
         f2$adj.r.squared,
         f3$adj.r.squared #34
        
-        
       )
       
     }
