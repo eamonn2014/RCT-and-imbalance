@@ -201,31 +201,51 @@ covariates not related to the outcome and collinear or correlated covariates.
                                   ###
                                   
                                     
-                                           radioButtons("dist",                "Present the following only:",
-                                                        
-                                                        c(
-                                                        "All"                   = "All",
-                                                          "prognostic"                   = "d1",
-                                                          
-                                                          
-                                                          "non prognostic"                   = "d3",
-                                                         
-                                                          
-                                                          "mix of prognostic"                   = "d5",
-                                                         
-                                                          
-                                                          "correlated prognostic"                   = "d7",
-                                                           
-                                                          
-                                                          "imbalanced prognostic"                   = "d9",
-                                                         
-                                                          
-                                                          "mbalanced non prognostic"                   = "d11"
-                                                         
-                                                        ), selected = "All"
-                                           ),
+                                           # radioButtons("dist",                 div(h5(tags$span(style="color:blue","Present the following only:"))),
+                                           #              
+                                           #              c(
+                                           #               "All"                   = "All",
+                                           #                "prognostic"                   = "d1",
+                                           #                
+                                           #                
+                                           #                "non prognostic"                   = "d3",
+                                           #               
+                                           #                
+                                           #                "mix of prognostic"                   = "d5",
+                                           #               
+                                           #                
+                                           #                "correlated prognostic"                   = "d7",
+                                           #                 
+                                           #                
+                                           #                "imbalanced prognostic"                   = "d9",
+                                           #               
+                                           #                
+                                           #                "mbalanced non prognostic"                   = "d11"
+                                           #               
+                                           #              ), selected = "All"
+                                           # ),
                                            
-                                    
+                                 
+                                               
+                                       #        choiceValues = c("All","d1","d3","d5","d7","d9","d11")
+                                               
+                                  radioButtons(
+                                    inputId = "dist",
+                                    label =  div(h5(tags$span(style="color:blue","Present the following only:"))),
+                                    choiceNames = list(
+                                      HTML("<font color='blue'>All</font>"), 
+                                      tags$span(style = "color:blue", "prognostic"), 
+                                      tags$span(style = "color:blue", "non prognostic"), 
+                                      tags$span(style = "color:blue", "mix of prognostic"),
+                                      tags$span(style = "color:blue", "correlated prognostic"),
+                                      tags$span(style = "color:blue", "imbalanced prognostic"),
+                                      tags$span(style = "color:blue", "imbalanced non prognostic")
+                                      
+                                    ),
+                                    choiceValues = c("All", "d1", "d3", "d5",  "d7", "d9", "d11")
+                                  )
+ 
+                                  
                                   
                                   ####
                                   
