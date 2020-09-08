@@ -109,7 +109,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 
            
                 h4("Stephen Senn's truisims '1) randomised controlled trials don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups' do not seem 
-                to be common knowledge [1]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
+                to be common knowledge [1]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [3]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
 may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
@@ -520,7 +520,7 @@ covariates not related to the outcome and collinear or correlated covariates.
                                                   div(p(" ")),
                                                   tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[2]  Frank Harrell twitter"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Data discourse"),),  
+                                                  tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Data discourse, see Senn's points"),),  
                                                   div(p(" ")),
                                                   tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[4] Data discourse"),),  
                                                   div(p(" ")),
@@ -649,21 +649,8 @@ server <- shinyServer(function(input, output   ) {
         
         dfx <- data.frame(matrix(unlist(l), nrow=length(l), byrow=T))  # dataset to export ttests
         names(dfx) <- c("t stat","df","p-value","lower 95%CI","upper 95%CI","mean placebo", "mean treated","null","Std err" ,"alt","method","dataset")
-       
-        
-        # round_df <- function(x, digits) {
-        #   # round all numeric variables
-        #   # x: data frame 
-        #   # digits: number of digits to round
-        #   numeric_columns <- sapply(x, mode) == 'numeric'
-        #   x[numeric_columns] <-  round(x[numeric_columns], digits)
-        #   x
-        # }
-        # 
-        # dfx <- round_df(dfx, 3)
-        
-        #df <- zz$X.1[2][[1]][[1]]
-
+    
+        # check covariate distribution
         zzz <-   lapply(zz, function(x)    ## execute the function
             x[4]
         )
