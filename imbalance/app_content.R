@@ -2498,6 +2498,11 @@ server <- shinyServer(function(input, output   ) {
     dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y                  ))
     dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
     
+    
+    
+    if (input$dist %in% "All") {
+      
+    
     plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates, truth= ",p4(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
           xlab="Standard error", #Change the x-axis label
           ylab="Density") #y-axis label)                   # Plot density of x
@@ -2513,6 +2518,105 @@ server <- shinyServer(function(input, output   ) {
     lines( (d10), col = "green", lty=w, lwd=ww)       
     lines( (d11), col = "grey", lty=wz, lwd=ww)       
     lines( (d12), col = "grey", lty=w, lwd=ww)  
+    
+    
+    }
+    
+    
+    else if (input$dist %in% "d1") {  #remove
+      
+      
+      plot((d1), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      lines( (d2), col = "black", lty=w, lwd=ww)  
+      
+      
+      
+    }
+    
+    else if (input$dist %in% "d3") {  #remove
+      
+      
+      plot((d3), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,col="red",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      lines( (d4), col = "red", lty=w, lwd=ww)          
+      
+      
+      
+    }
+    
+    else if (input$dist %in% "d5") {
+      
+      plot((d5), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="blue",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      
+      lines( (d6), col = "blue", lty=w, lwd=ww)       
+      
+      
+      
+    }
+    
+    else if (input$dist %in% "d7") {
+      
+      plot((d7), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="purple",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      
+      lines( (d8), col = "purple", lty=w, lwd=ww)     
+      
+    }
+    else if (input$dist %in% "d9") {
+      
+      plot((d9), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="green",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      
+      lines( (d10), col = "green", lty=w, lwd=ww)     
+      
+    }
+    
+    else if (input$dist %in% "d11") {
+      
+      plot((d11), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="grey",
+           xlab="Treatment effect", #Change the x-axis label
+           ylab="Density") #y-axis label)                   # Plot density of x
+      
+      lines( (d12), col = "grey", lty=w, lwd=ww)     
+      
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     abline(v = se., col = "darkgrey")   
     legend("topright",                                  # Add legend to density
