@@ -139,10 +139,12 @@ In short, not adjusting is permissable ONLY when there are no prognostic covaria
               Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model. 
 We simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
 covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome. 
-The key information can be found on tab 2, the results of simulation.
-
-
-         "), 
+The key information can be found on tab 2, the results of simulation."),
+h4("
+Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL so just adding 
+similar covariates into a model will result in a response the variance of which keeps on increasing and soon implausible values will result. 
+In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables. 
+However we also wish to examine imbalanced covariates and collinear covariates [4,5]. Therefore it is advisable to limit the number of covariates in the simulation, default is 3. "), 
                 
                 h3("  "), 
                 
@@ -651,7 +653,11 @@ is to control what simulated scenario results are presented graphically on tab 2
                                           "),
                                        
                                        
- 
+                                      
+                                      
+                                      
+                                      
+                                      
                                        
                                                                               
                                        
@@ -662,14 +668,17 @@ is to control what simulated scenario results are presented graphically on tab 2
                                               
                                               tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn, Stop obsessing about balance"),),   
                                               div(p(" ")),
-                                              tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[2] Stephen Senn, point 4, Should we ignore covariate imbalance and stop presenting a stratified table one for randomized trials see Senn's points"),),  
+                                              tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[2] Stephen Senn, point 4, Should we ignore covariate imbalance and stop presenting a stratified table one for randomized trials"),),  
                                               div(p(" ")),
-                                          
                                               tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[3]  Frank Harrell, twitter Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)."),),   
                                               div(p(" ")),
-                                              tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[4] Frank Harrell, twitter Adjusted analysis"),),   
+                                              tags$a(href = "https://statistics.fas.harvard.edu/files/statistics/files/21_stephen_senn.pdf", tags$span(style="color:blue", "[4] Randomisation isn’t perfect but doing better is harder than you think "),),   
                                               div(p(" ")),
-                                              tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[5] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
+                                              tags$a(href = "https://onlinelibrary.wiley.com/doi/epdf/10.1002/sim.8570", tags$span(style="color:blue", "[5] Graphical calibration curves and the integrated calibration index (ICI) for survival models, Statistics in Medicine. 2020;1–29 "),),  
+                                              div(p(" ")),
+                                              tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[6] Frank Harrell, twitter Adjusted analysis"),),   
+                                              div(p(" ")),
+                                              tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[7] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
                                               div(p(" ")),
                                               
                                               tags$hr()
@@ -689,7 +698,7 @@ is to control what simulated scenario results are presented graphically on tab 2
 
 server <- shinyServer(function(input, output   ) {
   
-  shinyalert("Welcome! \nAdjusting for covariates in RCTs!",
+  shinyalert("Welcome! \nAdjusting for covariates in continuous response RCT!",
              "Best to do it!", 
              type = "info")
   
