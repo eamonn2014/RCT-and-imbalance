@@ -757,7 +757,7 @@ server <- shinyServer(function(input, output   ) {
     
     MM <- N <-ceiling(Po$n)*2
     
-    # allow covariates to have different distibution
+    # allow covariates to have different distribution
     if (covar==1) {  
       X <- array(runif(N*K , -1,1), c(N,K))     # initially covars were uniform dist
     } else {
@@ -822,7 +822,7 @@ server <- shinyServer(function(input, output   ) {
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     ################################################################
-    ###now create covariate that are correlation with each other
+    ###now create covariates that are correlation with each other
     ################################################################
     library(Matrix)
     
@@ -909,10 +909,10 @@ server <- shinyServer(function(input, output   ) {
     
     ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # analyse when covariates associated with y
-    ols2 <- lm(y~X+z,fake5)
-    ols1 <- lm(y~z,fake5)
-    summary(ols2)
-    summary(ols1)
+    # ols2 <- lm(y~X+z,fake5)
+    # ols1 <- lm(y~z,fake5)
+    # summary(ols2)
+    # summary(ols1)
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # create y covariates not associated with y
@@ -920,11 +920,11 @@ server <- shinyServer(function(input, output   ) {
     fake6 <- data.frame(X=X, y=y, z=z)
     
     
-    ols2 <- lm(y~X+z,fake6)
-    ols1 <- lm(y~z,fake6)
-    summary(ols2)
-    summary(ols1)
-    b
+    # ols2 <- lm(y~X+z,fake6)
+    # ols1 <- lm(y~z,fake6)
+    # summary(ols2)
+    # summary(ols1)
+    # b
     ####################################################################
     
     f99 <- fake5
@@ -959,7 +959,6 @@ server <- shinyServer(function(input, output   ) {
     ####################################################################
     # end unbalanced covariates
     ####################################################################
-    
     
     return(list(  dat=dat, conf=conf, doff=doff , K=K, N=N, X=X, fake2=fake2, fake3=fake3,
                   
@@ -1006,7 +1005,7 @@ server <- shinyServer(function(input, output   ) {
   })
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # diagnostic plots
+  # diagnostic plots multivariable
   
   output$diag <- renderPlot({         
     
@@ -1030,7 +1029,6 @@ server <- shinyServer(function(input, output   ) {
     
   })
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
   # do the same for bivariate analysis
   output$diagu <- renderPlot({         
     
@@ -1149,6 +1147,7 @@ server <- shinyServer(function(input, output   ) {
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # mix of covariates
   output$diag3 <- renderPlot({         
     
     sample <- random.sample()
@@ -1219,6 +1218,7 @@ server <- shinyServer(function(input, output   ) {
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## correlated covariates
   output$diag4u <- renderPlot({         
     
     sample <- random.sample()
@@ -1287,7 +1287,7 @@ server <- shinyServer(function(input, output   ) {
   })
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #imbalance
+  # imbalanced covariates
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   output$diag5u <- renderPlot({         
@@ -1407,7 +1407,7 @@ server <- shinyServer(function(input, output   ) {
   
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #  plot  of the difference in covarites across arms, expecting balance and chance imbalance
+  #  plot of the difference in covariates across arms, expecting balance and chance imbalance
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
   
   output$reg.plot <- renderPlot({         
@@ -1634,10 +1634,8 @@ server <- shinyServer(function(input, output   ) {
     return(reg4()$R)
   })
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # imbalanced data
+  # run regression on imbalanced data
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
   reg5<- reactive({  
     
@@ -1684,7 +1682,7 @@ server <- shinyServer(function(input, output   ) {
   
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # create a table to summarise individual realisations
+  # create a table to summarize individual realizations
   output$summary1 <- renderPrint({
     
     stat1 <- reg1()$stat1 # ignoring true prog 
@@ -1703,17 +1701,7 @@ server <- shinyServer(function(input, output   ) {
     
     stat9 <- reg5()$stat7  # ignoring correlated prog covariates
     stat10 <- reg5()$stat8  # adj for correlated prog covariates
-    
-    
-    
-    
-    
-    
-    
-    # placebo <- mcmc()$placebo
-    # treated <- mcmc()$treated
-    # bigN <- mcmcm()$bigN
-    
+  
     d <- rbind(stat1, stat2, stat3, stat4, stat5, stat6, stat7, stat8, stat9, stat10)
     
     d<- data.frame(d)
@@ -1742,6 +1730,8 @@ server <- shinyServer(function(input, output   ) {
   })
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+  # SIMULATION CODE STARTS HERE
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
   # here is code to simulate scenarios prognostic covariates, covariates unrelated to y, mix of pro and unrelated to y covariates, 
   simul <- reactive({
     
@@ -1763,6 +1753,7 @@ server <- shinyServer(function(input, output   ) {
     
     # making up some beta coefficients, fixed for all simulations as it is outside loop
     b1 <- round(sort(runif(K1, -theta1*Fact,theta1*Fact)), digits=2) 
+    
     
     simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
       
@@ -2069,26 +2060,12 @@ server <- shinyServer(function(input, output   ) {
       # #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # fake5 <- data.frame(X=X, y=y, z=z)
       # head(fake5)
-      
-      ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      # analyse when covariates associated with y
-      # ols2 <- lm(y~X+z,fake5)
-      # ols1 <- lm(y~z,fake5)
-      # summary(ols2)
-      # summary(ols1)
+     
       
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # create y covariates not associated with y
       y2 <- a +  theta*z + rnorm(MM,0, sigma)    # note I use M here
-      # fake6 <- data.frame(X=X, y=y, z=z)
-      # 
-      # 
-      # ols2 <- lm(y~X+z,fake6)
-      # ols1 <- lm(y~z,fake6)
-      # summary(ols2)
-      # summary(ols1)
-      # b
-      # 
+      
       
       
       data.frame(X=XY, y=y, z=z, y2=y2)
@@ -2185,136 +2162,11 @@ server <- shinyServer(function(input, output   ) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   })
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #  plot 2 not using
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
   
-  # output$reg.plot2 <- renderPlot({         
-  #   
-  #   # Get the  data
-  #   
-  #   res <- simul()$res
-  #   result <- simul()$result
-  #   
-  #   
-  #   hist(res[,1], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[1]), ""), xlab='Treatment effect')
-  #   
-  # })
-  # 
-  # 
-  # output$reg.plot3 <- renderPlot({         
-  #   
-  #   # Get the  data
-  #   res <- simul()$res
-  #   result <- simul()$result
-  #   
-  #   hist(res[,2], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[2]), ""), xlab='Treatment effect se')
-  #   
-  # })
-  # 
-  # 
-  # 
-  # output$reg.plot4 <- renderPlot({         
-  #   
-  #   # Get the  data
-  #   
-  #   res <- simul()$res
-  #   result <- simul()$result
-  #   
-  #   
-  #   hist(res[,3], nclass=50,   main=paste0("Distribution of estimates of treatment effect ",p3(result[3]), ""), xlab='Treatment effect')
-  #   
-  # })
-  # 
-  # 
-  # output$reg.plot5 <- renderPlot({         
-  #   
-  #   # Get the  data
-  #   res <- simul()$res
-  #   result <- simul()$result
-  #   
-  #   hist(res[,4], nclass=50,   main=paste0("Distribution of estimates of treatment effect se ",p3(result[4]), ""), xlab='Treatment effect se')
-  #   
-  # })
-  # 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-  # output$reg.plotx <- renderPlot({         
-  #   
-  #   # Get the  data
-  #   
-  #   res <- simul()$res
-  #   result <- simul()$result
-  #   
-  #   
-  #   sample <- random.sample()
-  #   theta1=sample$theta     
-  #   
-  #   
-  #   d1 <-  (res[,1] )
-  #   d2 <-  (res[,3] )
-  # 
-  #   plot(density(d1), xlim = c(- 3, 3), main="Kernel Density of treatment effect estimates",
-  #        xlab="Treatment effect", #Change the x-axis label
-  #        ylab="Density") #y-axis label)                   # Plot density of x
-  #   lines(density(d2), col = "red")                                                      # Overlay density  
-  #   abline(v = theta1, col = "red")                  
-  #  
-  #   legend("topleft",                                  # Add legend to density
-  #          legend = c("Density adj", "Density not adj" ),
-  #          col = c("black", "red"),
-  #          lty = 1)
-  # })
-  # 
-  # #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-  # 
-  # output$reg.ploty <- renderPlot({         
-  #   
-  #   # Get the  data
-  #   
-  #   res <- simul()$res
-  #   result <- simul()$result
-  #   
-  #   d1 <-  (res[,2] )
-  #   d2 <-  (res[,4] )
-  #   
-  #   plot(density(d1), xlim = c(0, 2), main="Kernel Density of standard error of trt effect",
-  #        xlab="Standard error", #Change the x-axis label
-  #        ylab="Density") #y-axis label)                  # Plot density of x
-  #   lines(density(d2), col = "red")                                                      # Overlay density  
-  #   
-  #   
-  #   legend("topright",                                  # Add legend to density
-  #          legend = c("Density adj", "Density not adj" ),
-  #          col = c("black", "red"),
-  #          lty = 1)
-  # })
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  # output$textWithNumber4 <- renderText({ 
-  #   
-  #   result <- simul()$result  # means
-  #   
-  #   HTML(paste0(  tags$hr(),
-  #                 "Mean and se adjusting  "  
-  #                 , tags$span(style="color:red",  p3(result[1]))  ,
-  #                 " ; "  
-  #                 , tags$span(style="color:red",  p3(result[3] )) ,
-  #                 " and ignoring in analysis "
-  #                 , tags$span(style="color:red",  p3(result[2]  )),
-  #                 " ; "
-  #                 , tags$span(style="color:red",  p3(result[4] )) ,
-  #                 
-  #                 br(), br(),
-  #                 br(), br(),
-  #                 tags$hr()
-  # 
-  #   ))    
-  #   
-  # })  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # simulation plots
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # collect simulation trt effect estimates from simulation and plot!
-  
   
   output$reg.plotx <- renderPlot({         #means
     
@@ -2342,9 +2194,6 @@ server <- shinyServer(function(input, output   ) {
     
     dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y                  ))
     dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
-    
-    
-    
     
     if (input$dist %in% "All") {
 
@@ -2375,8 +2224,6 @@ server <- shinyServer(function(input, output   ) {
            ylab="Density") #y-axis label)                   # Plot density of x
       lines( (d2), col = "black", lty=w, lwd=ww)  
     
-      
-      
     }
     
     else if (input$dist %in% "d3") {  #remove
@@ -2386,8 +2233,6 @@ server <- shinyServer(function(input, output   ) {
            xlab="Treatment effect", #Change the x-axis label
            ylab="Density") #y-axis label)                   # Plot density of x
       lines( (d4), col = "red", lty=w, lwd=ww)          
-      
-      
       
     }
     
@@ -2399,8 +2244,7 @@ server <- shinyServer(function(input, output   ) {
           
       lines( (d6), col = "blue", lty=w, lwd=ww)       
      
-      
-      
+
     }
     
     else if (input$dist %in% "d7") {
@@ -2454,19 +2298,9 @@ server <- shinyServer(function(input, output   ) {
            lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w)           ,lwd=ww
                           , bty = "n", cex=1)
   })
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+  # SIMUALTION PLOT
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # collect simulation trt effect standard error estimates from simulation and plot!
   
@@ -2499,20 +2333,13 @@ server <- shinyServer(function(input, output   ) {
     d11 <-  density(res3[,6] )
     d12 <-  density(res3[,8] )
     
-    
-    #se. <-  sqrt((2*(sigma1^2 + sigma1^2)) /N1)  
-    #se. <-  sqrt((sigma1^2+sigma1^2) / (N1/2) )  #ditto
-    
+     
     # we may have imbalance in numbers, otherwise the se will not be exactly correct and this maybe seen in plot
     se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
-    
-    
-    
+
     dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y                  ))
     dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
-    
-    
-    
+
     if (input$dist %in% "All") {
       
     
@@ -2532,7 +2359,6 @@ server <- shinyServer(function(input, output   ) {
     lines( (d11), col = "grey", lty=wz, lwd=ww)       
     lines( (d12), col = "grey", lty=w, lwd=ww)  
     
-    
     }
     
     
@@ -2544,8 +2370,7 @@ server <- shinyServer(function(input, output   ) {
            ylab="Density") #y-axis label)                   # Plot density of x
       lines( (d2), col = "black", lty=w, lwd=ww)  
       
-      
-      
+
     }
     
     else if (input$dist %in% "d3") {  #remove
@@ -2555,8 +2380,6 @@ server <- shinyServer(function(input, output   ) {
            xlab="Treatment effect", #Change the x-axis label
            ylab="Density") #y-axis label)                   # Plot density of x
       lines( (d4), col = "red", lty=w, lwd=ww)          
-      
-      
       
     }
     
@@ -2569,8 +2392,7 @@ server <- shinyServer(function(input, output   ) {
       lines( (d6), col = "blue", lty=w, lwd=ww)       
       
       
-      
-    }
+      }
     
     else if (input$dist %in% "d7") {
       
@@ -2600,37 +2422,7 @@ server <- shinyServer(function(input, output   ) {
       lines( (d12), col = "grey", lty=w, lwd=ww)     
       
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+  
     abline(v = se., col = "darkgrey")   
     legend("topright",                                  # Add legend to density
            legend = c(" adj. for true prognostic covariates", 
@@ -2652,263 +2444,7 @@ server <- shinyServer(function(input, output   ) {
            , bty = "n", cex=1)
   })
   
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # this code writes coloured text to app, nice idea, lots of code, but not very clear, the simple table is better
-  # output$textWithNumber2 <- renderText({ 
-  #   
-  #   res <- simul()$res  # means
-  #   result <- simul()$result  # means
-  #   result2 <- simul2()$result  # means
-  #   
-  #   q1.result <- simul()$q1.result  # means
-  #   q2.result <- simul()$q2.result  # means
-  #   
-  #   q1.result2 <- simul2()$q1.result  # means
-  #   q2.result2 <- simul2()$q2.result  # means
-  #   
-  #   adjusting <- "adjusting"
-  #   ignoring <- "ignoring"
-  #   
-  #   HTML(paste0(  tags$hr(),
-  #                  
-  #                 "Mean and se ",
-  #                 tags$span(style="color:green",   adjusting)  ,
-  #                 " for true prognostic covariates (black lines) " 
-  #                 
-  #                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #                 , tags$span(style="color:blue",  p3(result[1]))  ,
-  #                 
-  #                                      " 95%CI ("
-  #                  , tags$span(style="color:blue",  p2(q1.result[1]))  ,
-  #                  ", "
-  #                  , tags$span(style="color:blue",  p2(q2.result[1]))  ,
-  #                  " )",
-  #                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #                 
-  #                  
-  #                 " ; "  
-  #                 , tags$span(style="color:red",  p3(result[2] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result[13] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result[19] )) ,
-  #                 " 95%CI ("
-  #                 , tags$span(style="color:purple",  p2(result[25] )) ,
-  #                 ", "
-  #                 , tags$span(style="color:purple",  p2(result[26] )) ,
-  #                 " )",
-  #                 
-  #                 
-  #               br(), br(),
-  #              
-  #                   
-  #                 
-  #                 " Mean and se ",
-  #                 tags$span(style="color:red",   ignoring) , 
-  #                 " true prognostic in analysis (red lines) "
-  #                 , tags$span(style="color:blue",  p3(result[3]  )),
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " 95%CI ("
-  #               , tags$span(style="color:blue",  p2(q1.result[3]))  ,
-  #               ", "
-  #               , tags$span(style="color:blue",  p2(q2.result[3]))  ,
-  #               " )",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               
-  #                 " ; "
-  #                 , tags$span(style="color:red",  p3(result[4] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result[14] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result[20] )) ,
-  #         
-  #               " 95%CI ("
-  #               , tags$span(style="color:purple",  p2(result[27] )) ,
-  #               ", "
-  #               , tags$span(style="color:purple",  p2(result[28] )) ,
-  #               " )",
-  #               
-  #               
-  #               
-  #               
-  #                 br(), br(),
-  #                 "Mean and se ",
-  #                 tags$span(style="color:green",   adjusting)  ,
-  #                 " for non prognostic covariates (blue lines) "  
-  #                 , tags$span(style="color:blue",  p3(result[5]))  ,
-  #            
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " 95%CI ("
-  #               , tags$span(style="color:blue",  p2(q1.result[5]))  ,
-  #               ", "
-  #               , tags$span(style="color:blue",  p2(q2.result[5]))  ,
-  #               " )",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               
-  #                 " ; "  
-  #                 , tags$span(style="color:red",  p3(result[6] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result[15] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result[21] )) ,
-  #               " 95%CI ("
-  #               , tags$span(style="color:purple",  p2(result[29] )) ,
-  #               ", "
-  #               , tags$span(style="color:purple",  p2(result[30] )) ,
-  #               " )",
-  #                 br(), br(),
-  #                 
-  #                 " Mean and se ",
-  #                 tags$span(style="color:red",   ignoring) , 
-  #                 "  non prognostic covariates (green lines) "
-  #               
-  #               
-  #                 , tags$span(style="color:blue",  p3(result[7]  )),
-  #               
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " 95%CI ("
-  #               , tags$span(style="color:blue",  p2(q1.result[7]))  ,
-  #               ", "
-  #               , tags$span(style="color:blue",  p2(q2.result[7]))  ,
-  #               " )",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " ; "
-  #               
-  #                 , tags$span(style="color:red",  p3(result[8] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result[16] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result[22] )) ,
-  #               " 95%CI ("
-  #               , tags$span(style="color:purple",  p2(result[31] )) ,
-  #               ", "
-  #               , tags$span(style="color:purple",  p2(result[32] )) ,
-  #               " )",
-  #                 br(), br(),
-  #                 
-  #                 "Mean and se ",
-  #                 tags$span(style="color:green",   adjusting)  ,
-  #                 " for mix of prognostic and non prognostic covariates (grey lines) "  
-  #                 , tags$span(style="color:blue",  p3(result[9]))  ,
-  #               
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " 95%CI ("
-  #               , tags$span(style="color:blue",  p2(q1.result[9]))  ,
-  #               ", "
-  #               , tags$span(style="color:blue",  p2(q2.result[9]))  ,
-  #               " )",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #                 " ; "  
-  #                 , tags$span(style="color:red",  p3(result[10] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result[17] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result[23] )) ,
-  #               " 95%CI ("
-  #               , tags$span(style="color:purple",  p2(result[33] )) ,
-  #               ", "
-  #               , tags$span(style="color:purple",  p2(result[34] )) ,
-  #               " )",
-  #                 br(), br(),
-  #                 
-  #                 " Mean and se ",
-  #                 tags$span(style="color:red",   ignoring) , 
-  #                 " mix of prognostic and non prognostic covariates (pink lines) "
-  #                 , tags$span(style="color:blue",  p3(result[11]  )),
-  #                 " ; ",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " 95%CI ("
-  #               , tags$span(style="color:blue",  p2(q1.result[11]))  ,
-  #               ", "
-  #               , tags$span(style="color:blue",  p2(q2.result[11]))  ,
-  #               " )",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               " ; "  
-  #                 , tags$span(style="color:red",  p3(result[12] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result[18] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result[24] )) ,
-  #               " 95%CI ("
-  #               , tags$span(style="color:purple",  p2(result[35] )) ,
-  #               ", "
-  #               , tags$span(style="color:purple",  p2(result[36] )) ,
-  #               " )",
-  #                 br(), br(),
-  #                 "Mean and se ",
-  #                 tags$span(style="color:green",   adjusting)  ,
-  #                 " adjusting for true prognostic correlated covariates (yellow lines) "  
-  #                 , tags$span(style="color:blue",  p3(result2[1]))  ,
-  #               
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " 95%CI ("
-  #               , tags$span(style="color:blue",  p2(q1.result2[1]))  ,
-  #               ", "
-  #               , tags$span(style="color:blue",  p2(q2.result2[1]))  ,
-  #               " )",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #                 " ; "  
-  #                 , tags$span(style="color:red",  p3(result2[2] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result2[5] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result2[7] )) ,
-  #               " 95%CI ("
-  #               , tags$span(style="color:purple",  p2(result2[9] )) ,
-  #               ", "
-  #               , tags$span(style="color:purple",  p2(result2[10] )) ,
-  #               " )",
-  #                 br(), br(),
-  #                 
-  #                 " Mean and se ",
-  #                 tags$span(style="color:red",   ignoring) , 
-  #                 "  true prognostic correlated covariates (purple lines) "
-  #                 , tags$span(style="color:blue",  p3(result2[3]  )),
-  #               
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               " 95%CI ("
-  #               , tags$span(style="color:blue",  p2(q1.result2[3]))  ,
-  #               ", "
-  #               , tags$span(style="color:blue",  p2(q2.result2[3]))  ,
-  #               " )",
-  #               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #               
-  #               
-  #                 " ; "
-  #                 , tags$span(style="color:red",  p3(result2[4] )) ,
-  #                 " power "
-  #                 , tags$span(style="color:green",  p3(result2[6] )) ,
-  #                 " MSE "
-  #                 , tags$span(style="color:purple",  p2(result2[8] )) ,
-  #               " 95%CI ("
-  #               , tags$span(style="color:purple",  p2(result2[11] )) ,
-  #               ", "
-  #               , tags$span(style="color:purple",  p2(result2[12] )) ,
-  #               " )",
-  #                 
-  #                 br(), br()
-  #                 # "Mean squared error (MSE: accuracy and precision) combines bias and
-  #                 # variance as (bias*bias+variance). It represents the total variation around the
-  #                 # true value, rather than the average estimated value. MSE gives an overall sense of the quality of the
-  #                 # estimator. As the MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator, 
-  #                 # this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
-  #                 # true sigma squared 
-  #                 # on the left input."
-  #   ))    
-  #   
-  # })   
+   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   output$textWithNumber99 <- renderText({ 
@@ -2942,61 +2478,6 @@ server <- shinyServer(function(input, output   ) {
     
     q1.result3 <- simul3()$q1.result  
     q2.result3 <- simul3()$q2.result  
-    
-   
-    
-    
-    # coef(f)["z", "Estimate"],
-    # coef(f)["z", "Std. Error"],
-    # 
-    # coef(f1)["z", "Estimate"],
-    # coef(f1)["z", "Std. Error"],
-    # 
-    # coef(f2)["z", "Estimate"],
-    # coef(f2)["z", "Std. Error"],
-    # 
-    # coef(f3)["z", "Estimate"],
-    # coef(f3)["z", "Std. Error"], #8
-    # 
-    # 
-    # 
-    # # collect p values
-    # coef(f)["z", "Pr(>|t|)"]  < alpha,  #9
-    # coef(f1)["z", "Pr(>|t|)"] < alpha,
-    # coef(f2)["z", "Pr(>|t|)"] < alpha,
-    # coef(f3)["z", "Pr(>|t|)"] < alpha,
-    # 
-    # ## mse
-    # mean((d$y-predict(zz))^2),   #13
-    # mean((d$y-predict(zz1))^2),
-    # mean((d$y2-predict(zz2))^2),
-    # mean((d$y2-predict(zz3))^2),
-    # 
-    # 
-    # mean(quantile( (d$y-predict(zz))^2, .025)), #17
-    # mean(quantile( (d$y-predict(zz))^2, .975)), 
-    # mean(quantile( (d$y-predict(zz1))^2, .025)), 
-    # mean(quantile( (d$y-predict(zz1))^2, .975)),
-    # mean(quantile( (d$y2-predict(zz2))^2, .025)), #
-    # mean(quantile( (d$y2-predict(zz2))^2, .975)), 
-    # mean(quantile( (d$y2-predict(zz3))^2, .025)), 
-    # mean(quantile( (d$y2-predict(zz3))^2, .975)),#24
-    # 
-    # 
-    # f$sigma,  #27
-    # f1$sigma,
-    # f2$sigma,
-    # f3$sigma, #30
-    # 
-    # 
-    # f$adj.r.squared,  #31
-    # f1$adj.r.squared,
-    # f2$adj.r.squared,
-    # f3$adj.r.squared #34
-    # 
-    # result <- apply(res,2,mean)
-    # q1.result <- apply(res,2, quantile, probs=c(0.025), na.rm=TRUE)
-    # q2.result <- apply(res,2, quantile, probs=c(0.975), na.rm=TRUE)
     
     zz <- rbind(
       (c( p3(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p3(result[2] ) ,  p2(result[13] ) ,  p2(result[19] ) ,   p2(result[25] ),   p2(result[26] )  ,   p2(result[37] )    ,   p2(result[43] )         )) ,
@@ -3035,10 +2516,7 @@ server <- shinyServer(function(input, output   ) {
       " not adj. for imbalanced prognostic covariates",  
       " adj. for non prognostic imbalanced covariates",
       " not adj. for non prognostic imbalanced covariates"
-      
-      
-      
-      )
+        )
     zz <- zz[order(zz$B),]
     
     colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","  MSE ", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
@@ -3056,7 +2534,7 @@ server <- shinyServer(function(input, output   ) {
   
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
+  # plot of null distrbution
   output$norm.plot <- renderPlot({ 
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3072,9 +2550,7 @@ server <- shinyServer(function(input, output   ) {
     x <- seq(mu1-6*sd1, mu1+6*sd1, 0.1)
     
     se1 <- sqrt((sd1^2/n1) + (sd1^2/n2))
-    
-    # crit <- mu1 + crit1 * se1
-    
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # plotting limits
     upper <- mu1+6*se1
@@ -3119,7 +2595,6 @@ server <- shinyServer(function(input, output   ) {
     qnorm(.975,0,se1) 
     
   }) 
-  
   
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3195,102 +2670,6 @@ server <- shinyServer(function(input, output   ) {
     
   })  
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # output$reg.plotxx <- renderPlot({         
-  #   
-  #   # Get the  data
-  #   res <- simul()$res
-  #   res2 <- simul2()$res
-  # 
-  #   sample <- random.sample()
-  #   theta1=sample$theta     
-  #   
-  #   d1 <-  density(res[,1] )
-  #   d2 <-  density(res[,3] )
-  #   d3 <-  density(res[,5] )
-  #   d4 <-  density(res[,7] )
-  #   d5 <-  density(res[,9] )
-  #   d6 <-  density(res[,11] )
-  #   d7 <-  density(res2[,1] )
-  #   d8 <-  density(res2[,3] )
-  #   
-  #   dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y))
-  #   dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x))
-  #   dx <- range(c(d1$x,  d3$x, d4$x, d5$x))
-  # 
-  #   plot((d1), xlim = dx, main=paste0("Density of treatment estimates (zoomed in), truth= ",p3(theta1),""), ylim=c(0,dz),lty=w, lwd=ww,
-  #         xlab="Treatment effect", #Change the x-axis label
-  #         ylab="Density") #y-axis label)                   # Plot density of x
-  #   lines( (d2), col = "red", lty=w, lwd=ww)  
-  #   lines( (d3), col = "blue", lty=w, lwd=ww)    
-  #   lines( (d4), col = "green", lty=w, lwd=ww)          
-  #   lines( (d5), col = "grey", lty=w, lwd=ww)       
-  #   lines( (d6), col = "pink", lty=w, lwd=ww)       
-  #   lines( (d7), col = "yellow", lty=w, lwd=ww)       
-  #   lines( (d8), col = "purple", lty=w, lwd=ww)       
-  # 
-  #   abline(v = theta1, col = "darkgrey")                  
-  #   
-  # })
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-  
-  # output$reg.plotyy <- renderPlot({         
-  #   
-  #   res <- simul()$res
-  # 
-  #   res2 <- simul2()$res
-  #  
-  #   sample <- random.sample()
-  #   sigma1=sample$sigma
-  #   N1 <- mcmc()$N # 
-  #   
-  #   se. <-  sqrt((2*(sigma1^2 + sigma1^2)) /N1)  
-  #   se. <-  sqrt((sigma1^2+sigma1^2) / (N1/2) )  #ditto
-  #   
-  #   d1 <-  density(res[,2] )
-  #   d2 <-  density(res[,4] )
-  #   d3 <-  density(res[,6] )
-  #   d4 <-  density(res[,8] )
-  #   d5 <-  density(res[,10] )
-  #   d6 <-  density(res[,12] )
-  #   d7 <-  density(res2[,2] )
-  #   d8 <-  density(res2[,4] )
-  #   
-  #   dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y)) 
-  #   dx <- range(c(d1$x,  d3$x, d4$x, d5$x)) #ignore some of the distributions
-  #   
-  #   plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates (zoomed in), truth= ",p4(se.),""), ylim=c(0,dz),lty=w, lwd=ww,
-  #         xlab="Standard error", #Change the x-axis label
-  #         ylab="Density") #y-axis label)                   # Plot density of x
-  #   lines( (d2), col = "red", lty=w, lwd=ww)  
-  #   lines( (d3), col = "blue", lty=w, lwd=ww)    
-  #   lines( (d4), col = "green", lty=w, lwd=ww)          
-  #   lines( (d5), col = "grey", lty=w, lwd=ww)       
-  #   lines( (d6), col = "pink", lty=w, lwd=ww)       
-  #   lines( (d7), col = "yellow", lty=w, lwd=ww)       
-  #   lines( (d8), col = "purple", lty=w, lwd=ww)     
-  #   
-  #   abline(v = se., col = "darkgrey")          
-  
-  # legend("topright",                                  # Add legend to density
-  #        legend = c(" adj. for true prognostic covariates", 
-  #                   " not adj. for true prognostic covariates" ,
-  #                   " adj. for covariates unrelated to outcome", 
-  #                   " not adj. for covariates unrelated to outcome",
-  #                   " adj. for mix of prognostic and unrelated to outcome", 
-  #                   " not adj. mix of prognostic and unrelated to outcome", 
-  #                   " adj. for correlated prognostic covariates", 
-  #                   " not adj. for correlated prognostic covariates"
-  #                   
-  #        ),
-  #        col = c("black", "red","blue","green","grey", "pink", "yellow", "purple"),
-  #        lty = w, lwd=ww, bty = "n", cex=.75)
-  
-  #})
-  
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # text 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
@@ -3313,9 +2692,7 @@ server <- shinyServer(function(input, output   ) {
   output$zz <- renderPrint({
     
     d <- table.sim()$zz
-    
-    # d <- plyr::arrange(d,  (d[,7])) 
-    
+ 
     return(d)
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
