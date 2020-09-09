@@ -1,22 +1,24 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Some notes on the topic of randomisation
+
 # need to incorporate ++  Randomisation isn’t perfect but doing bounding of response slides 17 and 18, 
-#https://twitter.com/ildiazm/status/1303002930723913728
+# https://twitter.com/ildiazm/status/1303002930723913728
 # Rshiny ideas from on https://gallery.shinyapps.io/multi_regression/
 #  It follows that covariate imbalance, contrary
-#to what has been claimed by Altman, is just as much of a problem for large Studies as for
+# to what has been claimed by Altman, is just as much of a problem for large Studies as for
 # small ones
-#https://twitter.com/f2harrell/status/1299755896319475712
-#https://twitter.com/f2harrell/status/1298640944405807105
-#'ut adjusted estimation does not have to be robust to be a major improvement over unadjusted analysis.  Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist). '
-#Using observed imbalances to find covariates to adjust for is arbitrary and reduces power by maximizing co-linearity with treatment
+# https://twitter.com/f2harrell/status/1299755896319475712
+# https://twitter.com/f2harrell/status/1298640944405807105
+#'but adjusted estimation does not have to be robust to be a major improvement over unadjusted analysis.  Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist). '
+# Using observed imbalances to find covariates to adjust for is arbitrary and reduces power by maximizing co-linearity with treatment
 
-#https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32
-#'randomisation entitles us to ignore covariates we have not measured.'
+# https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32
+# 'randomisation entitles us to ignore covariates we have not measured.'
 # To me the goal of a parallel-group randomized clinical trial is to answer this question: do two patients starting out at the same point 
 # (same age, severity of disease, etc.), one on treatment A and one on treatment B, end up with the same expected outcomes? This is fundamentally a completely conditional model.
 
 # https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/
-##https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2
+# https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2
 #' Can you reconcile these two points?
 #'   
 #'   @f2harrell
@@ -32,9 +34,9 @@
 #
 # Stop obsessing about balance
 # 1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups
-#https://twitter.com/f2harrell/status/1303002649080532995
-#Unadjusted estimates are biased in comparison with adjusted estimates from nonlinear models, a fact well studied for decades.  Some do not call this 'bias' but the damage is the same. Literature is summarized in my ANCOVA chapter in http://hbiostat.org/doc/bbr.pdf
-
+# https://twitter.com/f2harrell/status/1303002649080532995
+# Unadjusted estimates are biased in comparison with adjusted estimates from nonlinear models, a fact well studied for decades.  Some do not call this 'bias' but the damage is the same. Literature is summarized in my ANCOVA chapter in http://hbiostat.org/doc/bbr.pdf
+# https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/2
 # scenarios investigated
 # y	prognostic		      adj
 # y	prognostic		      not adj
@@ -53,67 +55,66 @@
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/2
-rm(list=ls()) 
-set.seed(333) # reproducible
-library(directlabels)
-library(shiny) 
-library(shinyWidgets)
-library(shinythemes)  # more funky looking apps
-library(DT)
-library(shinyalert)
-library(Hmisc)
-library(reshape)
-library(rms)
-library(ormPlot)
-library(ordinal)
-library(ggplot2)
-library(tidyverse)
+  rm(list=ls()) 
+  set.seed(333) # reproducible
+  library(directlabels)
+  library(shiny) 
+  library(shinyWidgets)
+  library(shinythemes)  # more funky looking apps
+  library(DT)
+  library(shinyalert)
+  library(Hmisc)
+  library(reshape)
+  library(rms)
+  library(ormPlot)
+  library(ordinal)
+  library(ggplot2)
+  library(tidyverse)
 #options(mc.cores = parallel::detectCores())
 #rstan_options(auto_write = TRUE)
-options(max.print=1000000)    
-
-fig.width <- 1200
-fig.height <- 500
-fig.width1 <- 1380
-fig.width8 <- 1380
-fig.height1 <- 700
-fig.width7 <- 700
-fig.height7 <- 500
-fig.width6 <- 680
-## convenience functions
-p0 <- function(x) {formatC(x, format="f", digits=0)}
-p1 <- function(x) {formatC(x, format="f", digits=1)}
-p2 <- function(x) {formatC(x, format="f", digits=2)}
-p3 <- function(x) {formatC(x, format="f", digits=3)}
-p4 <- function(x) {formatC(x, format="f", digits=4)}
-p5 <- function(x) {formatC(x, format="f", digits=5)}
-
-logit <- function(p) log(1/(1/p-1))
-expit <- function(x) 1/(1/exp(x) + 1)
-inv_logit <- function(logit) exp(logit) / (1 + exp(logit))
-is.even <- function(x){ x %% 2 == 0 } # function to id. odd maybe useful
-
-options(width=200)
-options(scipen=999)
-w=4  # line type
-ww=3 # line thickness
-wz=1
+  options(max.print=1000000)    
+  
+  fig.width <- 1200
+  fig.height <- 500
+  fig.width1 <- 1380
+  fig.width8 <- 1380
+  fig.height1 <- 700
+  fig.width7 <- 700
+  fig.height7 <- 500
+  fig.width6 <- 680
+  ## convenience functions
+  p0 <- function(x) {formatC(x, format="f", digits=0)}
+  p1 <- function(x) {formatC(x, format="f", digits=1)}
+  p2 <- function(x) {formatC(x, format="f", digits=2)}
+  p3 <- function(x) {formatC(x, format="f", digits=3)}
+  p4 <- function(x) {formatC(x, format="f", digits=4)}
+  p5 <- function(x) {formatC(x, format="f", digits=5)}
+  
+  logit <- function(p) log(1/(1/p-1))
+  expit <- function(x) 1/(1/exp(x) + 1)
+  inv_logit <- function(logit) exp(logit) / (1 + exp(logit))
+  is.even <- function(x){ x %% 2 == 0 } # function to id. odd maybe useful
+  
+  options(width=200)
+  options(scipen=999)
+  w=4  # line type
+  ww=3 # line thickness
+  wz=1
 
 # not used, but could use this for MSE
-calc.mse <- function(obs, pred, rsq = FALSE){
-  if(is.vector(obs)) obs <- as.matrix(obs)
-  if(is.vector(pred)) pred <- as.matrix(pred)
-  
-  n <- nrow(obs)
-  rss <- colSums((obs - pred)^2, na.rm = TRUE)
-  if(rsq == FALSE) rss/n else {
-    tss <- diag(var(obs, na.rm = TRUE)) * (n - 1)
-    1 - rss/tss
+  calc.mse <- function(obs, pred, rsq = FALSE){
+    if(is.vector(obs)) obs <- as.matrix(obs)
+    if(is.vector(pred)) pred <- as.matrix(pred)
+    
+    n <- nrow(obs)
+    rss <- colSums((obs - pred)^2, na.rm = TRUE)
+    if(rsq == FALSE) rss/n else {
+      tss <- diag(var(obs, na.rm = TRUE)) * (n - 1)
+      1 - rss/tss
+    }
   }
-}
 
-RR=.37 ## used to limit correlations between variables
+  RR=.37 ## used to limit correlations between variables
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2
                 # paper
