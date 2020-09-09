@@ -128,7 +128,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 h2("Covariate adjustment in randomised controlled trials (RCTs) with a continuous response"), 
                 
                 
-                h4("Stephen Senn's truisms '1) randomised controlled trials don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups' do not seem 
+                h4("Stephen Senn's truisms '1) randomised controlled trials don't deliver balance *even* if they are very large 2) valid inference does *not* depend on having balanced groups' do not seem 
                 to be common knowledge [1]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [2]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
