@@ -1,4 +1,5 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#https://twitter.com/ildiazm/status/1303002930723913728
 # Rshiny ideas from on https://gallery.shinyapps.io/multi_regression/
 #  It follows that covariate imbalance, contrary
 #to what has been claimed by Altman, is just as much of a problem for large Studies as for
@@ -135,7 +136,8 @@ This should be considered more often as sample sizes can be reduced. As Frank Ha
 In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
               Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model. 
 We simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
-covariates not related to the outcome and collinear or correlated covariates. 
+covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome. 
+
 
          "), 
                 
@@ -168,29 +170,79 @@ covariates not related to the outcome and collinear or correlated covariates.
                                     tags$style(HTML('#resample{background-color:orange}'))
                                   ),
                                   
-                                  textInput('K', 
-                                            div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
+                                  # textInput('K', 
+                                  #           div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
+                                  # 
+                                  # textInput('Kp', 
+                                  #           div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "2"),
                                   
-                                  textInput('Kp', 
-                                            div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "2"),
+                                  
+                                  
+                                  splitLayout(
+                                    
+                                    textInput('K', 
+                                              div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
+                                    
+                                    textInput('Kp', 
+                                              div(h5(tags$span(style="color:blue", "Make covariates X1:Xn prognostic"))), "2")
+                                  ),
+                                  
+                                  
+                                  
                                   
                                   textInput('Fact', 
                                             div(h5(tags$span(style="color:blue", "Covariate coefficients. Here a multiplicative factor is selected so that betas are randomly chosen between (-X*treatment effect) and (X*treatment effect)"))), "1"),
                                   
+                                  ####~~~~~~~~~~~~~~~~~~~~~~
+                                  
+                                  # tags$hr(),
+                                  # textInput('theta', 
+                                  #           div(h5(tags$span(style="color:blue", "Treatment effect"))), ".223"),
+                                  # 
+                                  # textInput('sigma', 
+                                  #           div(h5(tags$span(style="color:blue", "Residual variation"))), ".85"),
+                                  # tags$hr(), 
+                                  
+                                  
                                   tags$hr(),
-                                  textInput('theta', 
-                                            div(h5(tags$span(style="color:blue", "Treatment effect"))), ".223"),
+                                  splitLayout(
+                                    textInput('theta', 
+                                              div(h5(tags$span(style="color:blue", "Treatment effect"))), ".223"),
+                                    
+                                    textInput('sigma', 
+                                              div(h5(tags$span(style="color:blue", "Residual variation"))), ".85")
+                                  ),
+                                  #tags$hr(),
                                   
-                                  textInput('sigma', 
-                                            div(h5(tags$span(style="color:blue", "Residual variation"))), ".85"),
-                                  tags$hr(), 
                                   
                                   
-                                  textInput('pow', 
-                                            div(h5(tags$span(style="color:blue", "Power (%)"))), "90"),
-                                  textInput('alpha', 
-                                            div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5"),
+                                  
+                                  ####~~~~~~~~~~~~~~~~~~~~~~
+                                  
+                                  
+                                  
+                                  # textInput('pow', 
+                                  #           div(h5(tags$span(style="color:blue", "Power (%)"))), "90"),
+                                  # textInput('alpha', 
+                                  #           div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5"),
+                                  # tags$hr(),
+                                  
+                                  
+                                 # tags$hr(),
+                                  splitLayout(
+                                    
+                                    textInput('pow', 
+                                              div(h5(tags$span(style="color:blue", "Power (%)"))), "90"),
+                                    textInput('alpha', 
+                                              div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5")
+                                  ),
                                   tags$hr(),
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
                                   textInput('simuls', 
                                             div(h5(tags$span(style="color:blue", "Number of simulations (simulation tab only)"))), "99"),
                                   tags$hr(), 
@@ -198,56 +250,25 @@ covariates not related to the outcome and collinear or correlated covariates.
                                   textInput('covar', 
                                             div(h5(tags$span(style="color:blue", "Covariate distribution 1: uniform(-1,1), 2: normal(0,1)"))), "2"),
                                   
-                                  ###
-                                  
-                                    
-                                           # radioButtons("dist",                 div(h5(tags$span(style="color:blue","Present the following only:"))),
-                                           #              
-                                           #              c(
-                                           #               "All"                   = "All",
-                                           #                "prognostic"                   = "d1",
-                                           #                
-                                           #                
-                                           #                "non prognostic"                   = "d3",
-                                           #               
-                                           #                
-                                           #                "mix of prognostic"                   = "d5",
-                                           #               
-                                           #                
-                                           #                "correlated prognostic"                   = "d7",
-                                           #                 
-                                           #                
-                                           #                "imbalanced prognostic"                   = "d9",
-                                           #               
-                                           #                
-                                           #                "mbalanced non prognostic"                   = "d11"
-                                           #               
-                                           #              ), selected = "All"
-                                           # ),
-                                           
-                                 
-                                               
-                                       #        choiceValues = c("All","d1","d3","d5","d7","d9","d11")
+                                  ###https://stackoverflow.com/questions/49616376/r-shiny-radiobuttons-how-to-change-the-colors-of-some-of-the-choices
+                               
                                                
                                   radioButtons(
                                     inputId = "dist",
-                                    label =  div(h5(tags$span(style="color:blue","Present the following only:"))),
+                                    label =  div(h5(tags$span(style="color:blue","Plot choices for simulation tab 2, select to present :"))),
                                     choiceNames = list(
-                                      HTML("<font color='blue'>All</font>"), 
-                                      tags$span(style = "color:blue", "prognostic"), 
-                                      tags$span(style = "color:blue", "non prognostic"), 
-                                      tags$span(style = "color:blue", "mix of prognostic"),
-                                      tags$span(style = "color:blue", "correlated prognostic"),
-                                      tags$span(style = "color:blue", "imbalanced prognostic"),
-                                      tags$span(style = "color:blue", "imbalanced non prognostic")
+                                      HTML("<font color='blue'>All scenarios</font>"), 
+                                      tags$span(style = "color:blue", "Covariates all of prognostic value only"), 
+                                      tags$span(style = "color:blue", "Covariates all of no prognostic value only"), 
+                                      tags$span(style = "color:blue", "Mix of prognostic and non prognostic covariates only"),
+                                      tags$span(style = "color:blue", "Correlated covariates all of prognostic value only"),
+                                      tags$span(style = "color:blue", "Imbalanced covariates all of prognostic value only"),
+                                      tags$span(style = "color:blue", "Imbalanced covariates of no prognostic value only")
                                       
                                     ),
                                     choiceValues = c("All", "d1", "d3", "d5",  "d7", "d9", "d11")
                                   )
- 
-                                  
-                                  
-                                  ####
+  
                                   
                                 )
                                 
@@ -312,13 +333,19 @@ covariates not related to the outcome and collinear or correlated covariates.
                                             ))),#
                                         
                                         h4(paste("Here we perform simulations investigating the treatment effect estimate and associated standard error when there are
-                                           covariates that are prognostic, covariates unrelated to the outcome, a mix of prognostic and covariates unrelated to the outcome and finally 
-                                           when there are correlated covariates. For each scenario we adjust and also do not adjust for the covariates.
+                                           covariates that are prognostic, covariates unrelated to the outcome, a mix of prognostic and covariates unrelated to the outcome, correlated covariates
+                                           and imbalance prognostic covariates and imbalanced covariates of no prognostic value. For each scenario we adjust and also do not adjust for the covariates.
                                            The default number of simulations 
                                            is set at a lowly 99 so that results appear quickly. It is advisable to increase this number.
                                                     The left panel shows the distribution of the treatment effect estimates, the right panel the associated standard error estimates. The true value is shown
-                                                    by the grey vertical lines. The same covariates are used for all investigations except for the correlated covartiate investigation. 
-                                                    Correlations are capped at +/- 0.37")),
+                                                    by the grey vertical lines. The same covariates are used for investigations of covariates with prognostic value, 
+                                                    covariates unrelated to the outcome, a mix of prognostic and covariates unrelated to the outcome. 
+                                                    For imbalanced and correlated investigations covariates wil be unique. Correlations are capped at +/- 0.37.
+                                                    In the case of the imbalanced scenario an imbalance is induced by way of the treatment arm being derived from a Normal(0.3, 1) and the control arm 
+                                                    from a Normal(0, 1) distribution. We also can investigate this scenario using covariates derived from a uniform distribution Uniform(-1,1) in control
+                                                    and Uniform(-0.8,1.2) in the treatment arm.
+                                             
+                                                 ")),
                                         
                                         h4(paste("Table 2 Summary, sorted by smallest mean squared error (MSE) estimate")),
                                         div( verbatimTextOutput("zz") )  ,
@@ -791,7 +818,7 @@ server <- shinyServer(function(input, output   ) {
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     ################################################################
-    ###now create covariate that are correlation wit h each other
+    ###now create covariate that are correlation with each other
     ################################################################
     library(Matrix)
     
@@ -1326,31 +1353,10 @@ server <- shinyServer(function(input, output   ) {
     
   })
   
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #  plot of the difference in covariates across arms, deliberately imbalanced
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
+
   output$reg.ploti <- renderPlot({         
  
     sample <- random.sample()
@@ -1371,19 +1377,19 @@ server <- shinyServer(function(input, output   ) {
     # plot
     par(mar=c(4,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
     plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
-         ylab="Estimate Mean difference", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
-         main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
-             placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.96 X standard error of difference ",p3(se.*qnorm(.975)),""))
+         ylab="Estimate Mean difference (ctrl - trt)", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines are at 0 and -0.3.",
+         main=paste0("'Deliberate imbalance' estimate of mean difference of each covariate distribution & 95% confidence interval. Placebo=",placebo,", treated=",treated,", total=",bigN,""))
     #axis(2, seq(-5,5,1))
     # axis(1, seq(1,K,10))
     points(1:K, doff[,1], pch=20)
     abline(0, 0, col="pink", lty=w, lwd=.5)
-    abline(se., 0, col="pink" , lty=w, lwd=.5)
-    abline(-se., 0, col="pink" , lty=w, lwd=.5)
+    abline(-0.3, 0, col="pink" , lty=w, lwd=.5)
+   # abline(se., 0, col="pink" , lty=w, lwd=.5)
+  #  abline(-se., 0, col="pink" , lty=w, lwd=.5)
     #abline(qt(.975, df=dff)*se., 0, col="pink" , lty=w, lwd=.5)
     #abline(qt(.975, df=dff)*-se., 0, col="pink" , lty=w, lwd=.5)
-    abline(2*se., 0, col="pink" , lty=w, lwd=.5)
-    abline(2*-se., 0, col="pink" , lty=w, lwd=.5)
+   # abline(2*se., 0, col="pink" , lty=w, lwd=.5)
+  #  abline(2*-se., 0, col="pink" , lty=w, lwd=.5)
     
     for (i in 1:K){
       if (prod(conf[i,c(1,2)]) < 0 ) {
@@ -1396,25 +1402,8 @@ server <- shinyServer(function(input, output   ) {
   })
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #  plot  of the difference in covarites across arms
+  #  plot  of the difference in covarites across arms, expecting balance and chance imbalance
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
   
   output$reg.plot <- renderPlot({         
@@ -1442,8 +1431,8 @@ server <- shinyServer(function(input, output   ) {
     # plot
     par(mar=c(4,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
     plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
-         ylab="Estimate Mean difference", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
-         main=paste0("'Imbalance' treatment arm estimate of mean difference of each covariate distribution & 95% confidence interval
+         ylab="Estimate Mean difference (ctrl-trt)", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
+         main=paste0("'Chance imbalance' estimate of mean difference of each covariate distribution & 95% confidence interval
              placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.96 X standard error of difference ",p3(se.*qnorm(.975)),""))
     #axis(2, seq(-5,5,1))
     # axis(1, seq(1,K,10))
