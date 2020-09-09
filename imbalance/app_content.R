@@ -650,6 +650,11 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                               div(p(" ")),
                                               tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[7] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
                                               div(p(" ")),
+                                              tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[8] ESteyerberg explains some of the advantages of conditioning on covariates"),),  
+                                              div(p(" ")),
+                                              
+                                              
+                                              
                                               
                                               tags$hr()
                                        ) 
