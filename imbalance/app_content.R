@@ -170,14 +170,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                     tags$style(HTML('#resample{background-color:orange}'))
                                   ),
                                   
-                                  # textInput('K', 
-                                  #           div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
-                                  # 
-                                  # textInput('Kp', 
-                                  #           div(h5(tags$span(style="color:blue", "Make covariates X1 to Xn prognostic (tab 5 only)"))), "2"),
-                                  
-                                  
-                                  
+                             
                                   splitLayout(
                                     
                                     textInput('K', 
@@ -187,22 +180,10 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                               div(h5(tags$span(style="color:blue", "Make covariates X1:Xn prognostic"))), "2")
                                   ),
                                   
-                                  
-                                  
-                                  
+
                                   textInput('Fact', 
                                             div(h5(tags$span(style="color:blue", "Covariate coefficients. Here a multiplicative factor is selected so that betas are randomly chosen between (-X*treatment effect) and (X*treatment effect)"))), "1"),
-                                  
-                                  ####~~~~~~~~~~~~~~~~~~~~~~
-                                  
-                                  # tags$hr(),
-                                  # textInput('theta', 
-                                  #           div(h5(tags$span(style="color:blue", "Treatment effect"))), ".223"),
-                                  # 
-                                  # textInput('sigma', 
-                                  #           div(h5(tags$span(style="color:blue", "Residual variation"))), ".85"),
-                                  # tags$hr(), 
-                                  
+                        
                                   
                                   tags$hr(),
                                   splitLayout(
@@ -212,23 +193,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                     textInput('sigma', 
                                               div(h5(tags$span(style="color:blue", "Residual variation"))), ".85")
                                   ),
-                                  #tags$hr(),
-                                  
-                                  
-                                  
-                                  
-                                  ####~~~~~~~~~~~~~~~~~~~~~~
-                                  
-                                  
-                                  
-                                  # textInput('pow', 
-                                  #           div(h5(tags$span(style="color:blue", "Power (%)"))), "90"),
-                                  # textInput('alpha', 
-                                  #           div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5"),
-                                  # tags$hr(),
-                                  
-                                  
-                                 # tags$hr(),
+                                 
                                   splitLayout(
                                     
                                     textInput('pow', 
@@ -237,11 +202,6 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                               div(h5(tags$span(style="color:blue", "Alpha level two sided (%)"))), "5")
                                   ),
                                   tags$hr(),
-                                  
-                                  
-                                  
-                                  
-                                  
                                   
                                   textInput('simuls', 
                                             div(h5(tags$span(style="color:blue", "Number of simulations (simulation tab only)"))), "99"),
@@ -356,7 +316,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                         
                                         width = 30 )     ,
                               
-                              tabPanel("3 Measured covariates prognostic", value=7, 
+                              tabPanel("3a Measured covariates prognostic", value=7, 
                                        
                                        #h4("It appears the standard error of the treatment effect (variable z) is smaller if we adjust"),
                                        fluidRow(
@@ -392,7 +352,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                        
                               ) ,
                               
-                              tabPanel("3a Measured covariates non prognostic", value=3, 
+                              tabPanel("3b Measured covariates non prognostic", value=3, 
                                        
                                        
                                        
@@ -420,7 +380,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                        
                               ) ,
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                              tabPanel( "3b Measured covariates mix of non prog and prognostic", 
+                              tabPanel( "3c Measured covariates mix of non prog and prognostic", 
                                         
                                         
                                         h4("First X1:Xn covariates only are prognostic, the remainder are not"),
@@ -453,7 +413,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                         
                                         width = 30 )     ,
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                              tabPanel( "3c Measured correlated covariates",
+                              tabPanel( "4 Measured correlated covariates",
                                         
                                         fluidRow(
                                           column(width = 6, offset = 0, style='padding:1px;',
@@ -483,7 +443,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                         
                                         width = 30 )     ,
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                              tabPanel( "3d Measured imbalanced covariates",
+                              tabPanel( "5 Measured imbalanced covariates",
                                         
                                         fluidRow(
                                           column(width = 6, offset = 0, style='padding:1px;',
@@ -515,7 +475,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                               
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                               
-                              tabPanel("3d Observations based on one realisation", value=3, 
+                              tabPanel("6 Observations based on one realisation", value=3, 
                                        
                                        h4(htmlOutput("textWithNumber1") ),
                                        
@@ -536,7 +496,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                               ),
                               
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                              tabPanel("3e Observed covariate balance", value=7, 
+                              tabPanel("7 Observed covariate balance", value=7, 
                                        h4("Figure 7 Difference in baseline covariates across arms. Larger sample sizes does not mean better covariate balance. Precision improves so smaller differences are picked up."),
                                        
                                        div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
@@ -558,7 +518,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                               ) ,
                               
                               #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                              tabPanel("3t Observed covariate imbalance", value=7, 
+                              tabPanel("8 Observed covariate imbalance", value=7, 
                                        h4("Figure 8 Difference in baseline covariates across arms.up."),
                                        div(plotOutput("reg.ploti", width=fig.width1, height=fig.height1)),
                                         
@@ -572,7 +532,7 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                        
                               ) ,
                               
-                              tabPanel("4 Balance does not get better when clinical trials get larger", 
+                              tabPanel("9 Balance does not get better when clinical trials get larger", 
                                        h4("Figure 8 Investigating covariate balance, enter desired values in boxes."),
                                        fluidRow(
                                          column(3,
@@ -608,14 +568,14 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                        
                               ),
                               
-                              tabPanel("5 Data used tabs 3,4 & 5", value=3, 
+                              tabPanel("10 Data used tabs 3a, b & c", value=3, 
                                        
                                        h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
                                        div( verbatimTextOutput("ddd")),
                                        
                               ),
                               
-                              tabPanel("6 Correlated data tab 6", 
+                              tabPanel("11 Correlated data tab 4", 
                                        
                                        fluidRow(
                                          column(width = 9, offset = 0, style='padding:1px;',
@@ -625,18 +585,28 @@ covariates not related to the outcome, collinear or correlated covariates relate
                                          
                                        )
                               ),
-                              
-                              
-                              
-                              
-                              tabPanel("check", value=3, 
+                              tabPanel("12 Imbalanced data tab 5", 
                                        
-                                       # h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
-                                       div( verbatimTextOutput("ttests2")),
-                                       
+                                       fluidRow(
+                                         column(width = 9, offset = 0, style='padding:1px;',
+                                                
+                                                div( verbatimTextOutput("fake5")),
+                                             
+                                         ),
+                                         
+                                       )
                               ),
                               
-                              tabPanel("7 Notes", value=3, 
+                              
+                              # ttest ouputs
+                              # tabPanel("check", value=3, 
+                              #          
+                              #          # h4("Data and Response for prognostic, non prognostic and mix of prognostic and non prognostic variables"), 
+                              #          div( verbatimTextOutput("ttests2")),
+                              #          
+                              # ),
+                              
+                              tabPanel("13 Notes and references", value=3, 
                                        
                                        ## could do correlated covariates not related to the outcome?
                                        h4("The first tab, shows the standard power calculation function in R for a ttest, using the random error, treatment effect, alpha and power to determine the sample size.  
@@ -3342,6 +3312,13 @@ server <- shinyServer(function(input, output   ) {
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
+  output$fake5 <- renderPrint({
+    
+    d <- mcmc()$fake5
+    
+    
+    return(print(d, digits=4))
+  })
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 })
 
