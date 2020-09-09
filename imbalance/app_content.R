@@ -141,7 +141,7 @@ We simulate a 1:1 RCT with a continuous response, estimating treatment effects w
 covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome. 
 The key information can be found on tab 2, the results of simulation."),
 h4("
-Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL so just adding 
+Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL and if we were simulating this response adding 
 similar covariates into a model will result in a response the variance of which keeps on increasing and soon implausible values will result. 
 In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables. 
 However we also wish to examine imbalanced covariates and collinear covariates [4,5]. Therefore it is advisable to limit the number of covariates in the simulation, default is 3. "), 
@@ -267,7 +267,6 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                                 h4(paste("Table 1 Result of power calculation based on inputs")),
                                                 h4(paste("The first step is to perform a sample size calculation, based on the user inputs.")),
                                                 h4(htmlOutput("textWithNumber3") ),
-                                                #  h4(htmlOutput("textWithNumber1b") ),
                                          ) ,
                                          
                                          
@@ -278,14 +277,12 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                        
                               ) ,
                               tabPanel( "2 Simulation - to adjust or not to adjust",
-                                        # h4(paste("Figure 1 Simulation results")) ,
 
                                         h4(htmlOutput("textWithNumber1a") ),
                                         fluidRow(
                                           column(width = 6, offset = 0, style='padding:1px;',
 
                                                  div(plotOutput("reg.plotx",  width=fig.width8, height=fig.height7)),
-                                                 #  div(plotOutput("reg.plotxx",  width=fig.width7, height=fig.height7)),
                                                  div(plotOutput("reg.ploty",  width=fig.width8, height=fig.height7)),
                                           ) ,
 
@@ -293,8 +290,6 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                           fluidRow(
                                             column(width = 5, offset = 0, style='padding:1px;',
 
-                                                  # div(plotOutput("reg.ploty",  width=fig.width7, height=fig.height7)),
-                                                   #   div(plotOutput("reg.plotyy",  width=fig.width7, height=fig.height7)),
                                             ))),#
 
                                         h4(paste("Here we perform simulations investigating the treatment effect estimate and associated standard error when there are
@@ -323,7 +318,6 @@ However we also wish to examine imbalanced covariates and collinear covariates [
 
                               tabPanel("3a Measured covariates prognostic", value=7,
 
-                                       #h4("It appears the standard error of the treatment effect (variable z) is smaller if we adjust"),
                                        fluidRow(
                                          column(width = 6, offset = 0, style='padding:1px;',
 
@@ -505,17 +499,10 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                        h4("Figure 8 Difference in baseline covariates across arms. Larger sample sizes does not mean better covariate balance. Precision improves so smaller differences are picked up."),
 
                                        div(plotOutput("reg.plot", width=fig.width1, height=fig.height1)),
-
-
-
-
-                                       # covariates <- 10
+                                      # covariates <- 10
                                        # A <- rnorm(covariates, 0, sqrt(4/50))    # differences
                                        # mean(abs(A) > (1.96*sqrt(4/50)))
-
-
-
-                                       fluidRow(
+                              fluidRow(
                                          column(width = 7, offset = 0, style='padding:1px;',
 
                                          )),
@@ -526,9 +513,6 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                               tabPanel("8 Observed covariate imbalance", value=7,
                                        h4("Figure 9 Difference in baseline covariates across arms.up."),
                                        div(plotOutput("reg.ploti", width=fig.width1, height=fig.height1)),
-
-
-
 
                                        fluidRow(
                                          column(width = 7, offset = 0, style='padding:1px;',
@@ -554,7 +538,6 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                                           div(h5(tags$span(style="color:blue", "Two sided alpha level"))), "0.05")),
                                        ),
 
-
                                        div(plotOutput("norm.plot", width=fig.width, height=fig.height)),
 
                                        h4("'The reason is that in parallel group trials,
@@ -569,7 +552,6 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                               But we don't have to, the proportion of 'significant differences' is simply found using the normal distribution.
                                               So it does not matter how many covariates we have measured. On average 5% of the covariates will be picked up as 'significant' at the 5% level (randomisation assures the null is true).
                                              ")
-
 
                               ),
 
@@ -615,9 +597,6 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                               
                               tabPanel("13 Notes and references", value=3, 
                                        
-                                     
-
-                                       
                                       h4("The first tab, shows the standard power calculation function in R for a ttest, using the random error, treatment effect, alpha and power to determine the sample size. ") ,
                                        
                                        h4("Tab 2, presents the results of simulation where we investigate (i) adjusting for true prognostic covariates (ia) ignoring them in the analysis. We investigate (ii)
@@ -638,29 +617,20 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                        
                                                h4("The next three tabs present the data used in 3a/3b/3c/4/5/6/7/8.         ")   ,                         
                                        
-                                       
                                        h4("
                                           The first user input is the number of covarites to study. 
-The next input determines how many of the first n covariates are related to the outcome when investigating a
-a mix of prognostic and non prognostic covariates. 
-The next input determines the range over which the covariate beta coefficients are randomly selected, 
-using +/- multiples of the true treatment effect. The treatment effect and random error are determined 
-in the next two input boxes respectively. Power and the alpha level two sided can be selected using the next two boxes. 
-A power calculation for a ttest is executed resulting in a sample size used in the app. The next input box is used to 
-determine the number of simulations used in tab 2. The covarite distribution can be altered by selecting between the 
-two stated distributions, this has no effect for the imbalanced investigations. The bottom of the user input section 
-is to control what simulated scenario results are presented graphically on tab 2. We can also simulate a new sample or check the code behind the app by hitting the orange buttons.
+                                          The next input determines how many of the first n covariates are related to the outcome when investigating a
+                                          a mix of prognostic and non prognostic covariates. 
+                                          The next input determines the range over which the covariate beta coefficients are randomly selected, 
+                                          using +/- multiples of the true treatment effect. The treatment effect and random error are determined 
+                                          in the next two input boxes respectively. Power and the alpha level two sided can be selected using the next two boxes. 
+                                          A power calculation for a ttest is executed resulting in a sample size used in the app. The next input box is used to 
+                                          determine the number of simulations used in tab 2. The covarite distribution can be altered by selecting between the 
+                                          two stated distributions, this has no effect for the imbalanced investigations. The bottom of the user input section 
+                                          is to control what simulated scenario results are presented graphically on tab 2. We can also simulate a new sample or check the code behind the app by hitting the orange buttons.
                                           "),
                                        
-                                       
-                                      
-                                      
-                                      
-                                      
-                                      
-                                       
-                                                                              
-                                       
+                          
                                        column(width = 12, offset = 0, style='padding:1px;',
                                               
                                               tags$hr(),
@@ -1059,7 +1029,6 @@ server <- shinyServer(function(input, output   ) {
       
     }
     
-    
   })
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## only on multivariable do this residual v prediction
@@ -1106,7 +1075,6 @@ server <- shinyServer(function(input, output   ) {
       
     }
     
-    
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   output$diag1u <- renderPlot({         
@@ -1127,7 +1095,6 @@ server <- shinyServer(function(input, output   ) {
       abline(0,1)
       
     }
-    
     
   })
   
@@ -1177,7 +1144,6 @@ server <- shinyServer(function(input, output   ) {
       
     }
     
-    
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   output$diag3u <- renderPlot({         
@@ -1198,7 +1164,6 @@ server <- shinyServer(function(input, output   ) {
       abline(0,1)
       
     }
-    
     
   })
   
@@ -1248,7 +1213,6 @@ server <- shinyServer(function(input, output   ) {
       
     }
     
-    
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   output$diag4 <- renderPlot({         
@@ -1269,8 +1233,7 @@ server <- shinyServer(function(input, output   ) {
       abline(0,1)
       
     }
-    
-    
+
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## only on multivariable do this 
@@ -1318,8 +1281,7 @@ server <- shinyServer(function(input, output   ) {
       abline(0,1)
       
     }
-    
-    
+
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   output$diag5 <- renderPlot({         
@@ -1340,7 +1302,6 @@ server <- shinyServer(function(input, output   ) {
       abline(0,1)
       
     }
-    
     
   })
   ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1393,18 +1354,10 @@ server <- shinyServer(function(input, output   ) {
     plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
          ylab="Estimate Mean difference (ctrl - trt)", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines are at 0 and -0.3.",
          main=paste0("'Deliberate imbalance' estimate of mean difference of each covariate distribution & 95% confidence interval. Placebo=",placebo,", treated=",treated,", total=",bigN,""))
-    #axis(2, seq(-5,5,1))
-    # axis(1, seq(1,K,10))
     points(1:K, doff[,1], pch=20)
     abline(0, 0, col="pink", lty=w, lwd=.5)
     abline(-0.3, 0, col="pink" , lty=w, lwd=.5)
-   # abline(se., 0, col="pink" , lty=w, lwd=.5)
-  #  abline(-se., 0, col="pink" , lty=w, lwd=.5)
-    #abline(qt(.975, df=dff)*se., 0, col="pink" , lty=w, lwd=.5)
-    #abline(qt(.975, df=dff)*-se., 0, col="pink" , lty=w, lwd=.5)
-   # abline(2*se., 0, col="pink" , lty=w, lwd=.5)
-  #  abline(2*-se., 0, col="pink" , lty=w, lwd=.5)
-    
+
     for (i in 1:K){
       if (prod(conf[i,c(1,2)]) < 0 ) {
         lines(c(i,i), conf[i,c(1,2)], lwd=.8, col='blue') 
@@ -1440,22 +1393,17 @@ server <- shinyServer(function(input, output   ) {
     conf <- mcmc()$conf
     K <- mcmc()$K
     
-    #dff <- mcmc()$df
-    
-    # plot
+   
     par(mar=c(4,3,3,3), mgp=c(1.5,.5,0), tck=-.01)
     plot(c(0, K+1), range(conf), bty="l", xlab="Covariates", 
          ylab="Estimate Mean difference (ctrl-trt)", xaxs="i",  type="n",    sub="Note each CI is computed using a t-test using the observed data for each covariate comparison. The horizontal lines use the true SE (are not based on the t dist) and are guides only.",
          main=paste0("'Chance imbalance' estimate of mean difference of each covariate distribution & 95% confidence interval
              placebo=",placebo,", treated=",treated,", total=",bigN,", we show +/- standard error of difference ",p3(se.)," and 1.96 X standard error of difference ",p3(se.*qnorm(.975)),""))
-    #axis(2, seq(-5,5,1))
-    # axis(1, seq(1,K,10))
+
     points(1:K, doff[,1], pch=20)
     abline(0, 0, col="pink", lty=w, lwd=.5)
     abline(se., 0, col="pink" , lty=w, lwd=.5)
     abline(-se., 0, col="pink" , lty=w, lwd=.5)
-    #abline(qt(.975, df=dff)*se., 0, col="pink" , lty=w, lwd=.5)
-    #abline(qt(.975, df=dff)*-se., 0, col="pink" , lty=w, lwd=.5)
     abline(2*se., 0, col="pink" , lty=w, lwd=.5)
     abline(2*-se., 0, col="pink" , lty=w, lwd=.5)
     
@@ -1767,10 +1715,6 @@ server <- shinyServer(function(input, output   ) {
     
     simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
       
-      # X <- array(runif(N*K , -1,1), c(N,K))          # array of variables
-      # # Simulate a difference in two means with data SD of ?
-      # X <- array(rnorm(N*K, 0, 1), c(N,K))  
-      # 
       # we can select this, does not seem to have a big inpact
       if (covar==1) {  
         X <- array(runif(N*K , -1,1), c(N,K))     # initially covars were uniform dist
@@ -2113,7 +2057,6 @@ server <- shinyServer(function(input, output   ) {
         coef(f3)["z", "Estimate"],
         coef(f3)["z", "Std. Error"], #8
 
-        
         # collect p values for power
         coef(f)["z", "Pr(>|t|)"]  < alpha,  #9
         coef(f1)["z", "Pr(>|t|)"] < alpha,
@@ -2136,13 +2079,11 @@ server <- shinyServer(function(input, output   ) {
         mean(quantile( (d$y2-predict(zz3))^2, .025)), 
         mean(quantile( (d$y2-predict(zz3))^2, .975)),
          
-        
         f$sigma,  #27
         f1$sigma,
         f2$sigma,
         f3$sigma, #30
-        
-        
+
         f$adj.r.squared,  #31
         f1$adj.r.squared,
         f2$adj.r.squared,
@@ -2223,7 +2164,6 @@ server <- shinyServer(function(input, output   ) {
     lines( (d11), col = "grey", lty=wz, lwd=ww)       
     lines( (d12), col = "grey", lty=w, lwd=ww)  
     
-    
     }
     
     else if (input$dist %in% "d1") {  #remove
@@ -2254,7 +2194,6 @@ server <- shinyServer(function(input, output   ) {
           
       lines( (d6), col = "blue", lty=w, lwd=ww)       
      
-
     }
     
     else if (input$dist %in% "d7") {
@@ -2287,7 +2226,6 @@ server <- shinyServer(function(input, output   ) {
     }
       
 
-    
     abline(v = theta1, col = "darkgrey")                
     legend("topright",                                  # Add legend to density
            legend = c(" adj. for true prognostic covariates", 
@@ -2343,7 +2281,6 @@ server <- shinyServer(function(input, output   ) {
     d11 <-  density(res3[,6] )
     d12 <-  density(res3[,8] )
     
-     
     # we may have imbalance in numbers, otherwise the se will not be exactly correct and this maybe seen in plot
     se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
 
@@ -2351,8 +2288,7 @@ server <- shinyServer(function(input, output   ) {
     dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
 
     if (input$dist %in% "All") {
-      
-    
+
     plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates, truth= ",p4(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
           xlab="Standard error", #Change the x-axis label
           ylab="Density") #y-axis label)                   # Plot density of x
@@ -2379,7 +2315,6 @@ server <- shinyServer(function(input, output   ) {
            xlab="Treatment effect", #Change the x-axis label
            ylab="Density") #y-axis label)                   # Plot density of x
       lines( (d2), col = "black", lty=w, lwd=ww)  
-      
 
     }
     
@@ -2400,8 +2335,7 @@ server <- shinyServer(function(input, output   ) {
            ylab="Density") #y-axis label)                   # Plot density of x
       
       lines( (d6), col = "blue", lty=w, lwd=ww)       
-      
-      
+
       }
     
     else if (input$dist %in% "d7") {
@@ -2413,6 +2347,7 @@ server <- shinyServer(function(input, output   ) {
       lines( (d8), col = "purple", lty=w, lwd=ww)     
       
     }
+    
     else if (input$dist %in% "d9") {
       
       plot((d9), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="green",
@@ -2474,7 +2409,6 @@ server <- shinyServer(function(input, output   ) {
   # table for simulation summary
   table.sim <- reactive({
     
-    
     res <- simul()$res  
     result <- simul()$result  
     result2 <- simul2()$result  
@@ -2496,11 +2430,8 @@ server <- shinyServer(function(input, output   ) {
       (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p2(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p2(result[40] )      ,     p2(result[46] )         )) ,
       (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p2(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p2(result[41] )      ,   p2(result[47] )           )) ,
       (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p2(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p2(result[42] )      ,     p2(result[48] )         )) ,
-      
       (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p2(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p2(result2[13] )      ,  p2(result2[15] )         )) ,
       (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p2(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p2(result2[14] )      ,p2(result2[16] )          )),
-      
-      
       (c( p3(result3[1])  ,     p2(q1.result3[1])  ,  p2(q2.result3[1])   , p3(result3[2] ) ,  p2(result3[9] ) ,  p2(result3[13] ) ,    p2(result3[17] ),   p2(result3[18] )  ,   p2(result3[25] )    ,   p2(result3[29] )         )) ,
       (c( p3(result3[3])  ,     p2(q1.result3[3]) ,   p2(q2.result3[3])   , p3(result3[4] ) ,  p2(result3[10] ) ,  p2(result3[14] ) ,   p2(result3[19] ) ,  p2(result3[20] )   , p2(result3[26] )      ,    p2(result3[30] )         )) ,
       (c( p3(result3[5])  ,     p2(q1.result3[5]) ,   p2(q2.result3[5])   , p3(result3[6] ) ,  p2(result3[11] ) ,  p2(result3[15] ) ,   p2(result3[21] ) ,  p2(result3[22] )  , p2(result3[27] )      ,     p2(result3[31] )         )) ,
@@ -2540,8 +2471,6 @@ server <- shinyServer(function(input, output   ) {
     )) 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   })
-  
-  
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # plot of null distrbution
@@ -2639,8 +2568,7 @@ server <- shinyServer(function(input, output   ) {
       ,tags$span(style="color:red",  bigN  ),
       " total patients randomised 1:1 for each simulation. The true covariate coefficients are fixed at the same values for all simulations
                       and are selected randomly between +/- multiples of the treatment effect, as dictated by the input on left. The true covariate coefficients are printed at the bottom."
-      #  tags$hr()
-      
+
     ))    
     
   })
@@ -2660,7 +2588,6 @@ server <- shinyServer(function(input, output   ) {
                   , tags$span(style="color:red",  bigN  ),
                   " patients. Using only one realisation we make some observations.", 
                   tags$hr()
-                  
     ))    
     
   })  
