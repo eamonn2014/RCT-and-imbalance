@@ -608,17 +608,44 @@ covariates not related to the outcome, collinear or correlated covariates relate
                               
                               tabPanel("13 Notes and references", value=3, 
                                        
-                                       ## could do correlated covariates not related to the outcome?
-                                       h4("The first tab, shows the standard power calculation function in R for a ttest, using the random error, treatment effect, alpha and power to determine the sample size.  
-                                            The next tab, presents the results of simulation where we investigate (i) adjusting for true prognostic covariates (ia) ignoring them in the analysis. 
-                                            We investigate (ii) adjusting for covariates unrelated to the outcome (iia) ignoring them in the analysis.
-                                            We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia) ignoring them in the analysis.
-                                           We investigate (iv) adjusting for covariates related to the outcome and are correlated with each other (iva) ignoring them in the analysis.
-                                           Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.
-                                           The third tab presents one realisation from scenario (i),the fourth tab presents one realisation from scenario (ii), the fifth tab presents one realisation from scenario (iii)
-                                              the sixth tab presents one realisation from scenario (iv), the seventh tab presents a summary of the previous 4 tabs. Tabs 3 to 6 also present the correlation matrix from the multivariable
-                                              model and diagnostic plots. Tab 8 presents a plot of the difference in each covariate across the trial arms. The next two tabs present the data used in tabs 3,4 and 5 and then the correlated data."),
+                                     
+
                                        
+                                      h4("The first tab, shows the standard power calculation function in R for a ttest, using the random error, treatment effect, alpha and power to determine the sample size. ") ,
+                                       
+                                       h4("Tab 2, presents the results of simulation where we investigate (i) adjusting for true prognostic covariates (ia) ignoring them in the analysis. We investigate (ii)
+                                       adjusting for covariates unrelated to the outcome (iia) ignoring them in the analysis. We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia) 
+                                       ignoring them in the analysis. We investigate (iv) adjusting for covariates related to the outcome which are correlated with each other (iva) ignoring them in the analysis (v) 
+                                       adjusting for covariates of prognostic value that are imbalanced (va) ignoring them in the analysis and finally (vi) adjusting for imbalanced covariates of no prognostic value 
+                                       (via) ignoring them in the analysis.Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
+                                       
+                                         h4("One realisation of the scenarios (i) to (v) above are presented on tabs 3a/3b/3c/4/5. On tab 6 we present observations base on just one realisation, but it is far better to refer to the simulations on tab2.
+                                       These tabs also present the correlation matrix from the multivariable model and diagnostic plots."),
+                                       
+                                      h4(" Tabs 7 and 8 present plots displaying the (im)balance of covariates (plot of the difference in each covariate across the trial arms) for the preceeding tabs for displaying one realisation. 
+                                         Tab 7 shows the distribution when in truth there is no difference as when randomisation is applied.
+                                         
+                                           Tab 8 shows the distribution when in truth there is a true imbalance between treatments used in tab 5.") ,
+                                       
+                                      h4(" Tab 9 presents the null distribution, to explain why balance is not delivered even in large trials.") ,
+                                       
+                                               h4("The next three tabs present the data used in 3a/3b/3c/4/5/6/7/8.         ")   ,                         
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                                                              
                                        
                                        column(width = 3, offset = 0, style='padding:1px;',
                                               
