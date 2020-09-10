@@ -603,7 +603,7 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                        adjusting for covariates unrelated to the outcome (iia) ignoring them in the analysis. We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia) 
                                        ignoring them in the analysis. We investigate (iv) adjusting for covariates related to the outcome which are correlated with each other (iva) ignoring them in the analysis (v) 
                                        adjusting for covariates of prognostic value that are imbalanced (va) ignoring them in the analysis and finally (vi) adjusting for imbalanced covariates of no prognostic value 
-                                       (via) ignoring them in the analysis.Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
+                                       (via) ignoring them in the analysis. Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
                                        
                                          h4("One realisation of the scenarios (i) to (v) above are presented on tabs 3a/3b/3c/4/5. On tab 6 we present observations base on just one realisation, but it is far better to refer to the simulations on tab2.
                                        These tabs also present the correlation matrix from the multivariable model and diagnostic plots."),
@@ -740,7 +740,26 @@ server <- shinyServer(function(input, output   ) {
     Po <- power.t.test( delta =theta, sd=sigma, sig.level=alpha,
                         power=pow, type="two.sample", alternative=c("two.sided"))
     
+    ## will always be even as I double it , so we dont worry about odd in se calc
     MM <- N <-ceiling(Po$n)*2
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    # For the se of diff, we will use ensure even by adding one if odd , a simulation may diff trt allocation , we ignore this, ok in long run
+    
+    # if (is.even(MM)) {
+    #   
+    #   N2=MM/2
+    #   N1=N2 } else {
+    #     
+    #     MM=MM+1    
+    #     N2=MM/2
+    #     N1=N2  
+    #     bigN <- MM    
+    #   }
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     # allow covariates to have different distribution
     if (covar==1) {  
@@ -804,6 +823,12 @@ server <- shinyServer(function(input, output   ) {
     placebo <- as.vector(table(z)) [1]
     treated <- as.vector(table(z)) [2]
     bigN <- placebo + treated
+    
+    placebo <- MM/2
+    treated <- MM/2
+    bigN <- placebo + treated
+    
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     ################################################################

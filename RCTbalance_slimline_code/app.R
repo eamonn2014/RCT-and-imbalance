@@ -329,7 +329,7 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                        adjusting for covariates unrelated to the outcome (iia) ignoring them in the analysis. We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia) 
                                        ignoring them in the analysis. We investigate (iv) adjusting for covariates related to the outcome which are correlated with each other (iva) ignoring them in the analysis (v) 
                                        adjusting for covariates of prognostic value that are imbalanced (va) ignoring them in the analysis and finally (vi) adjusting for imbalanced covariates of no prognostic value 
-                                       (via) ignoring them in the analysis.Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
+                                       (via) ignoring them in the analysis. Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
                                            
                                                                 
                                            
@@ -457,17 +457,23 @@ server <- shinyServer(function(input, output   ) {
         Po <- power.t.test( delta =theta, sd=sigma, sig.level=alpha,
                             power=pow, type="two.sample", alternative=c("two.sided"))
 
-        MM <- N <-ceiling(Po$n)*2
+        MM <- N <-ceiling(Po$n)*2  # always even
 
-        bigN <- MM
+        bigN <- MM  
+        N1=MM/2
+        N2=N1
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        # For the se of diff, we will use ensure even by adding one if odd , a simulation may diff trt allocation 
+     
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         
         return(list(  
   
-                      
+                      Na=N1,
+                      Nb=N2,
                       N=N, 
-                      #placebo=placebo, treated=treated, 
                       bigN=bigN
                       
                       
@@ -1053,8 +1059,8 @@ server <- shinyServer(function(input, output   ) {
         sigma1=sample$sigma
         N1 <- mcmc()$N # 
         
-        n1 <- mcmc()$placebo
-        n2 <- mcmc()$treated
+        n1 <- mcmc()$Na
+        n2 <- mcmc()$Nb
         
         d1 <-  density(res[,2] )
         d2 <-  density(res[,4] )
