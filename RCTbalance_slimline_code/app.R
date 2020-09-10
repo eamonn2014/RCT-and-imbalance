@@ -464,7 +464,7 @@ server <- shinyServer(function(input, output   ) {
         N2=N1
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
-        # For the se of diff, we will use ensure even by adding one if odd , a simulation may diff trt allocation 
+        # For the se of diff, n1=n2 , a simulation may diff trt allocation 
      
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -777,15 +777,18 @@ server <- shinyServer(function(input, output   ) {
             
             MM = N
             
-            if (is.even(MM)) {
-                
-                N2=MM/2
-                N1=N2 } else {
-                    
-                    N1=(MM-1)/2
-                    N2=N1+1   
-                    
-                }
+           # if (is.even(MM)) {  #always even so no need for this
+                # 
+                # N2=MM/2
+                # N1=N2 } else {
+                #     
+                #     N1=(MM-1)/2
+                #     N2=N1+1   
+                #     
+                # }
+            
+            N2=MM/2
+            N1=N2 
             
             if (covar==1) {  
                 X1 <- array(runif(N1*K , -1,1), c(N1,K))  
