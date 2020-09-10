@@ -70,6 +70,7 @@ library(ormPlot)
 library(ordinal)
 library(ggplot2)
 library(tidyverse)
+library(Matrix)
 #options(mc.cores = parallel::detectCores())
 #rstan_options(auto_write = TRUE)
 options(max.print=1000000)    
@@ -316,7 +317,7 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                             h4(paste("Here are the true coefficients of the covariates used in the simulation: ")),
                                             div( verbatimTextOutput("betas") )  ,
                                             
-                                            
+                                         
                                             width = 30 )     ,
                                   
                                    
@@ -1203,6 +1204,21 @@ server <- shinyServer(function(input, output   ) {
         )
         
     })  
+    
+    
+    output$textWithNumber99 <- renderText({ 
+        
+        HTML(
+            "Mean squared error (MSE: accuracy and precision) combines bias and
+                    variance as (bias*bias+variance). It represents the total variation around the
+                    true value, rather than the average estimated value. MSE gives an overall sense of the quality of the
+                    estimator. As the MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator, 
+                    this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
+                    true sigma squared 
+                    on the left input."
+        )
+        
+    })  
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # table for simulation summary
     table.sim <- reactive({
@@ -1271,7 +1287,13 @@ server <- shinyServer(function(input, output   ) {
     })
     
     
-    
+    output$zz <- renderPrint({
+      
+      d <- table.sim()$zz
+      
+      return(d)
+    })
+    ##~~~~~~~~~~~~~
   
     
     output$textWithNumber1a <- renderText({ 
