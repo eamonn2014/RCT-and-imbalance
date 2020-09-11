@@ -511,7 +511,7 @@ server <- shinyServer(function(input, output   ) {
         
         simfun <- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
             
-            # we can select this, does not seem to have a big inpact
+            # we can select this, does not seem to have a big impact
             if (covar==1) {  
                 X <- array(runif(N*K , -1,1), c(N,K))     # initially covars were uniform dist
             } else {

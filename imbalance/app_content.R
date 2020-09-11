@@ -2528,7 +2528,7 @@ server <- shinyServer(function(input, output   ) {
     upper <- mu1+6*se1
     lower <- mu1-6*se1
     gap=0.001
-    # z of distibution alpha tresholds
+    # z of distribution alpha thresholds
     crit <-  mu1 + crit1 * se1  # how many ses above mean
     crit2 <- mu1 - crit1 * se1  # how many ses below mean
     # ranges for polygons, remember this is not N(0,1)
