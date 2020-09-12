@@ -138,8 +138,7 @@ and unknown patient characteristics. But note as Stephen Senn has stated '1) ran
 may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)' [3].
-In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
-              Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model.
+
 Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL and if we were simulating this response adding 
 similar covariates into a model will result in a response the variance of which keeps on increasing and soon implausible values will result. 
 In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables [4,5]."), 
@@ -150,7 +149,8 @@ As the variance of the response increases with more covariates in the simulation
                    As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
                    There are also three tabs presenting example results all using many simulations.
                    Note, the prognostic strength of treatment may be small compared with patient characteristics,
-such as age as in the GUSTO-1 trial (though here the response is binary) [6]. "), 
+such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
+              Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model."), 
                 
                 h3("  "), 
                 
