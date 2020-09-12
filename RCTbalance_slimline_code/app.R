@@ -128,8 +128,10 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 
                 h2("Covariate adjustment in randomised controlled trials (RCTs) with a continuous response"), 
                 
-                
-                h4("Stephen Senn's truisms '1) randomised controlled trials don't deliver balance *even* if they are very large 2) valid inference does *not* depend on having balanced groups' do not seem 
+                h4("The main value of randomization is that treatment
+groups are on average comparable in terms of known
+and unknown patient characteristics. But note as Stephen Senn has stated '1) randomised controlled trials don't deliver balance *even* if they are very large and 
+2) valid inference does *not* depend on having balanced groups', facts that do not seem 
                 to be common knowledge [1]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [2]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
@@ -137,14 +139,18 @@ may be related to the outcome, they are therefore not considered to be confoundi
 attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
 This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)' [3].
 In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
-              Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model. 
-We simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjustment of covariates related to the outcome, 
-covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome."),
-                h4("
+              Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model.
 Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL and if we were simulating this response adding 
 similar covariates into a model will result in a response the variance of which keeps on increasing and soon implausible values will result. 
-In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables. 
-However we also wish to examine imbalanced covariates and collinear covariates [4,5]. Therefore it is advisable to limit the number of covariates in the simulation, default is 3. "), 
+In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables [4,5]."), 
+
+h4("With this app we simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjusting and not adjusting for covariates related to the outcome, 
+covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome.
+As the variance of the response increases with more covariates in the simulation, it is advisable to limit the number of covariates, the default is 3. 
+                   As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
+                   There are also three tabs presenting example results all using many simulations.
+                   Note, the prognostic strength of treatment may be small compared with patient characteristics,
+such as age as in the GUSTO-1 trial (though here the response is binary) [6]. "), 
                 
                 h3("  "), 
                 
@@ -301,12 +307,12 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                            and imbalance prognostic covariates and imbalanced covariates of no prognostic value. For each scenario we adjust and also do not adjust for the covariates.
                                            The default number of simulations
                                            is set at a lowly 99 so that results appear quickly. It is advisable to increase this number.
-                                                    The left panel shows the distribution of the treatment effect estimates, the right panel the associated standard error estimates. The true value is shown
+                                                    The top panel shows the distribution of the treatment effect estimates, the lower panel the associated standard error estimates. The true value is shown
                                                     by the grey vertical lines. The same covariates are used for investigations of covariates with prognostic value,
                                                     covariates unrelated to the outcome, a mix of prognostic and covariates unrelated to the outcome.
                                                     For imbalanced and correlated investigations covariates wil be unique. Correlations are capped at +/- 0.37.
                                                     In the case of the imbalanced scenario an imbalance is induced by way of the treatment arm being derived from a Normal(0.3, 1) and the control arm
-                                                    from a Normal(0, 1) distribution. We also can investigate this scenario using covariates derived from a uniform distribution Uniform(-1,1) in control
+                                                    from a Normal(0, 1) distribution. We also can investigate scenarios using covariates derived from a uniform distribution Uniform(-1,1) in control
                                                     and Uniform(-0.8,1.2) in the treatment arm.
 
                                                  ")),
@@ -320,16 +326,51 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                          
                                             width = 30 )     ,
                                   
-                                   
                                   
-                                  tabPanel("2 Notes and references", value=3, 
+                                  tabPanel( "2 Example A simulation results default setting",
+                                            
+                                            h4(paste("Figure 3 Treatment effect estimates, betas -0.01  0.02  0.13, default settings 100,000 simulations (radio buttons do not work here)")),
+                                            img(src='estimates100K.png', align = "right"),
+                                            h4(paste("Figure 4 Standard error estimates")),
+                                            img(src='se100K.png', align = "right"),
+                                            h4(paste("Table 3 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                            img(src='summary100K.png', align = "center"),
+                                            
+                                              )     ,
+                                  
+                                  
+                                  tabPanel( "3 Example B simulation results",
+                                            
+                                            h4(paste("Figure 5 Treatment effect estimates, betas -.99  -0.4  0.99 (no larger than x2 trt effect); trt effect 1; residual variation 3; 50,000 simulations (radio buttons do not work here)")),
+                                            img(src='trtesr2.png', align = "right"),
+                                            h4(paste("Figure 6 Standard error estimates")),
+                                            img(src='se.estimates2.png', align = "right"),
+                                            h4(paste("Table 4 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                            img(src='summary of results2.png', align = "center"),
+                                            
+                                  )     ,
+                                  
+                                  
+                                  tabPanel( "4 Example C simulation results",
+                                            
+                                            h4(paste("Figure 7 Treatment effect estimates, betas -.58  0  0.5 (no larger than x.75 trt effect); trt effect 1; residual variation 2; 50,000 simulations (radio buttons do not work here)")),
+                                            img(src='trtesr3.png', align = "right"),
+                                            h4(paste("Figure 8 Standard error estimates")),
+                                            img(src='se.estimates3.png', align = "right"),
+                                            h4(paste("Table 5 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                            img(src='summary of results3.png', align = "center"),
+                                            
+                                  )     ,
+                                  
+                                  
+                                  tabPanel("5 Notes & references", value=3, 
                                            
                                            h4("A power calculation function in R for a ttest, using the random error, treatment effect, alpha and power is used to determine the sample size.") ,
                                            
-                                           h4("Tab 1, presents the results of simulation where we investigate (i) adjusting for true prognostic covariates (ia) ignoring them in the analysis. We investigate (ii)
-                                       adjusting for covariates unrelated to the outcome (iia) ignoring them in the analysis. We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia) 
-                                       ignoring them in the analysis. We investigate (iv) adjusting for covariates related to the outcome which are correlated with each other (iva) ignoring them in the analysis (v) 
-                                       adjusting for covariates of prognostic value that are imbalanced (va) ignoring them in the analysis and finally (vi) adjusting for imbalanced covariates of no prognostic value 
+                                           h4("Tab 1, presents the results of simulation where we investigate (i) adjusting for true prognostic covariates (i.a) ignoring them in the analysis. We investigate (ii)
+                                       adjusting for covariates unrelated to the outcome (ii.a) ignoring them in the analysis. We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia.) 
+                                       ignoring them in the analysis. We investigate (iv) adjusting for covariates related to the outcome which are correlated with each other (iv.a) ignoring them in the analysis (v) 
+                                       adjusting for covariates of prognostic value that are imbalanced (v.a) ignoring them in the analysis and finally (vi) adjusting for imbalanced covariates of no prognostic value 
                                        (via) ignoring them in the analysis. Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
                                            
                                                                 
@@ -344,8 +385,11 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                           A power calculation for a ttest is executed resulting in a sample size used in the app. The next input box is used to 
                                           determine the number of simulations used in tab 1. The covarite distribution can be altered by selecting between the 
                                           two stated distributions, this has no effect for the imbalanced investigations. The bottom of the user input section 
-                                          is to control what simulated scenario results are presented graphically on tab 2. 
+                                          is to control what simulated scenario results are presented graphically. 
                                           We can also simulate a new sample or check the code behind the app by hitting the orange buttons.
+                                          "),
+                                           h4("
+                                          The next three tabs present results of pre-run simulations.
                                           "),
                                            
                                            
@@ -364,11 +408,13 @@ However we also wish to examine imbalanced covariates and collinear covariates [
                                                   div(p(" ")),
                                                   tags$a(href = "https://onlinelibrary.wiley.com/doi/epdf/10.1002/sim.8570", tags$span(style="color:blue", "[5] Graphical calibration curves and the integrated calibration index (ICI) for survival models, Statistics in Medicine. 2020;1–29 "),),  
                                                   div(p(" ")),
-                                                  tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[6] Frank Harrell, twitter Adjusted analysis"),),   
+                                                  tags$a(href = "https://sci-hub.tw/https://doi.org/10.1016/S0002-8703(00)90001-2", tags$span(style="color:blue", "[6] Steyerberg, E. W., Bossuyt, P. M. M., & Lee, K. L. (2000). Clinical trials in acute myocardial infarction: Should we adjust for baseline characteristics? American Heart Journal, 139(5), 745–751. doi:10.1016/s0002-8703(00)90001-2"),),   
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[7] Frank Harrell, twitter Adjusted analysis"),),   
                                                   div(p(" ")),
                                                   tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[7] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
                                                   div(p(" ")),
-                                                  tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[8] ESteyerberg explains some of the advantages of conditioning on covariates"),),  
+                                                  tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[8] E.Steyerberg explains some of the advantages of conditioning on covariates"),),  
                                                   div(p(" ")),
                                                   
                                                   
@@ -1237,24 +1283,40 @@ server <- shinyServer(function(input, output   ) {
         q1.result3 <- simul3()$q1.result  
         q2.result3 <- simul3()$q2.result  
         
+        # zz <- rbind(
+        #     (c( p4(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p4(result[2] ) ,  p4(result[13] ) ,  p4(result[19] ) ,   p2(result[25] ),   p2(result[26] )  ,   p4(result[37] )    ,   p4(result[43] )         )) ,
+        #     (c( p4(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p4(result[4] ) ,  p4(result[14] ) ,  p4(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )   , p4(result[38] )      ,    p4(result[44] )        )) ,
+        #     (c( p4(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p4(result[6] ) ,  p4(result[15] ) ,  p4(result[21] ) ,   p2(result[29] ) ,  p2(result[30] )  , p4(result[39] )      ,     p4(result[45] )        )) ,
+        #     (c( p4(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p4(result[8] ) ,  p4(result[16] ) ,  p4(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p4(result[40] )      ,     p4(result[46] )         )) ,
+        #     (c( p4(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p4(result[10] ) , p4(result[17] ) ,  p4(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p4(result[41] )      ,   p4(result[47] )           )) ,
+        #     (c( p4(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p4(result[12] ) , p4(result[18] ) ,  p4(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p4(result[42] )      ,     p4(result[48] )         )) ,
+        #     (c( p4(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p4(result2[2] ) , p4(result2[5] ) ,  p4(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p4(result2[13] )      ,  p4(result2[15] )         )) ,
+        #     (c( p4(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p4(result2[4] ) , p4(result2[6] ) ,  p4(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p4(result2[14] )      ,p4(result2[16] )          )),
+        #     (c( p4(result3[1])  ,     p2(q1.result3[1])  ,  p2(q2.result3[1])   , p4(result3[2] ) ,  p4(result3[9] ) ,  p4(result3[13] ) ,    p2(result3[17] ),   p2(result3[18] )  ,   p4(result3[25] )    ,   p4(result3[29] )         )) ,
+        #     (c( p4(result3[3])  ,     p2(q1.result3[3]) ,   p2(q2.result3[3])   , p4(result3[4] ) ,  p4(result3[10] ) ,  p4(result3[14] ) ,   p2(result3[19] ) ,  p2(result3[20] )   , p4(result3[26] )      ,    p4(result3[30] )         )) ,
+        #     (c( p4(result3[5])  ,     p2(q1.result3[5]) ,   p2(q2.result3[5])   , p4(result3[6] ) ,  p4(result3[11] ) ,  p4(result3[15] ) ,   p2(result3[21] ) ,  p2(result3[22] )  , p4(result3[27] )      ,     p4(result3[31] )         )) ,
+        #     (c( p4(result3[7])  ,     p2(q1.result3[7]) ,   p2(q2.result3[7])   , p4(result3[8] ) ,  p4(result3[12] ) ,  p4(result3[16] ) ,   p2(result3[23] ) ,  p2(result3[24] ) , p4(result3[28] )      ,     p4(result3[32]  )         )) 
+        # ) 
+        
         zz <- rbind(
-            (c( p3(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p3(result[2] ) ,  p2(result[13] ) ,  p2(result[19] ) ,   p2(result[25] ),   p2(result[26] )  ,   p2(result[37] )    ,   p2(result[43] )         )) ,
-            (c( p3(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p3(result[4] ) ,  p2(result[14] ) ,  p2(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )   , p2(result[38] )      ,    p2(result[44] )        )) ,
-            (c( p3(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p3(result[6] ) ,  p2(result[15] ) ,  p2(result[21] ) ,   p2(result[29] ) ,  p2(result[30] )  , p2(result[39] )      ,     p2(result[45] )        )) ,
-            (c( p3(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p3(result[8] ) ,  p2(result[16] ) ,  p2(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p2(result[40] )      ,     p2(result[46] )         )) ,
-            (c( p3(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p3(result[10] ) , p2(result[17] ) ,  p2(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p2(result[41] )      ,   p2(result[47] )           )) ,
-            (c( p3(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p3(result[12] ) , p2(result[18] ) ,  p2(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p2(result[42] )      ,     p2(result[48] )         )) ,
-            (c( p3(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p3(result2[2] ) , p2(result2[5] ) ,  p2(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p2(result2[13] )      ,  p2(result2[15] )         )) ,
-            (c( p3(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p3(result2[4] ) , p2(result2[6] ) ,  p2(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p2(result2[14] )      ,p2(result2[16] )          )),
-            (c( p3(result3[1])  ,     p2(q1.result3[1])  ,  p2(q2.result3[1])   , p3(result3[2] ) ,  p2(result3[9] ) ,  p2(result3[13] ) ,    p2(result3[17] ),   p2(result3[18] )  ,   p2(result3[25] )    ,   p2(result3[29] )         )) ,
-            (c( p3(result3[3])  ,     p2(q1.result3[3]) ,   p2(q2.result3[3])   , p3(result3[4] ) ,  p2(result3[10] ) ,  p2(result3[14] ) ,   p2(result3[19] ) ,  p2(result3[20] )   , p2(result3[26] )      ,    p2(result3[30] )         )) ,
-            (c( p3(result3[5])  ,     p2(q1.result3[5]) ,   p2(q2.result3[5])   , p3(result3[6] ) ,  p2(result3[11] ) ,  p2(result3[15] ) ,   p2(result3[21] ) ,  p2(result3[22] )  , p2(result3[27] )      ,     p2(result3[31] )         )) ,
-            (c( p3(result3[7])  ,     p2(q1.result3[7]) ,   p2(q2.result3[7])   , p3(result3[8] ) ,  p2(result3[12] ) ,  p2(result3[16] ) ,   p2(result3[23] ) ,  p2(result3[24] ) , p2(result3[28] )      ,     p2(result3[32]  )         )) 
+          (c( p4(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p4(result[2] ) ,  p4(result[13] ) ,  p4(result[19] ) ,      p4(result[37] )    ,   p4(result[43] )         )) ,
+          (c( p4(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p4(result[4] ) ,  p4(result[14] ) ,  p4(result[20] ) ,      p4(result[38] )      ,    p4(result[44] )        )) ,
+          (c( p4(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p4(result[6] ) ,  p4(result[15] ) ,  p4(result[21] ) ,   p4(result[39] )      ,     p4(result[45] )        )) ,
+          (c( p4(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p4(result[8] ) ,  p4(result[16] ) ,  p4(result[22] ) ,      p4(result[40] )      ,     p4(result[46] )         )) ,
+          (c( p4(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p4(result[10] ) , p4(result[17] ) ,  p4(result[23] ) ,    p4(result[41] )      ,   p4(result[47] )           )) ,
+          (c( p4(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p4(result[12] ) , p4(result[18] ) ,  p4(result[24] ) ,      p4(result[42] )      ,     p4(result[48] )         )) ,
+          (c( p4(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p4(result2[2] ) , p4(result2[5] ) ,  p4(result2[7] ) ,      p4(result2[13] )      ,  p4(result2[15] )         )) ,
+          (c( p4(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p4(result2[4] ) , p4(result2[6] ) ,  p4(result2[8] ) ,     p4(result2[14] )      ,p4(result2[16] )          )),
+          (c( p4(result3[1])  ,     p2(q1.result3[1])  ,  p2(q2.result3[1])   , p4(result3[2] ) ,  p4(result3[9] ) ,  p4(result3[13] ) ,        p4(result3[25] )    ,   p4(result3[29] )         )) ,
+          (c( p4(result3[3])  ,     p2(q1.result3[3]) ,   p2(q2.result3[3])   , p4(result3[4] ) ,  p4(result3[10] ) ,  p4(result3[14] ) ,        p4(result3[26] )      ,    p4(result3[30] )         )) ,
+          (c( p4(result3[5])  ,     p2(q1.result3[5]) ,   p2(q2.result3[5])   , p4(result3[6] ) ,  p4(result3[11] ) ,  p4(result3[15] ) ,       p4(result3[27] )      ,     p4(result3[31] )         )) ,
+          (c( p4(result3[7])  ,     p2(q1.result3[7]) ,   p2(q2.result3[7])   , p4(result3[8] ) ,  p4(result3[12] ) ,  p4(result3[16] ) ,     p4(result3[28] )      ,     p4(result3[32]  )         )) 
         ) 
         
         zz <- as.data.frame(zz)
         
-        colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma","R2")
+       # colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma","R2")
+        colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B" , "sigma","R2")
         
         zz <- data.frame(lapply(zz, function(x) as.numeric(as.character(x))))
         zz <- as.data.frame(zz)
@@ -1274,8 +1336,9 @@ server <- shinyServer(function(input, output   ) {
         )
         zz <- zz[order(zz$B),]
         
-        colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","  MSE ", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
+      #  colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","  MSE ", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
         
+        colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","MSE" , "sigma","R2")
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         return(list(  

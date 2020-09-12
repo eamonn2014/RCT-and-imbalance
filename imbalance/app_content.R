@@ -128,7 +128,9 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 h2("Covariate adjustment in randomised controlled trials (RCTs) with a continuous response"), 
                 
                 
-                h4("Stephen Senn's truisms '1) randomised controlled trials don't deliver balance *even* if they are very large 2) valid inference does *not* depend on having balanced groups' do not seem 
+                h4("The main value of randomization is that treatment
+groups are on average comparable in terms of known
+and unknown patient characteristics. However as Stephen Senn's states '1) randomised controlled trials don't deliver balance *even* if they are very large 2) valid inference does *not* depend on having balanced groups' do not seem 
                 to be common knowledge [1]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [2]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
@@ -143,8 +145,10 @@ The key information can be found on tab 2, the results of simulation."),
 h4("
 Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL and if we were simulating this response adding 
 similar covariates into a model will result in a response the variance of which keeps on increasing and soon implausible values will result. 
-In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables. 
-However we also wish to examine imbalanced covariates and collinear covariates [4,5]. Therefore it is advisable to limit the number of covariates in the simulation, default is 3. "), 
+In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables [4,5]. 
+However we also wish to examine imbalanced covariates and collinear covariates. Therefore it is advisable to limit the number of covariates in the simulation, default is 3. 
+   As the number of simulations to get smooth curves is high, the app may time out first. Therefore take the code and run on your own machine. 
+                 "), 
                 
                 h3("  "), 
                 
