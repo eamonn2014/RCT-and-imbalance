@@ -365,13 +365,13 @@ such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In
                                   
                                   tabPanel("5 Notes & references", value=3, 
                                            
-                                           h4("A power calculation function in R for a ttest, using the random error, treatment effect, alpha and power is used to determine the sample size.") ,
+                                           h4("First, a power calculation function in R for a ttest, using the random error, treatment effect, alpha and power is used to determine the sample size.") ,
                                            
                                            h4("Tab 1, presents the results of simulation where we investigate (i) adjusting for true prognostic covariates (i.a) ignoring them in the analysis. We investigate (ii)
-                                       adjusting for covariates unrelated to the outcome (ii.a) ignoring them in the analysis. We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iiia.) 
+                                       adjusting for covariates unrelated to the outcome (ii.a) ignoring them in the analysis. We investigate (iii) adjusting for covariates some unrelated and some related to the outcome (iii.a) 
                                        ignoring them in the analysis. We investigate (iv) adjusting for covariates related to the outcome which are correlated with each other (iv.a) ignoring them in the analysis (v) 
                                        adjusting for covariates of prognostic value that are imbalanced (v.a) ignoring them in the analysis and finally (vi) adjusting for imbalanced covariates of no prognostic value 
-                                       (via) ignoring them in the analysis. Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
+                                       (vi.a) ignoring them in the analysis. Plots of treatment effect estimates and standard error estimates are presented as well as a summary of simulations from which we can draw conclusions.") ,
                                            
                                                                 
                                            
@@ -1338,7 +1338,7 @@ server <- shinyServer(function(input, output   ) {
         
       #  colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","  MSE ", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
         
-        colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","MSE" , "sigma","R2")
+        colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Std.error", "Power ","MSE" , "sigma","R2")
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         return(list(  
