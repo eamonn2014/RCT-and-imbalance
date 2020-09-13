@@ -179,7 +179,7 @@
         p4(result[5] ),  p4(result[6] ) ,  p4(result[7] )  , p4(result[8] ) )) 
 
   zz <- as.data.frame(zz)
-  colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","MSE", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma","R2")
+  colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power","MSE", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma","R2")
   zz <- data.frame(lapply(zz, function(x) as.numeric(as.character(x))))
   zz <- as.data.frame(zz)
   zz
