@@ -130,7 +130,7 @@ ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/p
                 
                 h4("The main value of randomization is that treatment
 groups are on average comparable in terms of known
-and unknown patient characteristics. But note as Stephen Senn has stated '1) randomised controlled trials don't deliver balance *even* if they are very large and 
+and unknown patient characteristics. But as Stephen Senn has stated '1) randomised controlled trials don't deliver balance *even* if they are very large and 
 2) valid inference does *not* depend on having balanced groups', facts that do not seem 
                 to be common knowledge [1]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [2]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
@@ -149,8 +149,9 @@ As the variance of the response increases with more covariates in the simulation
                    As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
                    There are also three tabs presenting example results all using many simulations.
                    Note, the prognostic strength of treatment may be small compared with patient characteristics,
-such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In short, not adjusting is permissable ONLY when there are no prognostic covariates.  How can that be known with certainty? 
-              Power is therefore compromised in the unadjusted analyses when there are measured prognostic covariates availalable to include in the model."), 
+such as age as in the GUSTO-1 trial (though the GUSTo-1 response is binary) [6]. The limited simulations I have done support adjusting over not adjusting, the mean square error is smaller when adjusting.
+Not adjusting is permissable ONLY when there are no measured prognostic covariates.  
+How can that be known with certainty before seeing the data? "), 
                 
                 h3("  "), 
                 
@@ -310,9 +311,9 @@ such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In
                                                     The top panel shows the distribution of the treatment effect estimates, the lower panel the associated standard error estimates. The true value is shown
                                                     by the grey vertical lines. The same covariates are used for investigations of covariates with prognostic value,
                                                     covariates unrelated to the outcome, a mix of prognostic and covariates unrelated to the outcome.
-                                                    For imbalanced and correlated investigations covariates wil be unique. Correlations are capped at +/- 0.37.
-                                                    In the case of the imbalanced scenario an imbalance is induced by way of the treatment arm being derived from a Normal(0.3, 1) and the control arm
-                                                    from a Normal(0, 1) distribution. We also can investigate scenarios using covariates derived from a uniform distribution Uniform(-1,1) in control
+                                                    For imbalanced and correlated investigations covariates will be unique. Correlations are capped at +/- 0.37.
+                                                    In the case of the imbalanced scenario, an imbalance is induced for all covariates by way of the treatment arm being derived from a Normal(0.3, 1) and the control arm
+                                                    from a Normal(0, 1) distribution. We can also investigate scenarios of imbalanced covariates derived from a uniform distribution Uniform(-1,1) in control
                                                     and Uniform(-0.8,1.2) in the treatment arm.
 
                                                  ")),
@@ -327,7 +328,7 @@ such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In
                                             width = 30 )     ,
                                   
                                   
-                                  tabPanel( "2 Example A simulation results default setting",
+                                  tabPanel( "2 Example A results, default setting",
                                             
                                             h4(paste("Figure 3 Treatment effect estimates, betas -0.01  0.02  0.13, default settings 100,000 simulations (radio buttons do not work here)")),
                                             img(src='estimates100K.png', align = "right"),
@@ -339,7 +340,7 @@ such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In
                                               )     ,
                                   
                                   
-                                  tabPanel( "3 Example B simulation results",
+                                  tabPanel( "3 Example B results",
                                             
                                             h4(paste("Figure 5 Treatment effect estimates, betas -.99  -0.4  0.99 (no larger than x2 trt effect); trt effect 1; residual variation 3; 50,000 simulations (radio buttons do not work here)")),
                                             img(src='trtesr2.png', align = "right"),
@@ -351,7 +352,7 @@ such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In
                                   )     ,
                                   
                                   
-                                  tabPanel( "4 Example C simulation results",
+                                  tabPanel( "4 Example C results",
                                             
                                             h4(paste("Figure 7 Treatment effect estimates, betas -.58  0  0.5 (no larger than x.75 trt effect); trt effect 1; residual variation 2; 50,000 simulations (radio buttons do not work here)")),
                                             img(src='trtesr3.png', align = "right"),
@@ -384,7 +385,7 @@ such as age as in the GUSTO-1 trial (though here the response is binary) [6]. In
                                           in the next two input boxes respectively. Power and the alpha level two sided can be selected using the next two boxes. 
                                           A power calculation for a ttest is executed resulting in a sample size used in the app. The next input box is used to 
                                           determine the number of simulations used in tab 1. The covarite distribution can be altered by selecting between the 
-                                          two stated distributions, this has no effect for the imbalanced investigations. The bottom of the user input section 
+                                          two stated distributions, this option does work for the imbalanced investigations. The bottom of the user input section 
                                           is to control what simulated scenario results are presented graphically. 
                                           We can also simulate a new sample or check the code behind the app by hitting the orange buttons.
                                           "),
