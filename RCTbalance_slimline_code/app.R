@@ -142,7 +142,7 @@
                 As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
                 There are also three tabs presenting example results all using many simulations.
                 Note, the prognostic strength of treatment may be small compared with patient characteristics,
-                such as age as in the GUSTO-1 trial (though the GUSTo-1 response is binary) [7].
+                such as age as in the GUSTO-1 trial (though the GUSTO-1 response is binary) [7].
                 The limited simulations I have done support adjusting over not adjusting, the mean square error being smaller when adjusting.
                 "), 
                 
@@ -156,7 +156,7 @@
                                   actionButton(inputId='ab1', label="R Shiny ",   icon = icon("th"),   
                                                onclick ="window.open('https://raw.githubusercontent.com/eamonn2014/RCT-and-imbalance/master/RCTbalance_slimline_code/app.R', '_blank')"), 
                                   actionButton(inputId='ab1', label="R code",   icon = icon("th"),   
-                                               onclick ="window.open('https://raw.githubusercontent.com/eamonn2014/RCT-and-imbalance/master/RCTbalance_slimline_code/app.R', '_blank')"),  
+                                               onclick ="window.open('https://raw.githubusercontent.com/eamonn2014/RCT-and-imbalance/master/app%20qc.R', '_blank')"),  
                                   actionButton("resample", "Simulate a new sample"),
                                   br(),  
                                   tags$style(".well {background-color:#b6aebd ;}"), 
