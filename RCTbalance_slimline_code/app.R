@@ -1,15 +1,11 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Some notes on the topic of randomisation
-
-# need to incorporate ++  Randomisation isn’t perfect but doing bounding of response slides 17 and 18, 
 # https://twitter.com/ildiazm/status/1303002930723913728
 # Rshiny ideas from on https://gallery.shinyapps.io/multi_regression/
-#  It follows that covariate imbalance, contrary
-# to what has been claimed by Altman, is just as much of a problem for large Studies as for
-# small ones
+# It follows that covariate imbalance, contrary # to what has been claimed by Altman, is just as much of a problem for large Studies as for  small ones
 # https://twitter.com/f2harrell/status/1299755896319475712
 # https://twitter.com/f2harrell/status/1298640944405807105
-#'but adjusted estimation does not have to be robust to be a major improvement over unadjusted analysis.  Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist). '
+# but adjusted estimation does not have to be robust to be a major improvement over unadjusted analysis.  
 # Using observed imbalances to find covariates to adjust for is arbitrary and reduces power by maximizing co-linearity with treatment
 
 # https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32
@@ -21,23 +17,17 @@
 # https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2
 #' Can you reconcile these two points?
 #'   
-#'   @f2harrell
-#' : One covariate imbalance is likely to be counterbalanced by another in opposite direction.
-#' 
-#' @stephensenn
-#' : One covariate imbalance likely coincides with other imbalances in same direction (thus, adjusting for one adjusts for them all)
-#' Stephen John Senn
-#' @stephensenn
-#' ·
+#' @f2harrell' : One covariate imbalance is likely to be counterbalanced by another in opposite direction.
+#' @stephensenn : One covariate imbalance likely coincides with other imbalances in same direction (thus, adjusting for one adjusts for them all)
+#' Stephen John Senn #' @stephensenn
 #' 22 Aug 2019
 #' 1/2 So the first is true(ish) of unobserved covariates. The second  covers the fact that given observed  imbalance/balance in one covariate there may be imbalance/balance in another. So what?!
 #
-# Stop obsessing about balance
-# 1) RCTs don't deliver balance even if they are very large 2) valid inference does not depend on having balanced groups
+
 # https://twitter.com/f2harrell/status/1303002649080532995
 # Unadjusted estimates are biased in comparison with adjusted estimates from nonlinear models, a fact well studied for decades.  Some do not call this 'bias' but the damage is the same. Literature is summarized in my ANCOVA chapter in http://hbiostat.org/doc/bbr.pdf
 # https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/2
-# scenarios investigated
+# scenarios investigated in this app
 # y	prognostic		      adj
 # y	prognostic		      not adj
 # y	unrelated		        adj
@@ -55,118 +45,118 @@
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-rm(list=ls()) 
-set.seed(333) # reproducible
-library(directlabels)
-library(shiny) 
-library(shinyWidgets)
-library(shinythemes)  # more funky looking apps
-library(DT)
-library(shinyalert)
-library(Hmisc)
-library(reshape)
-library(rms)
-library(ormPlot)
-library(ordinal)
-library(ggplot2)
-library(tidyverse)
-library(Matrix)
-#options(mc.cores = parallel::detectCores())
-#rstan_options(auto_write = TRUE)
-options(max.print=1000000)    
+  rm(list=ls()) 
+  set.seed(333) # reproducible
+  library(directlabels)
+  library(shiny) 
+  library(shinyWidgets)
+  library(shinythemes)  # more funky looking apps
+  library(DT)
+  library(shinyalert)
+  library(Hmisc)
+  library(reshape)
+  library(rms)
+  library(ormPlot)
+  library(ordinal)
+  library(ggplot2)
+  library(tidyverse)
+  library(Matrix)
 
-fig.width <- 1200
-fig.height <- 500
-fig.width1 <- 1380
-fig.width8 <- 1380
-fig.height1 <- 700
-fig.width7 <- 700
-fig.height7 <- 500
-fig.width6 <- 680
-## convenience functions
-p0 <- function(x) {formatC(x, format="f", digits=0)}
-p1 <- function(x) {formatC(x, format="f", digits=1)}
-p2 <- function(x) {formatC(x, format="f", digits=2)}
-p3 <- function(x) {formatC(x, format="f", digits=3)}
-p4 <- function(x) {formatC(x, format="f", digits=4)}
-p5 <- function(x) {formatC(x, format="f", digits=5)}
+  options(max.print=1000000)    
+  
+  fig.width <- 1200
+  fig.height <- 500
+  fig.width1 <- 1380
+  fig.width8 <- 1380
+  fig.height1 <- 700
+  fig.width7 <- 700
+  fig.height7 <- 500
+  fig.width6 <- 680
+  ## convenience functions
+  p0 <- function(x) {formatC(x, format="f", digits=0)}
+  p1 <- function(x) {formatC(x, format="f", digits=1)}
+  p2 <- function(x) {formatC(x, format="f", digits=2)}
+  p3 <- function(x) {formatC(x, format="f", digits=3)}
+  p4 <- function(x) {formatC(x, format="f", digits=4)}
+  p5 <- function(x) {formatC(x, format="f", digits=5)}
 
-logit <- function(p) log(1/(1/p-1))
-expit <- function(x) 1/(1/exp(x) + 1)
-inv_logit <- function(logit) exp(logit) / (1 + exp(logit))
-is.even <- function(x){ x %% 2 == 0 } # function to id. odd maybe useful
+  logit <- function(p) log(1/(1/p-1))
+  expit <- function(x) 1/(1/exp(x) + 1)
+  inv_logit <- function(logit) exp(logit) / (1 + exp(logit))
+  is.even <- function(x){ x %% 2 == 0 } # function to identify odd maybe useful
 
-options(width=200)
-options(scipen=999)
-w=4  # line type
-ww=3 # line thickness
-wz=1
+  options(width=200)
+  options(scipen=999)
+  w=4  # line type
+  ww=3 # line thickness
+  wz=1 
 
 # not used, but could use this for MSE
-calc.mse <- function(obs, pred, rsq = FALSE){
-    if(is.vector(obs)) obs <- as.matrix(obs)
-    if(is.vector(pred)) pred <- as.matrix(pred)
-    
-    n <- nrow(obs)
-    rss <- colSums((obs - pred)^2, na.rm = TRUE)
-    if(rsq == FALSE) rss/n else {
-        tss <- diag(var(obs, na.rm = TRUE)) * (n - 1)
-        1 - rss/tss
-    }
-}
+  calc.mse <- function(obs, pred, rsq = FALSE){
+      if(is.vector(obs)) obs <- as.matrix(obs)
+      if(is.vector(pred)) pred <- as.matrix(pred)
+      
+      n <- nrow(obs)
+      rss <- colSums((obs - pred)^2, na.rm = TRUE)
+      if(rsq == FALSE) rss/n else {
+          tss <- diag(var(obs, na.rm = TRUE)) * (n - 1)
+          1 - rss/tss
+      }
+  }
 
-RR=.37 ## used to limit correlations between variables
+  RR=.37 ## used to limit correlations between variables
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2
-                # paper
-                useShinyalert(),  # Set up shinyalert
-                setBackgroundColor(
-                    color = c( "#2171B5", "#F7FBFF"), 
-                    gradient = "linear",
-                    direction = "bottom"
-                ),
+  ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2 , paper another option to try
+                  # paper
+                  useShinyalert(),  # Set up shinyalert
+                  setBackgroundColor(
+                      color = c( "#2171B5", "#F7FBFF"), 
+                      gradient = "linear",
+                      direction = "bottom"
+                  ),
+                  
+            h2("Covariate adjustment in randomised controlled trials (RCTs) with a continuous response"), 
                 
-                h2("Covariate adjustment in randomised controlled trials (RCTs) with a continuous response"), 
-                
-                h4("The main value of randomization is that treatment
-groups are on average comparable in terms of known
-and unknown patient characteristics. But as Stephen Senn has stated '1) randomised controlled trials don't deliver balance *even* if they are very large and 
-2) valid inference does *not* depend on having balanced groups', facts that do not seem 
-                to be common knowledge [1]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [2]. We will look into these points and investigate a related common misconception concerning RCTs; it is mistakenly thought there is no need to include baseline covariates in the analysis.
+            h4("The main value of randomization is that it eliminates selection bias, treatment groups are on average comparable in terms of known
+                and unknown patient characteristics [1]. But as Stephen Senn has stated '1) randomised controlled trials don't deliver balance *even* if they are very large and 
+                2) valid inference does *not* depend on having balanced groups', facts that do not seem 
+                to be common knowledge [2]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [3]. 
+                This app looks into these points and investigates a related common misconception concerning RCTs; 
+                it is mistakenly thought there is no need to include baseline covariates in the analysis.
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
-                precision of the treatment effect estimate is improved when adjusting for baseline covariates. We do not expect covariates to be related to the treatment assignment because of randomisation, but they 
-may be related to the outcome, they are therefore not considered to be confounding. However, differences between the outcome which can be 
-attributed to differences in the covariates can be removed, this results in a more precise estimate of treatment effect.
-This should be considered more often as sample sizes can be reduced. As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)' [3].
+                precision of the treatment effect estimate is improved when adjusting for baseline covariates. 
+                We do not expect covariates to be related to the treatment assignment because of randomisation,
+                but they may be related to the outcome, they are therefore not considered to be confounding. 
+                However, differences between the outcome which can be attributed to differences in the covariates can be removed, 
+                this results in a more precise estimate of treatment effect. This should be considered more often as sample sizes can be reduced. 
+                As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)' [4].
 
-Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL and if we were simulating this response adding 
-similar covariates into a model will result in a response the variance of which keeps on increasing and soon implausible values will result. 
-In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables [4,5]."), 
+                Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL 
+                and if we were simulating this response adding similar covariates into a model will result in a response the variance of which keeps on increasing 
+                and soon implausible values will result. 
+                In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables [5,6]."), 
 
-h4("With this app we simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjusting and not adjusting for covariates related to the outcome, 
-covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome.
-As the variance of the response increases with more covariates in the simulation, it is advisable to limit the number of covariates, the default is 3. 
-                   As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
-                   There are also three tabs presenting example results all using many simulations.
-                   Note, the prognostic strength of treatment may be small compared with patient characteristics,
-such as age as in the GUSTO-1 trial (though the GUSTo-1 response is binary) [6]. The limited simulations I have done support adjusting over not adjusting, the mean square error is smaller when adjusting.
-Not adjusting is permissable ONLY when there are no measured prognostic covariates.  
-How can that be known with certainty before seeing the data? "), 
+                h4("With this app we simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjusting and not adjusting for covariates related to the outcome, 
+                covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome.
+                As the variance of the response increases with more covariates in the simulation, it is advisable to limit the number of covariates, the default is 3. 
+                As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
+                There are also three tabs presenting example results all using many simulations.
+                Note, the prognostic strength of treatment may be small compared with patient characteristics,
+                such as age as in the GUSTO-1 trial (though the GUSTo-1 response is binary) [7].
+                The limited simulations I have done support adjusting over not adjusting, the mean square error being smaller when adjusting.
+                "), 
                 
                 h3("  "), 
-                
-                
-                sidebarLayout(
+         sidebarLayout(
                     
                     sidebarPanel( width=3 ,
                                   
                                   tags$style(type="text/css", ".span8 .well { background-color: #00FFFF; }"),
-                                  
-                                  
+
                                   actionButton(inputId='ab1', label="R Shiny ",   icon = icon("th"),   
-                                               onclick ="window.open('https://raw.githubusercontent.com/eamonn2014/proportional-odds-model2/master/app.R', '_blank')"), 
+                                               onclick ="window.open('https://raw.githubusercontent.com/eamonn2014/RCT-and-imbalance/master/RCTbalance_slimline_code/app.R', '_blank')"), 
                                   actionButton(inputId='ab1', label="R code",   icon = icon("th"),   
-                                               onclick ="window.open('https://raw.githubusercontent.com/eamonn2014/proportional-odds-model2/master/app%20stripped%20code.R', '_blank')"),  
+                                               onclick ="window.open('https://raw.githubusercontent.com/eamonn2014/RCT-and-imbalance/master/RCTbalance_slimline_code/app.R', '_blank')"),  
                                   actionButton("resample", "Simulate a new sample"),
                                   br(),  
                                   tags$style(".well {background-color:#b6aebd ;}"), 
@@ -182,8 +172,7 @@ How can that be known with certainty before seeing the data? "),
                                           tags$style(HTML('#resample{background-color:orange}'))
                                       ),
                                       
-                                      
-                                      splitLayout(
+                                       splitLayout(
                                           
                                           textInput('K', 
                                                     div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
@@ -191,8 +180,7 @@ How can that be known with certainty before seeing the data? "),
                                           textInput('Kp', 
                                                     div(h5(tags$span(style="color:blue", "Make covariates X1:Xn prognostic"))), "2")
                                       ),
-                                      
-                                      
+                                       
                                       textInput('Fact', 
                                                 div(h5(tags$span(style="color:blue", "Covariate coefficients. Here a multiplicative factor is selected so that betas are randomly chosen between (-X*treatment effect) and (X*treatment effect)"))), "1"),
                                       
@@ -224,8 +212,7 @@ How can that be known with certainty before seeing the data? "),
                                       
                                       ###https://stackoverflow.com/questions/49616376/r-shiny-radiobuttons-how-to-change-the-colors-of-some-of-the-choices
                                       
-                                      
-                                      radioButtons(
+                                       radioButtons(
                                           inputId = "dist",
                                           label =  div(h5(tags$span(style="color:blue","Plot choices for simulation tab 2, select to present :"))),
                                           choiceNames = list(
@@ -241,32 +228,9 @@ How can that be known with certainty before seeing the data? "),
                                           choiceValues = c("All", "d1", "d3", "d5",  "d7", "d9", "d11")
                                       )
                                       
-                                      
-                                  ),
+                                   ),
                                   
-                                  
-                                  # tags$hr(),
-                                  # div(h4("References:")),  
-                                  # 
-                                  # tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn, Stop obsessing about balance"),),   
-                                  # div(p(" ")),
-                                  # tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[2] Stephen Senn, point 4, Should we ignore covariate imbalance and stop presenting a stratified table one for randomized trials"),),  
-                                  # div(p(" ")),
-                                  # tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[3]  Frank Harrell, twitter Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)."),),   
-                                  # div(p(" ")),
-                                  # tags$a(href = "https://statistics.fas.harvard.edu/files/statistics/files/21_stephen_senn.pdf", tags$span(style="color:blue", "[4] Randomisation isn’t perfect but doing better is harder than you think "),),   
-                                  # div(p(" ")),
-                                  # tags$a(href = "https://onlinelibrary.wiley.com/doi/epdf/10.1002/sim.8570", tags$span(style="color:blue", "[5] Graphical calibration curves and the integrated calibration index (ICI) for survival models, Statistics in Medicine. 2020;1–29 "),),  
-                                  # div(p(" ")),
-                                  # tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[6] Frank Harrell, twitter Adjusted analysis"),),   
-                                  # div(p(" ")),
-                                  # tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[7] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
-                                  # div(p(" ")),
-                                  # tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[8] ESteyerberg explains some of the advantages of conditioning on covariates"),),  
-                                  # div(p(" "))
-                                  # 
-                                  
-                    ),
+              ),
                     
                     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~tab panels
                     mainPanel(width=9, #eight=4,
@@ -299,7 +263,7 @@ How can that be known with certainty before seeing the data? "),
                                                 
                                                 
                                                 fluidRow(
-                                                    column(width = 5, offset = 0, style='padding:1px;',
+                                                    column(width = 6, offset = 0, style='padding:1px;',
                                                            
                                                     ))),#
                                             
@@ -398,29 +362,27 @@ How can that be known with certainty before seeing the data? "),
                                                   
                                                   tags$hr(),
                                                   div(h4("References:")),  
-                                                  
-                                                  tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[1] Stephen Senn, Stop obsessing about balance"),),   
+                                                  tags$a(href = "https://www.bmj.com/content/bmj/340/bmj.c869.full.pdf", tags$span(style="color:blue", "[1] CONSORT 2010 Explanation and Elaboration: updated guidelines for reporting parallel group randomised trials"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[2] Stephen Senn, point 4, Should we ignore covariate imbalance and stop presenting a stratified table one for randomized trials"),),  
+                                                  tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[2] Stephen Senn, Stop obsessing about balance"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[3]  Frank Harrell, twitter Unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)."),),   
+                                                  tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Stephen Senn, point 4, Should we ignore covariate imbalance and stop presenting a stratified table one for randomized trials"),),  
                                                   div(p(" ")),
-                                                  tags$a(href = "https://statistics.fas.harvard.edu/files/statistics/files/21_stephen_senn.pdf", tags$span(style="color:blue", "[4] Randomisation isn’t perfect but doing better is harder than you think "),),   
+                                                  tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[4]  Frank Harrell, twitter, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'."),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://onlinelibrary.wiley.com/doi/epdf/10.1002/sim.8570", tags$span(style="color:blue", "[5] Graphical calibration curves and the integrated calibration index (ICI) for survival models, Statistics in Medicine. 2020;1–29 "),),  
+                                                  tags$a(href = "https://statistics.fas.harvard.edu/files/statistics/files/21_stephen_senn.pdf", tags$span(style="color:blue", "[5] Randomisation isn’t perfect but doing better is harder than you think "),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://sci-hub.tw/https://doi.org/10.1016/S0002-8703(00)90001-2", tags$span(style="color:blue", "[6] Steyerberg, E. W., Bossuyt, P. M. M., & Lee, K. L. (2000). Clinical trials in acute myocardial infarction: Should we adjust for baseline characteristics? American Heart Journal, 139(5), 745–751. doi:10.1016/s0002-8703(00)90001-2"),),   
+                                                  tags$a(href = "https://onlinelibrary.wiley.com/doi/epdf/10.1002/sim.8570", tags$span(style="color:blue", "[6] Graphical calibration curves and the integrated calibration index (ICI) for survival models, Statistics in Medicine. 2020;1–29 "),),  
                                                   div(p(" ")),
-                                                  tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[7] Frank Harrell, twitter Adjusted analysis"),),   
+                                                  tags$a(href = "https://sci-hub.tw/https://doi.org/10.1016/S0002-8703(00)90001-2", tags$span(style="color:blue", "[7] Steyerberg, E. W., Bossuyt, P. M. M., & Lee, K. L. (2000). Clinical trials in acute myocardial infarction: Should we adjust for baseline characteristics? American Heart Journal, 139(5), 745–751. doi:10.1016/s0002-8703(00)90001-2"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[7] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
+                                                  tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[8] Frank Harrell, twitter, Adjusted analysis"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[8] E.Steyerberg explains some of the advantages of conditioning on covariates"),),  
+                                                  tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[9] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
                                                   div(p(" ")),
-                                                  
-                                                  
-                                                  
-                                                  
+                                                  tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[10] E.Steyerberg explains some of the advantages of conditioning on covariates"),),  
+                                                  div(p(" ")),
+                                               
                                                   tags$hr()
                                            ) 
                                            
@@ -443,7 +405,7 @@ server <- shinyServer(function(input, output   ) {
                type = "info")
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # This is where a new sample is instigated and inouts made numeric
+    # This is where a new sample is instigated and inputs converted to numeric
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     random.sample <- reactive({
         
@@ -505,18 +467,15 @@ server <- shinyServer(function(input, output   ) {
         Po <- power.t.test( delta =theta, sd=sigma, sig.level=alpha,
                             power=pow, type="two.sample", alternative=c("two.sided"))
 
-        MM <- N <-ceiling(Po$n)*2  # always even
+        MM <- N <-ceiling(Po$n)*2  # total will always be even
 
         bigN <- MM  
         N1=MM/2
         N2=N1
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        # For the se of diff, n1=n2 , a simulation may diff trt allocation 
-     
-        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # For the se of diff, n1=n2 , a simulation may have different numbers allocated to treatments 
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        
         return(list(  
   
                       Na=N1,
@@ -530,10 +489,12 @@ server <- shinyServer(function(input, output   ) {
     })
     
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # SIMULATION CODE STARTS HERE
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # here is code to simulate scenarios prognostic covariates, covariates unrelated to y, mix of pro and unrelated to y covariates, 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     simul <- reactive({
         
         sample <- random.sample()
@@ -692,8 +653,10 @@ server <- shinyServer(function(input, output   ) {
         
     })
     
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
-    # do the same as the first simulation code, but this time correlated covariates are created
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # simulation code 2 do the same as the first simulation code, but this time correlated covariates are created
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     simul2 <- reactive({
         
         sample <- random.sample()
@@ -797,9 +760,11 @@ server <- shinyServer(function(input, output   ) {
         )) 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     })
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~NEW
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~####
+   
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # do the same as the first simulation code, but this time imbalanced covariates are created
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
     simul3 <- reactive({
         
         sample <- random.sample()
@@ -824,17 +789,6 @@ server <- shinyServer(function(input, output   ) {
         simfun3<- function(N=N1, K=K1, a=1, sigma=sigma1, theta=theta1, b=b1) {
             
             MM = N
-            
-           # if (is.even(MM)) {  #always even so no need for this
-                # 
-                # N2=MM/2
-                # N1=N2 } else {
-                #     
-                #     N1=(MM-1)/2
-                #     N2=N1+1   
-                #     
-                # }
-            
             N2=MM/2
             N1=N2 
             
@@ -854,20 +808,13 @@ server <- shinyServer(function(input, output   ) {
             
             a <- 1                                     # intercept
             
-            # b coefficient generated earlier 
+            # b coefficient are generated earlier 
             y <- a+ X %*% b + theta*z + rnorm(MM,0, sigma)  # note I use M here
-            
-            # #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            # fake5 <- data.frame(X=X, y=y, z=z)
-            # head(fake5)
-            
-            
+   
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             # create y covariates not associated with y
             y2 <- a +  theta*z + rnorm(MM,0, sigma)    # note I use M here
-            
-            
-            
+   
             data.frame(X=XY, y=y, z=z, y2=y2)
             
         }
@@ -989,14 +936,14 @@ server <- shinyServer(function(input, output   ) {
         d11 <-  density(res3[,5] )
         d12 <-  density(res3[,7] )
         
-        dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y                  ))
-        dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
+        dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y  ))
+        dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x  ))
         
         if (input$dist %in% "All") {
             
             plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")                           
             lines( (d2), col = "black", lty=w, lwd=ww)  
             lines( (d3), col = "red", lty=wz, lwd=ww)    
             lines( (d4), col = "red", lty=w, lwd=ww)          
@@ -1016,8 +963,8 @@ server <- shinyServer(function(input, output   ) {
             
             
             plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")  
             lines( (d2), col = "black", lty=w, lwd=ww)  
             
         }
@@ -1026,8 +973,8 @@ server <- shinyServer(function(input, output   ) {
             
             
             plot((d3), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,col="red",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")               
             lines( (d4), col = "red", lty=w, lwd=ww)          
             
         }
@@ -1035,8 +982,8 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d5") {
             
             plot((d5), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="blue",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")                    
             
             lines( (d6), col = "blue", lty=w, lwd=ww)       
             
@@ -1045,8 +992,8 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d7") {
             
             plot((d7), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="purple",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect", 
+                 ylab="Density") 
             
             lines( (d8), col = "purple", lty=w, lwd=ww)     
             
@@ -1054,8 +1001,8 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d9") {
             
             plot((d9), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="green",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect", 
+                 ylab="Density")  
             
             lines( (d10), col = "green", lty=w, lwd=ww)     
             
@@ -1064,8 +1011,8 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d11") {
             
             plot((d11), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="grey",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")  
             
             lines( (d12), col = "grey", lty=w, lwd=ww)     
             
@@ -1073,7 +1020,7 @@ server <- shinyServer(function(input, output   ) {
         
         
         abline(v = theta1, col = "darkgrey")                
-        legend("topright",                                  # Add legend to density
+        legend("topright",       # Add legend to density
                legend = c(" adj. for true prognostic covariates", 
                           " not adj. for true prognostic covariates" ,
                           " adj. for covariates unrelated to outcome", 
@@ -1089,7 +1036,7 @@ server <- shinyServer(function(input, output   ) {
                           
                ),
                col = c("black", "black","red","red","blue", "blue", "purple", "purple", "green", "green", "grey", "grey"),
-               lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w)           ,lwd=ww
+               lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w)  ,lwd=ww
                , bty = "n", cex=1)
     })
     
@@ -1130,14 +1077,14 @@ server <- shinyServer(function(input, output   ) {
         # we may have imbalance in numbers, otherwise the se will not be exactly correct and this maybe seen in plot
         se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
         
-        dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y                  ))
-        dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x                 ))
+        dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y    ))
+        dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x    ))
         
         if (input$dist %in% "All") {
             
             plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates, truth= ",p4(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
-                  xlab="Standard error", #Change the x-axis label
-                  ylab="Density") #y-axis label)                   # Plot density of x
+                  xlab="Standard error",  
+                  ylab="Density")  
             lines( (d2), col = "black", lty=w, lwd=ww)  
             lines( (d3), col = "red", lty=wz, lwd=ww)    
             lines( (d4), col = "red", lty=w, lwd=ww)          
@@ -1154,22 +1101,21 @@ server <- shinyServer(function(input, output   ) {
         }
         
         
-        else if (input$dist %in% "d1") {  #remove
-            
+        else if (input$dist %in% "d1") {  
             
             plot((d1), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density") 
             lines( (d2), col = "black", lty=w, lwd=ww)  
             
         }
         
-        else if (input$dist %in% "d3") {  #remove
+        else if (input$dist %in% "d3") {  
             
             
             plot((d3), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,col="red",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect", 
+                 ylab="Density")  
             lines( (d4), col = "red", lty=w, lwd=ww)          
             
         }
@@ -1177,8 +1123,8 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d5") {
             
             plot((d5), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="blue",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")  
             
             lines( (d6), col = "blue", lty=w, lwd=ww)       
             
@@ -1187,8 +1133,8 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d7") {
             
             plot((d7), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="purple",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density") 
             
             lines( (d8), col = "purple", lty=w, lwd=ww)     
             
@@ -1197,8 +1143,8 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d9") {
             
             plot((d9), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="green",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")  
             
             lines( (d10), col = "green", lty=w, lwd=ww)     
             
@@ -1207,15 +1153,15 @@ server <- shinyServer(function(input, output   ) {
         else if (input$dist %in% "d11") {
             
             plot((d11), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="grey",
-                 xlab="Treatment effect", #Change the x-axis label
-                 ylab="Density") #y-axis label)                   # Plot density of x
+                 xlab="Treatment effect",  
+                 ylab="Density")  
             
             lines( (d12), col = "grey", lty=w, lwd=ww)     
             
         }
         
         abline(v = se., col = "darkgrey")   
-        legend("topright",                                  # Add legend to density
+        legend("topright",           # Add legend to density
                legend = c(" adj. for true prognostic covariates", 
                           " not adj. for true prognostic covariates" ,
                           " adj. for covariates unrelated to outcome", 
@@ -1231,7 +1177,7 @@ server <- shinyServer(function(input, output   ) {
                           
                ),
                col = c("black", "black","red","red","blue", "blue", "purple", "purple", "green", "green", "grey", "grey"),
-               lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w)           ,lwd=ww
+               lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w) ,lwd=ww
                , bty = "n", cex=1)
     })
     
@@ -1251,7 +1197,6 @@ server <- shinyServer(function(input, output   ) {
         )
         
     })  
-    
     
     output$textWithNumber99 <- renderText({ 
         
@@ -1283,40 +1228,24 @@ server <- shinyServer(function(input, output   ) {
         
         q1.result3 <- simul3()$q1.result  
         q2.result3 <- simul3()$q2.result  
-        
-        # zz <- rbind(
-        #     (c( p4(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p4(result[2] ) ,  p4(result[13] ) ,  p4(result[19] ) ,   p2(result[25] ),   p2(result[26] )  ,   p4(result[37] )    ,   p4(result[43] )         )) ,
-        #     (c( p4(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p4(result[4] ) ,  p4(result[14] ) ,  p4(result[20] ) ,   p2(result[27] ) ,  p2(result[28] )   , p4(result[38] )      ,    p4(result[44] )        )) ,
-        #     (c( p4(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p4(result[6] ) ,  p4(result[15] ) ,  p4(result[21] ) ,   p2(result[29] ) ,  p2(result[30] )  , p4(result[39] )      ,     p4(result[45] )        )) ,
-        #     (c( p4(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p4(result[8] ) ,  p4(result[16] ) ,  p4(result[22] ) ,   p2(result[31] ) ,  p2(result[32] ) , p4(result[40] )      ,     p4(result[46] )         )) ,
-        #     (c( p4(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p4(result[10] ) , p4(result[17] ) ,  p4(result[23] ) ,   p2(result[33] ) ,  p2(result[34] ) , p4(result[41] )      ,   p4(result[47] )           )) ,
-        #     (c( p4(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p4(result[12] ) , p4(result[18] ) ,  p4(result[24] ) ,   p2(result[35] ) ,  p2(result[36] ) , p4(result[42] )      ,     p4(result[48] )         )) ,
-        #     (c( p4(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p4(result2[2] ) , p4(result2[5] ) ,  p4(result2[7] ) ,   p2(result2[9] ) , p2(result2[10] ) ,  p4(result2[13] )      ,  p4(result2[15] )         )) ,
-        #     (c( p4(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p4(result2[4] ) , p4(result2[6] ) ,  p4(result2[8] ) ,   p2(result2[11] ) , p2(result2[12] ) , p4(result2[14] )      ,p4(result2[16] )          )),
-        #     (c( p4(result3[1])  ,     p2(q1.result3[1])  ,  p2(q2.result3[1])   , p4(result3[2] ) ,  p4(result3[9] ) ,  p4(result3[13] ) ,    p2(result3[17] ),   p2(result3[18] )  ,   p4(result3[25] )    ,   p4(result3[29] )         )) ,
-        #     (c( p4(result3[3])  ,     p2(q1.result3[3]) ,   p2(q2.result3[3])   , p4(result3[4] ) ,  p4(result3[10] ) ,  p4(result3[14] ) ,   p2(result3[19] ) ,  p2(result3[20] )   , p4(result3[26] )      ,    p4(result3[30] )         )) ,
-        #     (c( p4(result3[5])  ,     p2(q1.result3[5]) ,   p2(q2.result3[5])   , p4(result3[6] ) ,  p4(result3[11] ) ,  p4(result3[15] ) ,   p2(result3[21] ) ,  p2(result3[22] )  , p4(result3[27] )      ,     p4(result3[31] )         )) ,
-        #     (c( p4(result3[7])  ,     p2(q1.result3[7]) ,   p2(q2.result3[7])   , p4(result3[8] ) ,  p4(result3[12] ) ,  p4(result3[16] ) ,   p2(result3[23] ) ,  p2(result3[24] ) , p4(result3[28] )      ,     p4(result3[32]  )         )) 
-        # ) 
-        
+
         zz <- rbind(
-          (c( p4(result[1])  ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p4(result[2] ) ,  p4(result[13] ) ,  p4(result[19] ) ,      p4(result[37] )    ,   p4(result[43] )         )) ,
-          (c( p4(result[3])  ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p4(result[4] ) ,  p4(result[14] ) ,  p4(result[20] ) ,      p4(result[38] )      ,    p4(result[44] )        )) ,
-          (c( p4(result[5])  ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p4(result[6] ) ,  p4(result[15] ) ,  p4(result[21] ) ,   p4(result[39] )      ,     p4(result[45] )        )) ,
-          (c( p4(result[7])  ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p4(result[8] ) ,  p4(result[16] ) ,  p4(result[22] ) ,      p4(result[40] )      ,     p4(result[46] )         )) ,
-          (c( p4(result[9])  ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p4(result[10] ) , p4(result[17] ) ,  p4(result[23] ) ,    p4(result[41] )      ,   p4(result[47] )           )) ,
-          (c( p4(result[11])  ,    p2(q1.result[11]) ,  p2(q2.result[11])  , p4(result[12] ) , p4(result[18] ) ,  p4(result[24] ) ,      p4(result[42] )      ,     p4(result[48] )         )) ,
-          (c( p4(result2[1]),      p2(q1.result2[1]),   p2(q2.result2[1])  , p4(result2[2] ) , p4(result2[5] ) ,  p4(result2[7] ) ,      p4(result2[13] )      ,  p4(result2[15] )         )) ,
-          (c( p4(result2[3]),      p2(q1.result2[3])  , p2(q2.result2[3])  , p4(result2[4] ) , p4(result2[6] ) ,  p4(result2[8] ) ,     p4(result2[14] )      ,p4(result2[16] )          )),
-          (c( p4(result3[1])  ,     p2(q1.result3[1])  ,  p2(q2.result3[1])   , p4(result3[2] ) ,  p4(result3[9] ) ,  p4(result3[13] ) ,        p4(result3[25] )    ,   p4(result3[29] )         )) ,
-          (c( p4(result3[3])  ,     p2(q1.result3[3]) ,   p2(q2.result3[3])   , p4(result3[4] ) ,  p4(result3[10] ) ,  p4(result3[14] ) ,        p4(result3[26] )      ,    p4(result3[30] )         )) ,
-          (c( p4(result3[5])  ,     p2(q1.result3[5]) ,   p2(q2.result3[5])   , p4(result3[6] ) ,  p4(result3[11] ) ,  p4(result3[15] ) ,       p4(result3[27] )      ,     p4(result3[31] )         )) ,
-          (c( p4(result3[7])  ,     p2(q1.result3[7]) ,   p2(q2.result3[7])   , p4(result3[8] ) ,  p4(result3[12] ) ,  p4(result3[16] ) ,     p4(result3[28] )      ,     p4(result3[32]  )         )) 
+          (c( p4(result[1])   ,     p2(q1.result[1])  ,  p2(q2.result[1])   , p4(result[2] ) ,  p4(result[13] ) ,  p4(result[19] ) ,      p4(result[37] )    ,  p4(result[43] )         )) ,
+          (c( p4(result[3])   ,     p2(q1.result[3]) ,   p2(q2.result[3])   , p4(result[4] ) ,  p4(result[14] ) ,  p4(result[20] ) ,      p4(result[38] )    ,  p4(result[44] )        )) ,
+          (c( p4(result[5])   ,     p2(q1.result[5]) ,   p2(q2.result[5])   , p4(result[6] ) ,  p4(result[15] ) ,  p4(result[21] ) ,      p4(result[39] )    ,  p4(result[45] )        )) ,
+          (c( p4(result[7])   ,     p2(q1.result[7]) ,   p2(q2.result[7])   , p4(result[8] ) ,  p4(result[16] ) ,  p4(result[22] ) ,      p4(result[40] )    ,  p4(result[46] )         )) ,
+          (c( p4(result[9])   ,     p2(q1.result[9]) ,   p2(q2.result[9])   , p4(result[10] ) , p4(result[17] ) ,  p4(result[23] ) ,      p4(result[41] )    ,  p4(result[47] )           )) ,
+          (c( p4(result[11])  ,     p2(q1.result[11]) ,  p2(q2.result[11])  , p4(result[12] ) , p4(result[18] ) ,  p4(result[24] ) ,      p4(result[42] )    ,  p4(result[48] )         )) ,
+          (c( p4(result2[1])  ,     p2(q1.result2[1]),   p2(q2.result2[1])  , p4(result2[2] ) , p4(result2[5] ) ,  p4(result2[7] ) ,      p4(result2[13] )   ,  p4(result2[15] )         )) ,
+          (c( p4(result2[3])  ,     p2(q1.result2[3])  , p2(q2.result2[3])  , p4(result2[4] ) , p4(result2[6] ) ,  p4(result2[8] ) ,      p4(result2[14] )   ,  p4(result2[16] )          )),
+          (c( p4(result3[1])  ,     p2(q1.result3[1])  , p2(q2.result3[1])   , p4(result3[2] ) ,  p4(result3[9] ) ,  p4(result3[13] ) , p4(result3[25] )   ,  p4(result3[29] )         )) ,
+          (c( p4(result3[3])  ,     p2(q1.result3[3]) ,  p2(q2.result3[3])   , p4(result3[4] ) ,  p4(result3[10] ) ,  p4(result3[14] ) ,p4(result3[26] )   ,  p4(result3[30] )         )) ,
+          (c( p4(result3[5])  ,     p2(q1.result3[5]) ,  p2(q2.result3[5])   , p4(result3[6] ) ,  p4(result3[11] ) ,  p4(result3[15] ) , p4(result3[27] )  ,  p4(result3[31] )         )) ,
+          (c( p4(result3[7])  ,     p2(q1.result3[7]) ,  p2(q2.result3[7])   , p4(result3[8] ) ,  p4(result3[12] ) ,  p4(result3[16] ) , p4(result3[28] )  ,  p4(result3[32]  )         )) 
         ) 
         
         zz <- as.data.frame(zz)
         
-       # colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma","R2")
         colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","B" , "sigma","R2")
         
         zz <- data.frame(lapply(zz, function(x) as.numeric(as.character(x))))
@@ -1336,8 +1265,6 @@ server <- shinyServer(function(input, output   ) {
             " not adj. for non prognostic imbalanced covariates"
         )
         zz <- zz[order(zz$B),]
-        
-      #  colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Stand.error", "Power ","  MSE ", "MSE Low 95%CI", "MSE Upp 95%CI", "sigma", "Adj.R2")
         
         colnames(zz) <- c("Mean  ", "Lower 95%CI", "Upper 95%CI", "Std.error", "Power ","MSE" , "sigma","R2")
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
