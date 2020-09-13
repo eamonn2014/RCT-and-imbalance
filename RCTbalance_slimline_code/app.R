@@ -350,7 +350,7 @@
                                           A power calculation for a ttest is executed resulting in a sample size used in the app. The next input box is used to 
                                           determine the number of simulations used in tab 1. The covarite distribution can be altered by selecting between the 
                                           two stated distributions, this option does work for the imbalanced investigations. The bottom of the user input section 
-                                          is to control what simulated scenario results are presented graphically. 
+                                          allows control over which simulated scenario results are presented graphically. 
                                           We can also simulate a new sample or check the code behind the app by hitting the orange buttons.
                                           "),
                                            h4("
