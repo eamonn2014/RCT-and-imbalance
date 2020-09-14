@@ -136,7 +136,7 @@
                 and soon implausible values will result. 
                 In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables [5,6]."), 
 
-                h4("With this app we simulate a 1:1 RCT with a continuous response, estimating treatment effects whilst examining adjusting and not adjusting for covariates related to the outcome, 
+                h4("With this app Monte Carlo simulation is used to generate an RCT with patients randomised 1:1 to treatment and control with a continuous response, estimating treatment effects whilst examining adjusting and not adjusting for covariates related to the outcome, 
                 covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome.
                 As the variance of the response increases with more covariates in the simulation, it is advisable to limit the number of covariates, the default is 3. 
                 As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
