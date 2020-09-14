@@ -117,7 +117,7 @@
                   
             h2("Covariate adjustment in randomised controlled trials (RCTs) with a continuous response"), 
                 
-            h4("The main value of randomization is that it eliminates selection bias, treatment groups are on average comparable in terms of known
+            h4("The main value of randomization in RCTs is that it eliminates selection bias, treatment groups are on average comparable in terms of known
                 and unknown patient characteristics [1]. But as Stephen Senn has stated '1) randomised controlled trials don't deliver balance *even* if they are very large and 
                 2) valid inference does *not* depend on having balanced groups', facts that do not seem 
                 to be common knowledge [2]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [3]. 
