@@ -123,17 +123,19 @@
                 to be common knowledge [2]. As Senn says elsewhere, 'Balance is valuable as a contribution to efficiency. It has nothing to do with validity' [3]. 
                 This app looks into these points and investigates a related common misconception concerning RCTs; 
                 it is mistakenly thought there is no need to include baseline covariates in the analysis.
-                Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. When the response outcome is continuous, 
+                Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. 
+                When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates. 
-                We do not expect covariates to be related to the treatment assignment because of randomisation,
-                but they may be related to the outcome, they are therefore not considered to be confounding. 
-                However, differences between the outcome which can be attributed to differences in the covariates can be removed, 
-                this results in a more precise estimate of treatment effect. This should be considered more often as sample sizes can be reduced. 
+                Because of randomisation We do not expect covariates to be related to the treatment assignment, 
+                but  may be related to the outcome ans so are not considered confounding. 
+                Differences between the outcome which can be attributed to differences in the covariates can be removed, 
+                resulting in a more precise estimate of treatment effect. This should be considered more often as sample sizes can be reduced.
+                
                 As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)' [4].
 
                 Note: The total effect of covariates has to be bounded. For example the range of human fasting blood glucose levels is approx. 70 to 130 mg/dL 
-                and if we were simulating this response adding similar covariates into a model will result in a response the variance of which keeps on increasing 
-                and soon implausible values will result. 
+                and if we were simulating this response and adding similar covariates into a model this will result in a response the variance of which keeps on increasing 
+                and soon implausible fasting blood glucose levels will result. 
                 In fact a single continuous covariate could be used as a linear predictor or risk score that summarizes the multivariable contribution of a set of predictor variables [5,6]."), 
 
                 h4("With this app Monte Carlo simulation is used to generate an RCT with patients randomised 1:1 to treatment and control with a continuous response, estimating treatment effects whilst examining adjusting and not adjusting for covariates related to the outcome, 
