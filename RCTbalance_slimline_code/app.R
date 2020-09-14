@@ -143,7 +143,8 @@
                 There are also three tabs presenting example results all using many simulations.
                 Note, the prognostic strength of treatment may be small compared with patient characteristics,
                 such as age as in the GUSTO-1 trial (though the GUSTO-1 response is binary) [7].
-                The limited simulations I have done support adjusting over not adjusting, the mean square error being smaller when adjusting.
+                The limited simulations I have done support adjusting over not adjusting, the mean square error being smaller when adjusting. Note we have ideal data conforming to 
+                statistical distributions and no missing data.
                 "), 
                 
                 h3("  "), 
