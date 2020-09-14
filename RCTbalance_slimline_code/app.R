@@ -145,7 +145,7 @@
                 such as age as in the GUSTO-1 trial (though the GUSTO-1 response is binary) [7].
                 The limited simulations I have done support adjusting over not adjusting, the mean square error being smaller when adjusting. 
                 Note we have ideal data conforming to 
-                statistical distributions, no missing data all covariates are truly linear and continuous.
+                statistical distributions, no missing data and all covariates are truly linear and continuous.
                 "), 
                 
                 h3("  "), 
