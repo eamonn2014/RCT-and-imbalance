@@ -176,7 +176,7 @@
                                        splitLayout(
                                           
                                           textInput('K', 
-                                                    div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
+                                                    div(h5(tags$span(style="color:blue", "No of covariates (min 2)"))), "3"),
                                           
                                           textInput('Kp', 
                                                     div(h5(tags$span(style="color:blue", "Make covariates X1:Xn prognostic"))), "2")
