@@ -186,7 +186,7 @@ However we also wish to examine imbalanced covariates and collinear covariates. 
                                               div(h5(tags$span(style="color:blue", "No of covariates"))), "3"),
                                     
                                     textInput('Kp', 
-                                              div(h5(tags$span(style="color:blue", "Make covariates X1:Xn prognostic"))), "2")
+                                              div(h5(tags$span(style="color:blue", "Only covariates 1:n prognostic"))), "2")
                                   ),
                                   
 
