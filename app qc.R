@@ -1,18 +1,20 @@
 ##############################################################################
-# rcode to simulate covariate adjustment
+# Sept 2020 qc r code for app
+# r code to simulate covariate adjustment for continuous response RCTs
 # run the simfun3 function of interest
-# change the model in statfun3 function and run the code below
+# change the model in statfun3 function and run the code below it
 
   rm(list=ls()) 
   set.seed(333) # reproducible
   
-  p0 <- function(x) {formatC(x, format="f", digits=0)}
-  p1 <- function(x) {formatC(x, format="f", digits=1)}
-  p2 <- function(x) {formatC(x, format="f", digits=2)}
-  p3 <- function(x) {formatC(x, format="f", digits=3)}
-  p4 <- function(x) {formatC(x, format="f", digits=4)}
-  p5 <- function(x) {formatC(x, format="f", digits=5)}
-  # checking simulations
+  # formmating only p4 used
+  # p0 <- function(x) {formatC(x, format="f", digits=0)}
+  # p1 <- function(x) {formatC(x, format="f", digits=1)}
+  # p2 <- function(x) {formatC(x, format="f", digits=2)}
+  # p3 <- function(x) {formatC(x, format="f", digits=3)}
+    p4 <- function(x) {formatC(x, format="f", digits=4)}
+  # p5 <- function(x) {formatC(x, format="f", digits=5)}
+ 
   require(Matrix)
   
   ###############################################################################
@@ -57,9 +59,9 @@
     }
     
     z <- sample(c(0,1), N, replace=T)                            # treatment indicators
-    y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)              # linear predictor
-    #y <- a+            theta*z + rnorm(N,0, sigma)              # linear predictor
-    #y <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma) # linear predictor
+    y <-  a+ X %*% b + theta*z + rnorm(N,0, sigma)               # response , prognostic X
+    #y <- a+            theta*z + rnorm(N,0, sigma)              # response no true prognostic covariates
+    #y <- a+ X[,1:Kp] %*% b[1:Kp] + theta*z + rnorm(N,0, sigma)  # response with a mix od prognostics covariates
     
     data.frame(X=X, y=y, z=z )
     
@@ -78,11 +80,11 @@
     
     if (covar==1) {  
       X1 <- array(runif(N1*K , -1,1), c(N1,K))  
-      X2 <- array(runif(N2*K , -.8,1.2), c(N2,K))   ##imbalance compared to above
+      X2 <- array(runif(N2*K , -.8,1.2), c(N2,K))   ##imbalance compared to above line
       XY <- X <- rbind(X1,X2)
     } else {
       X1 <- array(rnorm(N1*K, 0,  1), c(N1,K))  
-      X2 <- array(rnorm(N2*K, .3, 1), c(N2,K))   ##imbalance compared to above
+      X2 <- array(rnorm(N2*K, .3, 1), c(N2,K))   #  #imbalance compared to above line
       XY <- X <- rbind(X1,X2)
     }
     
@@ -92,10 +94,10 @@
     a <- 1                                     # intercept
     
     # b coefficient generated earlier 
-#    y <- a+ X %*% b + theta*z + rnorm(MM,0, sigma)  # note I use M here
+    # y <- a+ X %*% b + theta*z + rnorm(MM,0, sigma)  # note I use M here
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # create y covariates not associated with y
+    # create y, covariates are not associated with y
     y <- a +  theta*z + rnorm(MM,0, sigma)    # note I use M here
     
     data.frame(X=XY, y=y, z=z)
@@ -140,8 +142,8 @@
   statfun3 <- function(d) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     zz <- lm(y~z, data=d)    ## ignoring any covariate
-    #zz <- lm(y~., data=d)  ## adjusting for all covariates
+     zz <- lm(y~z, data=d)    ## ignoring any covariates
+    #zz <- lm(y~., data=d)    ## adjusting for all covariates
     
     f <-  summary(zz)
     pr <- predict(zz)
@@ -165,14 +167,14 @@
   # Execute
   ##############################################################################
  
- 
   library(plyr)
   res <- raply(simuls, statfun3(simfun3())) # run the model many times
   # summarize
   result <- apply(res,2,mean)
   q1.result <- apply(res,2, quantile, probs=c(0.025), na.rm=TRUE)
   q2.result <- apply(res,2, quantile, probs=c(0.975), na.rm=TRUE)
-
+ 
+  # collect the results
   zz <- rbind(
     c(  p4(result[1])   ,p4(q1.result[1]),  p4(q2.result[1]), 
         p4(result[2] ) , p4(result[3] ) ,  p4(result[4] ) , 
@@ -187,36 +189,4 @@
   ###############################################################################
   # End
   ##############################################################################   
-  
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #mean se power mse mselow msehigh sigma r2
-   # summary(sc2)
-   # 
-   #   xx <- as.data.frame(rbind(apply(sc1,2,mean),apply(sc2,2,mean), apply(sc3,2,mean),
-   #         apply(sc4,2,mean),apply(sc5,2,mean),apply(sc6,2,mean),
-   #         apply(sc8,2,mean),apply(sc7,2,mean),apply(sc9,2,mean),
-   #         apply(sc10,2,mean),apply(sc11,2,mean),apply(sc12,2,mean)))
-   #         
-   # 
-   #   colnames(xx) <- c("mean","se","power","mse","mselow","msehigh","sigma","r2")
-   #   rownames(xx) <- c(" adj. for true prognostic covariates", 
-   #              " not adj. for true prognostic covariates" ,
-   #              " adj. for covariates unrelated to outcome", 
-   #              " not adj. for covariates unrelated to outcome",
-   #              " adj. for mix of prognostic and unrelated to outcome", 
-   #              " not adj. mix of prognostic and unrelated to outcome", 
-   #              " adj. for correlated prognostic covariates", 
-   #              " not adj. for correlated prognostic covariates",
-   #              " adj. for imbalanced prognostic covariates", 
-   #              " not adj. for imbalanced prognostic covariates", 
-   #              " adj. for imbalanced covariates unrelated to outcome", 
-   #              " not adj. imbalanced covariates unrelated to outcome"
-   #   )
-   # 
-   #   xx <- xx[order(xx$mse),]
-   #   
-   #  xx
  
-    #save.image(file = "qc_app_data.RData")
-  
-   #load("qc_app_data.RData")
