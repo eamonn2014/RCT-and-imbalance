@@ -285,8 +285,10 @@
                                                  ")),
                                             
                                             h4(paste("Table 2 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                           
                                             div( verbatimTextOutput("zz") )  ,
                                             h4(htmlOutput("textWithNumber99",) ),
+                                            div( verbatimTextOutput("mse.target") )  ,
                                             h4(paste("Here are the true coefficients of the covariates used in the simulation: ")),
                                             div( verbatimTextOutput("betas") )  ,
                                             
@@ -296,7 +298,7 @@
                                   
                                   tabPanel( "2 Example A results, default setting",
                                             
-                                            h4(paste("Figure 3 Treatment effect estimates, betas -0.01  0.02  0.13, default settings 100,000 simulations (radio buttons do not work here)")),
+                                            h4(paste("Figure 3 Treatment effect estimates, betas -0.01,  0.02,  0.13, default settings 100,000 simulations (radio buttons do not work here)")),
                                             img(src='estimates100K.png', align = "right"),
                                             h4(paste("Figure 4 Standard error estimates")),
                                             img(src='se100K.png', align = "right"),
@@ -308,7 +310,7 @@
                                   
                                   tabPanel( "3 Example B results",
                                             
-                                            h4(paste("Figure 5 Treatment effect estimates, betas -.99  -0.4  0.99 (no larger than x2 trt effect); trt effect 1; residual variation 3; 50,000 simulations (radio buttons do not work here)")),
+                                            h4(paste("Figure 5 Treatment effect estimates, betas -.99,  -0.4,  0.99 (no larger than 2 x trt effect); trt effect 1; residual variation 3; 50,000 simulations (radio buttons do not work here)")),
                                             img(src='trtesr2.png', align = "right"),
                                             h4(paste("Figure 6 Standard error estimates")),
                                             img(src='se.estimates2.png', align = "right"),
@@ -320,7 +322,7 @@
                                   
                                   tabPanel( "4 Example C results",
                                             
-                                            h4(paste("Figure 7 Treatment effect estimates, betas -.58  0  0.5 (no larger than x.75 trt effect); trt effect 1; residual variation 2; 50,000 simulations (radio buttons do not work here)")),
+                                            h4(paste("Figure 7 Treatment effect estimates, betas -.58,  0,  0.5 (no larger than 0.75 x trt effect); trt effect 1; residual variation 2; 50,000 simulations (radio buttons do not work here)")),
                                             img(src='trtesr3.png', align = "right"),
                                             h4(paste("Figure 8 Standard error estimates")),
                                             img(src='se.estimates3.png', align = "right"),
@@ -329,8 +331,18 @@
                                             
                                   )     ,
                                   
+                                  tabPanel( "5 Example D results",
+                                            
+                                            h4(paste("Figure 8 Treatment effect estimates, betas  -0.87,  0.62,  0.82 (no larger than 4 x trt effect); trt effect .223; residual variation 0.2; 10,000 simulations (radio buttons do not work here)")),
+                                            img(src='estimate4.png', align = "right"),
+                                            h4(paste("Figure 8 Standard error estimates")),
+                                            img(src='se4.png', align = "right"),
+                                            h4(paste("Table 6 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                            img(src='summary4.png', align = "center"),
+                                            
+                                  )     ,
                                   
-                                  tabPanel("5 Notes & references", value=3, 
+                                  tabPanel("6 Notes & references", value=3, 
                                            
                                            h4("First, a power calculation function in R for a ttest, using the random error, treatment effect, alpha and power is used to determine the sample size.") ,
                                            
@@ -483,8 +495,8 @@ server <- shinyServer(function(input, output   ) {
                       Na=N1,
                       Nb=N2,
                       N=N, 
-                      bigN=bigN
-                      
+                      bigN=bigN,
+                      sigma=sigma
                       
                       ))
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1195,21 +1207,7 @@ server <- shinyServer(function(input, output   ) {
                     estimator. As the MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator, 
                     this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
                     true sigma squared 
-                    on the left input."
-        )
-        
-    })  
-    
-    output$textWithNumber99 <- renderText({ 
-        
-        HTML(
-            "Mean squared error (MSE: accuracy and precision) combines bias and
-                    variance as (bias*bias+variance). It represents the total variation around the
-                    true value, rather than the average estimated value. MSE gives an overall sense of the quality of the
-                    estimator. As the MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator, 
-                    this implies that in the case of unbiased estimators, the MSE and variance are equivalent. So compare the calculated MSE to the 
-                    true sigma squared 
-                    on the left input."
+                    on the left input and printed here:"
         )
         
     })  
@@ -1318,7 +1316,17 @@ server <- shinyServer(function(input, output   ) {
         
     })
   
-})
+ 
+    
+    output$mse.target <- renderPrint({
+      
+      d <- mcmc()$sigma
+      
+      return(print(d^2)) 
+      
+    })
+ 
+}) 
 
 # Run the application 
 shinyApp(ui = ui, server = server)
