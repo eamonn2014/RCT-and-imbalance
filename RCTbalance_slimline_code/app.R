@@ -370,7 +370,7 @@
                                           We can also simulate a new sample or check the code behind the app by hitting the orange buttons.
                                           "),
                                            h4("
-                                          The next three tabs present results of pre-run simulations.
+                                          The next four tabs present results of pre-run simulations.
                                           "),
                                            
                                            
