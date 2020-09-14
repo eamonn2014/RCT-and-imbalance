@@ -142,7 +142,7 @@
                 covariates not related to the outcome, collinear or correlated covariates related to the outcome and imbalanced covariates both of prognostic value and unrelated to the outcome.
                 As the variance of the response increases with more covariates in the simulation, it is advisable to limit the number of covariates, the default is 3. 
                 As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
-                There are also three tabs presenting example results all using many simulations.
+                There are also four tabs presenting example results all using many simulations.
                 Note, the prognostic strength of treatment may be small compared with patient characteristics,
                 such as age as in the GUSTO-1 trial (though the GUSTO-1 response is binary) [7].
                 The limited simulations I have done support adjusting over not adjusting, the mean square error being smaller when adjusting. 
