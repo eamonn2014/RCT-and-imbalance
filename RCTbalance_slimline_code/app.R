@@ -126,8 +126,8 @@
                 Many RCTs are analysed in a simple manner using only the randomised treatment as the independent variable. 
                 When the response outcome is continuous, 
                 precision of the treatment effect estimate is improved when adjusting for baseline covariates. 
-                Because of randomisation We do not expect covariates to be related to the treatment assignment, 
-                but  may be related to the outcome ans so are not considered confounding. 
+                Due to randomisation we do not expect covariates to be related to the treatment assignment, 
+                but they may be related to the outcome and so are not considered confounding. 
                 Differences between the outcome which can be attributed to differences in the covariates can be removed, 
                 resulting in a more precise estimate of treatment effect. This should be considered more often as sample sizes can be reduced.
                 
