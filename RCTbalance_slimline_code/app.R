@@ -144,7 +144,9 @@
                 As the number of simulations to get smooth curves is high, the application may time out before simulations complete. Therefore take the code and run on your own machine. 
                 There are also four tabs presenting example results all using many simulations.
                 Note, the prognostic strength of treatment may be small compared with patient characteristics,
-                such as age as in the GUSTO-1 trial (though the GUSTO-1 response is binary) [7].
+                such as age as in the GUSTO-1 trial. This phenomenon is observed in many prognostic evaluations of RCTs:
+treatment has a 'statistically significant' impact on outcome, but its relevance is small
+compared to other prognostic factors [7,8].
                 The limited simulations I have done support adjusting over not adjusting, the mean square error being smaller when adjusting. 
                 Note we have ideal data conforming to 
                 statistical distributions, no missing data and all covariates are truly linear and continuous.
@@ -182,7 +184,7 @@
                                                     div(h5(tags$span(style="color:blue", "No of covariates (min 2)"))), "3"),
                                           
                                           textInput('Kp', 
-                                                    div(h5(tags$span(style="color:blue", "Make covariates X1:Xn prognostic"))), "2")
+                                                    div(h5(tags$span(style="color:blue", "Make covariates 1:n prognostic"))), "2")
                                       ),
                                        
                                       textInput('Fact', 
@@ -391,11 +393,13 @@
                                                   div(p(" ")),
                                                   tags$a(href = "https://www.sciencedirect.com/science/article/abs/pii/S0002870300900012?via%3Dihub", tags$span(style="color:blue", "[7] Steyerberg, E. W., Bossuyt, P. M. M., & Lee, K. L. (2000). Clinical trials in acute myocardial infarction: Should we adjust for baseline characteristics? American Heart Journal, 139(5), 745–751. doi:10.1016/s0002-8703(00)90001-2"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[8] Frank Harrell, twitter, Adjusted analysis"),),   
+                                                  tags$a(href = "http://clinicalpredictionmodels.org/", tags$span(style="color:blue", "[8] Steyerberg, E. W., Clinical Prediction Models, 2019 p459"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[9] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
+                                                  tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[9] Frank Harrell, twitter, Adjusted analysis"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[10] E.Steyerberg explains some of the advantages of conditioning on covariates"),),  
+                                                  tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[10 Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[11] E.Steyerberg explains some of the advantages of conditioning on covariates"),),  
                                                   div(p(" ")),
                                                
                                                   tags$hr()
