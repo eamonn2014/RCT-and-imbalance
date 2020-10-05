@@ -105,6 +105,9 @@
   }
 
   RR=.37 ## used to limit correlations between variables
+  
+  pp <-"https://github.com/eamonn2014/RCT-and-imbalance/raw/master/RCTbalance_slimline_code/5000%20simulation%20default%20setting.Rdata"
+  
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2 , paper another option to try
                   # paper
@@ -306,7 +309,7 @@ compared to other prognostic factors [7,8].
                                                        
                                                        div(plotOutput("reg.plotx",  width=fig.width8, height=fig.height7)),
                                                        div(plotOutput("reg.ploty",  width=fig.width8, height=fig.height7)),
-                                                       div(plotOutput("phoney",  width=NULL, height=NULL)), #dummy line so rdata is saved
+                                                      # div(plotOutput("phoney",  width=NULL, height=NULL)), #dummy line so rdata is saved
                                                 ) ,
                                                 
                                                 
@@ -361,7 +364,7 @@ compared to other prognostic factors [7,8].
                                                      
                                               ),
                                               
-                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                              h4("Hit to load, 5000 simulations default settings"),
                                             ),
                                             
                                             
@@ -435,23 +438,11 @@ compared to other prognostic factors [7,8].
                                             ) ,
                                             # this spinner indicating something is loading does work
                                             shinycssloaders::withSpinner(
-                                              verbatimTextOutput('content1'),  #summary table
+                                              verbatimTextOutput('content5'),  #summary table
 
                                             ),
 
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
+                                     
                                             
                                   ),
                                   
@@ -1370,6 +1361,25 @@ server <- shinyServer(function(input, output   ) {
                col = c("black", "black","red","red","blue", "blue", "purple", "purple", "green", "green", "grey", "grey"),
                lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w) ,lwd=ww
                , bty = "n", cex=1)
+        
+        
+        
+        ###
+        
+        sample <- random.sample()
+        res <- simul()$res
+        res2 <- simul2()$res
+        res3 <- simul3()$res
+        sigma1=sample$sigma
+        N1 <- mcmc()$N #
+        n1 <- mcmc()$Na
+        n2 <- mcmc()$Nb
+        se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
+        theta=sample$theta
+        zz <- table.sim()$zz
+        
+        save(list = c("sigma", "se.","N1","n1","n2","res", "res2","res3","theta","zz"),
+             file = "simulation_results.Rdata")
     })
     
     
@@ -1504,26 +1514,35 @@ server <- shinyServer(function(input, output   ) {
     })
     
     # save the data , you need code in ui see above
-    output$phoney <- renderPlot({
-
-      sample <- random.sample()
-      res <- simul()$res
-      res2 <- simul2()$res
-      res3 <- simul3()$res
-      sigma1=sample$sigma
-      N1 <- mcmc()$N #
-      n1 <- mcmc()$Na
-      n2 <- mcmc()$Nb
-      se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
-      theta=sample$theta
-      zz <- table.sim()$zz
-
-      save(list = c("sigma", "se.","N1","n1","n2","res", "res2","res3","theta","zz"),
-                         file = "simulation_results.Rdata")
-
+    # output$phoney <- renderPlot({
+    # 
+    #   sample <- random.sample()
+    #   res <- simul()$res
+    #   res2 <- simul2()$res
+    #   res3 <- simul3()$res
+    #   sigma1=sample$sigma
+    #   N1 <- mcmc()$N #
+    #   n1 <- mcmc()$Na
+    #   n2 <- mcmc()$Nb
+    #   se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
+    #   theta=sample$theta
+    #   zz <- table.sim()$zz
+    # 
+    #   save(list = c("sigma", "se.","N1","n1","n2","res", "res2","res3","theta","zz"),
+    #                      file = "simulation_results.Rdata")
+    # 
+    # 
+    # })
   
-    })
-  
+    # sigma 1
+    # se. 2
+    # res 6
+    # res2 7
+    # res3 8
+    # theta 9
+    # zz 10
+    
+    
     
 ###################################################################################################################################
     
@@ -1607,28 +1626,28 @@ server <- shinyServer(function(input, output   ) {
     # now we have put the data that we load into objects that can be used as inputs  
     
     output$content1 <- renderPrint({
-      if (is.null(content1$tab1)) return()
+      if (is.null(content1$tab1)) return()  #res
       content1$tab1
     })
     
     output$content2 <- renderPrint({
-      if (is.null(content2$tab2)) return()
+      if (is.null(content2$tab2)) return()   #res2
       content2$tab2
     })
     output$content3 <- renderPrint({
-      if (is.null(content3$tab3)) return()
+      if (is.null(content3$tab3)) return() #res3
       content3$tab3
     })
     output$content4 <- renderPrint({
-      if (is.null(content4$tab4)) return()
+      if (is.null(content4$tab4)) return()  #theta
       content4$tab4
     })
     output$content5 <- renderPrint({
-      if (is.null(content5$tab5)) return()
+      if (is.null(content5$tab5)) return()  #zz
       content5$tab5
     })    
     output$content6 <- renderPrint({
-      if (is.null(content6$tab6)) return()
+      if (is.null(content6$tab6)) return() #se.
       content6$tab6
     })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1640,22 +1659,22 @@ server <- shinyServer(function(input, output   ) {
     output$reg.plotLL <- renderPlot({         #means
       
       # Get the  data
-      if (is.null(content2$tab1)) return()  # this stops red error messages before the first button is loaded
-      if (is.null(content3$tab2)) return()
-      if (is.null(content4$tab3)) return()
-      if (is.null(content5$tab4)) return()
+      if (is.null(content1$tab1)) return()  # this stops red error messages before the first button is loaded
+      if (is.null(content2$tab2)) return()
+      if (is.null(content3$tab3)) return()
+      if (is.null(content4$tab4)) return()
        
       
-      res <- as.data.frame(content2$tab1)     # loaded objects assigned to objects
+      res <- as.data.frame(content1$tab1)     # loaded objects assigned to objects
       res <- as.data.frame(lapply(res, as.numeric))
       
-      res2 <- as.data.frame(content3$tab2)
+      res2 <- as.data.frame(content2$tab2)
       res2 <- as.data.frame(lapply(res2, as.numeric))
       
-      res3 <- as.data.frame(content4$tab3)
+      res3 <- as.data.frame(content3$tab3)
       res3 <- as.data.frame(lapply(res3, as.numeric))
       
-      theta1 <- (content5$tab4)
+      theta1 <- (content4$tab4)
       
       ## below here code is the same 
       
@@ -1785,33 +1804,23 @@ server <- shinyServer(function(input, output   ) {
       
       # Get the  data
       
-    #  res <- simul()$res
-     # res2 <- simul2()$res
-      #res3 <- simul3()$res
-      
-      #sample <- random.sample()
-     # sigma1=sample$sigma
-    #  N1 <- mcmc()$N # 
-      
-    #  n1 <- mcmc()$Na
-    #  n2 <- mcmc()$Nb
-      
+
       # pull in the loaded objects
-      if (is.null(content2$tab1)) return()  # this stops red error messages before the first button is loaded
-      if (is.null(content3$tab2)) return()
-      if (is.null(content4$tab3)) return()
-      if (is.null(content5$tab6)) return()
+      if (is.null(content1$tab1)) return()  # this stops red error messages before the first button is loaded
+      if (is.null(content2$tab2)) return()
+      if (is.null(content3$tab3)) return()
+      if (is.null(content6$tab6)) return()
       
-      res <- as.data.frame(content2$tab1)     # loaded objects assigned to objects
+      res <- as.data.frame(content1$tab1)     # loaded objects assigned to objects
       res <- as.data.frame(lapply(res, as.numeric))
       
-      res2 <- as.data.frame(content3$tab2)
+      res2 <- as.data.frame(content2$tab2)
       res2 <- as.data.frame(lapply(res2, as.numeric))
       
-      res3 <- as.data.frame(content4$tab3)
+      res3 <- as.data.frame(content3$tab3)
       res3 <- as.data.frame(lapply(res3, as.numeric))
       
-      se. <- (content5$tab6)
+      se. <- (content6$tab6)
       
       ## below here code is the same 
       
