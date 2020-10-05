@@ -106,8 +106,10 @@
 
   RR=.37 ## used to limit correlations between variables
   
-  pp <-"https://github.com/eamonn2014/RCT-and-imbalance/raw/master/RCTbalance_slimline_code/5000%20simulation%20default%20setting.Rdata"
-  
+  pp <-"https://github.com/eamonn2014/RCT-and-imbalance/raw/master/RCTbalance_slimline_code/A%205000%20simulation%20default%20setting.Rdata"
+  pp2 <-"https://github.com/eamonn2014/RCT-and-imbalance/raw/master/RCTbalance_slimline_code/B%205000_simulations_trt.eff.1_sigma_3%20%20-1.00%20-0.33%20%201.75.Rdata"
+  pp3 <-"https://github.com/eamonn2014/RCT-and-imbalance/raw/master/RCTbalance_slimline_code/C%205000_simulations_trt.eff.1_sigma_2_.75_multiplicative_-0.20%20-0.04%20%200.22.Rdata"
+  pp4 <-"https://github.com/eamonn2014/RCT-and-imbalance/raw/master/RCTbalance_slimline_code/D%205000%20simulations%20sigma_0.2_4_multiplicative_-0.73%20%200.35%20%200.55.Rdata"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ui <- fluidPage(theme = shinytheme("journal"), #https://www.rdocumentation.org/packages/shinythemes/versions/1.1.2 , paper another option to try
                   # paper
@@ -383,7 +385,7 @@ compared to other prognostic factors [7,8].
                                                      
                                               ),
                                               
-                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                              h4("Hit to load, 5000 simulations, treatment effect 1, sigma 3, covariate coefficients -1.00 -0.33 1.75"),
                                             ),
                                             
                                             fluidRow(
@@ -400,7 +402,7 @@ compared to other prognostic factors [7,8].
                                                      
                                               ),
                                               
-                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                              h4("Hit to load, 5000 simulations, treatment effect 1, sigma 2, 0.75 multiplicative covariate coefficients -0.20 -0.04 0.22"),
                                             ),
                                             
                                             
@@ -423,7 +425,7 @@ compared to other prognostic factors [7,8].
                                                      
                                                      
                                               ),
-                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                              h4("Hit to load, 5000 simulations, default treatment effect, sigma 0.2, 4 multiplicative covariate coefficients -0.73 0.35 0.55"),
                                               
                                             ),
                                             
@@ -447,51 +449,51 @@ compared to other prognostic factors [7,8].
                                   ),
                                   
                                   
-                                  tabPanel( "2 Example A results, default setting",
-                                            
-                                            h4(paste("Figure 3 Treatment effect estimates, betas -0.01,  0.02,  0.13, default settings 100,000 simulations (radio buttons do not work here)")),
-                                            img(src='estimates100K.png', align = "right"),
-                                            h4(paste("Figure 4 Standard error estimates")),
-                                            img(src='se100K.png', align = "right"),
-                                            h4(paste("Table 3 Summary, sorted by smallest mean squared error (MSE) estimate")),
-                                            img(src='summary100K.png', align = "center"),
-                                            
-                                              )     ,
-                                  
-                                  
-                                  tabPanel( "3 Example B results",
-                                            
-                                            h4(paste("Figure 5 Treatment effect estimates, betas -.99,  -0.4,  0.99 (no larger than 2 x trt effect); trt effect 1; residual variation 3; 50,000 simulations (radio buttons do not work here)")),
-                                            img(src='trtesr2.png', align = "right"),
-                                            h4(paste("Figure 6 Standard error estimates")),
-                                            img(src='se.estimates2.png', align = "right"),
-                                            h4(paste("Table 4 Summary, sorted by smallest mean squared error (MSE) estimate")),
-                                            img(src='summary of results2.png', align = "center"),
-                                            
-                                  )     ,
-                                  
-                                  
-                                  tabPanel( "4 Example C results",
-                                            
-                                            h4(paste("Figure 7 Treatment effect estimates, betas -.58,  0,  0.5 (no larger than 0.75 x trt effect); trt effect 1; residual variation 2; 50,000 simulations (radio buttons do not work here)")),
-                                            img(src='trtesr3.png', align = "right"),
-                                            h4(paste("Figure 8 Standard error estimates")),
-                                            img(src='se.estimates3.png', align = "right"),
-                                            h4(paste("Table 5 Summary, sorted by smallest mean squared error (MSE) estimate")),
-                                            img(src='summary of results3.png', align = "center"),
-                                            
-                                  )     ,
-                                  
-                                  tabPanel( "5 Example D results",
-                                            
-                                            h4(paste("Figure 8 Treatment effect estimates, betas  -0.87,  0.62,  0.82 (no larger than 4 x trt effect); trt effect .223; residual variation 0.2; 10,000 simulations (radio buttons do not work here)")),
-                                            img(src='estimate4.png', align = "right"),
-                                            h4(paste("Figure 8 Standard error estimates")),
-                                            img(src='se4.png', align = "right"),
-                                            h4(paste("Table 6 Summary, sorted by smallest mean squared error (MSE) estimate")),
-                                            img(src='summary4.png', align = "center"),
-                                            
-                                  )     ,
+                                  # tabPanel( "2 Example A results, default setting",
+                                  #           
+                                  #           h4(paste("Figure 3 Treatment effect estimates, betas -0.01,  0.02,  0.13, default settings 100,000 simulations (radio buttons do not work here)")),
+                                  #           img(src='estimates100K.png', align = "right"),
+                                  #           h4(paste("Figure 4 Standard error estimates")),
+                                  #           img(src='se100K.png', align = "right"),
+                                  #           h4(paste("Table 3 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                  #           img(src='summary100K.png', align = "center"),
+                                  #           
+                                  #             )     ,
+                                  # 
+                                  # 
+                                  # tabPanel( "3 Example B results",
+                                  #           
+                                  #           h4(paste("Figure 5 Treatment effect estimates, betas -.99,  -0.4,  0.99 (no larger than 2 x trt effect); trt effect 1; residual variation 3; 50,000 simulations (radio buttons do not work here)")),
+                                  #           img(src='trtesr2.png', align = "right"),
+                                  #           h4(paste("Figure 6 Standard error estimates")),
+                                  #           img(src='se.estimates2.png', align = "right"),
+                                  #           h4(paste("Table 4 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                  #           img(src='summary of results2.png', align = "center"),
+                                  #           
+                                  # )     ,
+                                  # 
+                                  # 
+                                  # tabPanel( "4 Example C results",
+                                  #           
+                                  #           h4(paste("Figure 7 Treatment effect estimates, betas -.58,  0,  0.5 (no larger than 0.75 x trt effect); trt effect 1; residual variation 2; 50,000 simulations (radio buttons do not work here)")),
+                                  #           img(src='trtesr3.png', align = "right"),
+                                  #           h4(paste("Figure 8 Standard error estimates")),
+                                  #           img(src='se.estimates3.png', align = "right"),
+                                  #           h4(paste("Table 5 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                  #           img(src='summary of results3.png', align = "center"),
+                                  #           
+                                  # )     ,
+                                  # 
+                                  # tabPanel( "5 Example D results",
+                                  #           
+                                  #           h4(paste("Figure 8 Treatment effect estimates, betas  -0.87,  0.62,  0.82 (no larger than 4 x trt effect); trt effect .223; residual variation 0.2; 10,000 simulations (radio buttons do not work here)")),
+                                  #           img(src='estimate4.png', align = "right"),
+                                  #           h4(paste("Figure 8 Standard error estimates")),
+                                  #           img(src='se4.png', align = "right"),
+                                  #           h4(paste("Table 6 Summary, sorted by smallest mean squared error (MSE) estimate")),
+                                  #           img(src='summary4.png', align = "center"),
+                                  #           
+                                  # )     ,
                                   
                                   tabPanel("6 Notes & references", value=3, 
                                            
