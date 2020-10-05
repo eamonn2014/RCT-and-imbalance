@@ -385,7 +385,7 @@ compared to other prognostic factors [7,8].
                                                      
                                               ),
                                               
-                                              h4("Hit to load, 5000 simulations, treatment effect 1, sigma 3, covariate coefficients -1.00 -0.33 1.75"),
+                                              h4("Hit to load, 5000 simulations, treatment effect 1, sigma 3, 2x multiplicative covariate coefficients -1.00 -0.33 1.75"),
                                             ),
                                             
                                             fluidRow(
@@ -425,7 +425,7 @@ compared to other prognostic factors [7,8].
                                                      
                                                      
                                               ),
-                                              h4("Hit to load, 5000 simulations, default treatment effect, sigma 0.2, 4 multiplicative covariate coefficients -0.73 0.35 0.55"),
+                                              h4("Hit to load, 5000 simulations, default treatment effect, sigma 0.2, 4 x multiplicative covariate coefficients -0.73 0.35 0.55"),
                                               
                                             ),
                                             
@@ -520,7 +520,7 @@ compared to other prognostic factors [7,8].
                                           We can also simulate a new sample or check the code behind the app by hitting the orange buttons.
                                           "),
                                            h4("
-                                          The next four tabs present results of pre-run simulations.
+                                          The next tab allows the upload of pre-run simulations.
                                           "),
                                            
                                            
