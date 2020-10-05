@@ -170,6 +170,47 @@ compared to other prognostic factors [7,8].
                                   # h4("User inputs"),
                                   div(
                                       
+                                    
+                                    # font colours for button font
+                                    tags$head(
+                                      tags$style(HTML('#upload{color:black}'))    
+                                    ),
+                                    
+                                    tags$head(
+                                      tags$style(HTML('#upload2{color:black}'))    
+                                    ),
+                                    
+                                    tags$head(
+                                      tags$style(HTML('#upload3{color:black}'))    
+                                    ),
+                                    
+                                    tags$head(
+                                      tags$style(HTML('#upload4{color:black}'))    
+                                    ),
+                                    
+                                    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
+                                    
+                                    # colours for button background
+                                    
+                                    tags$head(
+                                      tags$style(HTML('#upload{background-color:chartreuse}'))
+                                    ),
+                                    
+                                    tags$head(
+                                      tags$style(HTML('#upload2{background-color:chartreuse}'))
+                                    ),
+                                    
+                                    tags$head(
+                                      tags$style(HTML('#upload3{background-color:chartreuse}'))
+                                    ),
+                                    
+                                    tags$head(
+                                      tags$style(HTML('#upload4{background-color:chartreuse}'))
+                                    ),
+                                    
+                                    
+                                    
+                                    
                                       tags$head(
                                           tags$style(HTML('#ab1{background-color:orange}'))
                                       ),
@@ -265,6 +306,7 @@ compared to other prognostic factors [7,8].
                                                        
                                                        div(plotOutput("reg.plotx",  width=fig.width8, height=fig.height7)),
                                                        div(plotOutput("reg.ploty",  width=fig.width8, height=fig.height7)),
+                                                       div(plotOutput("phoney",  width=NULL, height=NULL)), #dummy line so rdata is saved
                                                 ) ,
                                                 
                                                 
@@ -298,6 +340,120 @@ compared to other prognostic factors [7,8].
                                             
                                          
                                             width = 30 )     ,
+                                  
+                                  #
+                                  #
+                                  tabPanel( "2 Load in pre-run simulations",
+                                            
+                                            
+                                            fluidRow(
+                                              
+                                              column(1,
+                                                     actionBttn(
+                                                       inputId = "upload",
+                                                       label = "",
+                                                       color = "royal",
+                                                       style = "float",
+                                                       icon = icon("sliders"),
+                                                       block = TRUE,
+                                                       no_outline=TRUE
+                                                     ),
+                                                     
+                                              ),
+                                              
+                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                            ),
+                                            
+                                            
+                                            fluidRow(
+                                              
+                                              column(1,
+                                                     actionBttn(
+                                                       inputId = "upload2",
+                                                       label = "",
+                                                       color = "royal",
+                                                       style = "float",
+                                                       icon = icon("sliders"),
+                                                       block = TRUE,
+                                                       no_outline=FALSE
+                                                     ),
+                                                     
+                                              ),
+                                              
+                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                            ),
+                                            
+                                            fluidRow(
+                                              
+                                              column(1,
+                                                     actionBttn(
+                                                       inputId = "upload3",
+                                                       label = "",
+                                                       color = "royal",
+                                                       style = "float",
+                                                       icon = icon("sliders"),
+                                                       block = TRUE
+                                                     ), 
+                                                     
+                                              ),
+                                              
+                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                            ),
+                                            
+                                            
+                                            
+                                            fluidRow(
+                                              
+                                              column(1,
+                                                     
+                                                     
+                                                     actionBttn(
+                                                       inputId = "upload4",
+                                                       label = "",  
+                                                       color = "royal",
+                                                       style = "float",
+                                                       icon = icon("sliders"),
+                                                       block = TRUE
+                                                     ),
+                                                     
+                                                     
+                                                     
+                                                     
+                                              ),
+                                              h4("Hit to load, xxxxxxxxxxxxxxxx"),
+                                              
+                                            ),
+                                            
+                                            
+                                           # this spinner indicating something is loading does not seem to work
+                                            shinycssloaders::withSpinner(
+                                              div(plotOutput("reg.plotLL",  width=fig.width8, height=fig.height7)),  #trt est plot
+                                            ) ,
+                                            # this spinner indicating something is loading does not seem to work
+                                            shinycssloaders::withSpinner(
+                                              div(plotOutput("reg.plotMM",  width=fig.width8, height=fig.height7)),  #se est plot
+                                            ) ,
+                                            # this spinner indicating something is loading does work
+                                            shinycssloaders::withSpinner(
+                                              verbatimTextOutput('content1'),  #summary table
+
+                                            ),
+
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                  ),
                                   
                                   
                                   tabPanel( "2 Example A results, default setting",
@@ -1079,6 +1235,9 @@ server <- shinyServer(function(input, output   ) {
         n1 <- mcmc()$Na
         n2 <- mcmc()$Nb
         
+        
+        
+        
         d1 <-  density(res[,2] )
         d2 <-  density(res[,4] )
         d3 <-  density(res[,6] )
@@ -1095,6 +1254,19 @@ server <- shinyServer(function(input, output   ) {
         
         # we may have imbalance in numbers, otherwise the se will not be exactly correct and this maybe seen in plot
         se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
+        
+        
+        #######################
+        # need to get zz here
+        # theta=sample$theta   # for purposes of saving
+        # here we save simulation results
+        # rename if important to keep
+        # save(list = c("wz","w","ww","se.","N1","n1","n2","res", "res2","res3","theta","zz"), file = "simulation_results.Rdata")  
+        # theta<- NULL
+        #######################
+        
+        
+        
         
         dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y    ))
         dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x    ))
@@ -1330,6 +1502,459 @@ server <- shinyServer(function(input, output   ) {
       return(print(d^2)) 
       
     })
+    
+    # save the data , you need code in ui see above
+    output$phoney <- renderPlot({
+
+      sample <- random.sample()
+      res <- simul()$res
+      res2 <- simul2()$res
+      res3 <- simul3()$res
+      sigma1=sample$sigma
+      N1 <- mcmc()$N #
+      n1 <- mcmc()$Na
+      n2 <- mcmc()$Nb
+      se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
+      theta=sample$theta
+      zz <- table.sim()$zz
+
+      save(list = c("sigma", "se.","N1","n1","n2","res", "res2","res3","theta","zz"),
+                         file = "simulation_results.Rdata")
+
+  
+    })
+  
+    
+###################################################################################################################################
+    
+    #####################################################################################################################
+    # Here we code up how to click a button and automatically upload rdata file
+    # tough to code again but duelling buttons link v helpful:  # https://shiny.rstudio.com/articles/action-buttons.html
+    #####################################################################################################################
+    
+    # declare empty objects to populate
+    content1 <- reactiveValues(tab1 = NULL)
+    content2 <- reactiveValues(tab2 = NULL)
+    content3 <- reactiveValues(tab3 = NULL)
+    content4 <- reactiveValues(tab4 = NULL)
+    content5 <- reactiveValues(tab5 = NULL)
+    content6 <- reactiveValues(tab6 = NULL)
+    
+    # If upload button is pressed this will activate
+    observeEvent(input$upload,    
+                 
+                 isolate({
+                   isfar <-  load(url(pp))
+                   
+                   content1$tab1 <-  get((isfar)[6])  # res
+                   content2$tab2 <-  get((isfar)[7])  # res2
+                   content3$tab3 <-  get((isfar)[8])  # res3
+                   content4$tab4 <-  get((isfar)[9])  # theta
+                   content5$tab5 <-  get((isfar)[10]) # zz
+                   content6$tab6 <-  get((isfar)[2])  # se
+                 })
+                 
+    )
+    
+    # If upload2 button is pressed this will activate
+    observeEvent(input$upload2, 
+                 
+                 isolate({
+                   isfar <-  load(url(pp2))  # 2nd link
+                   
+                   content1$tab1 <-  get((isfar)[6])  # res
+                   content2$tab2 <-  get((isfar)[7])  # res2
+                   content3$tab3 <-  get((isfar)[8])  # res3
+                   content4$tab4 <-  get((isfar)[9])  # theta
+                   content5$tab5 <-  get((isfar)[10]) # zz
+                   content6$tab6 <-  get((isfar)[2])  # se
+                 })
+                 
+    )
+    
+    # If upload3 button is pressed this will activate
+    observeEvent(input$upload3, 
+                 
+                 isolate({
+                   isfar <-  load(url(pp3))  # 3rdd link
+                   
+                   content1$tab1 <-  get((isfar)[6])  # res
+                   content2$tab2 <-  get((isfar)[7])  # res2
+                   content3$tab3 <-  get((isfar)[8])  # res3
+                   content4$tab4 <-  get((isfar)[9])  # theta
+                   content5$tab5 <-  get((isfar)[10]) # zz
+                   content6$tab6 <-  get((isfar)[2])  # se
+                 })
+                 
+    )
+    
+    # If upload3 button is pressed this will activate
+    observeEvent(input$upload4, 
+                 
+                 isolate({
+                   isfar <-  load(url(pp4))  # 4th link
+                   
+                   content1$tab1 <-  get((isfar)[6])  # res
+                   content2$tab2 <-  get((isfar)[7])  # res2
+                   content3$tab3 <-  get((isfar)[8])  # res3
+                   content4$tab4 <-  get((isfar)[9])  # theta
+                   content5$tab5 <-  get((isfar)[10]) # zz
+                   content6$tab6 <-  get((isfar)[2])  # se
+                 })
+                 
+    )
+    
+    # now we have put the data that we load into objects that can be used as inputs  
+    
+    output$content1 <- renderPrint({
+      if (is.null(content1$tab1)) return()
+      content1$tab1
+    })
+    
+    output$content2 <- renderPrint({
+      if (is.null(content2$tab2)) return()
+      content2$tab2
+    })
+    output$content3 <- renderPrint({
+      if (is.null(content3$tab3)) return()
+      content3$tab3
+    })
+    output$content4 <- renderPrint({
+      if (is.null(content4$tab4)) return()
+      content4$tab4
+    })
+    output$content5 <- renderPrint({
+      if (is.null(content5$tab5)) return()
+      content5$tab5
+    })    
+    output$content6 <- renderPrint({
+      if (is.null(content6$tab6)) return()
+      content6$tab6
+    })
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # the code to load is complete
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    ##repeat plot code for read in data
+    
+    output$reg.plotLL <- renderPlot({         #means
+      
+      # Get the  data
+      if (is.null(content2$tab1)) return()  # this stops red error messages before the first button is loaded
+      if (is.null(content3$tab2)) return()
+      if (is.null(content4$tab3)) return()
+      if (is.null(content5$tab4)) return()
+       
+      
+      res <- as.data.frame(content2$tab1)     # loaded objects assigned to objects
+      res <- as.data.frame(lapply(res, as.numeric))
+      
+      res2 <- as.data.frame(content3$tab2)
+      res2 <- as.data.frame(lapply(res2, as.numeric))
+      
+      res3 <- as.data.frame(content4$tab3)
+      res3 <- as.data.frame(lapply(res3, as.numeric))
+      
+      theta1 <- (content5$tab4)
+      
+      ## below here code is the same 
+      
+      d1 <-  density(res[,1] )
+      d2 <-  density(res[,3] )
+      d3 <-  density(res[,5] )
+      d4 <-  density(res[,7] )
+      d5 <-  density(res[,9] )
+      d6 <-  density(res[,11] )
+      d7 <-  density(res2[,1] )
+      d8 <-  density(res2[,3] )
+      d9 <-   density(res3[,1] )
+      d10 <-  density(res3[,3] )
+      d11 <-  density(res3[,5] )
+      d12 <-  density(res3[,7] )
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y  ))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x  ))
+      
+      if (input$dist %in% "All") {
+        
+        plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,
+             xlab="Treatment effect",  
+             ylab="Density")                           
+        lines( (d2), col = "black", lty=w, lwd=ww)  
+        lines( (d3), col = "red", lty=wz, lwd=ww)    
+        lines( (d4), col = "red", lty=w, lwd=ww)          
+        lines( (d5), col = "blue", lty=wz, lwd=ww)       
+        lines( (d6), col = "blue", lty=w, lwd=ww)       
+        lines( (d7), col = "purple", lty=wz, lwd=ww)       
+        lines( (d8), col = "purple", lty=w, lwd=ww)       
+        
+        lines( (d9), col = "green", lty=wz, lwd=ww)       
+        lines( (d10), col = "green", lty=w, lwd=ww)       
+        lines( (d11), col = "grey", lty=wz, lwd=ww)       
+        lines( (d12), col = "grey", lty=w, lwd=ww)  
+        
+      }
+      
+      else if (input$dist %in% "d1") {  #remove
+        
+        
+        plot((d1), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,
+             xlab="Treatment effect",  
+             ylab="Density")  
+        lines( (d2), col = "black", lty=w, lwd=ww)  
+        
+      }
+      
+      else if (input$dist %in% "d3") {  #remove
+        
+        
+        plot((d3), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww,col="red",
+             xlab="Treatment effect",  
+             ylab="Density")               
+        lines( (d4), col = "red", lty=w, lwd=ww)          
+        
+      }
+      
+      else if (input$dist %in% "d5") {
+        
+        plot((d5), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="blue",
+             xlab="Treatment effect",  
+             ylab="Density")                    
+        
+        lines( (d6), col = "blue", lty=w, lwd=ww)       
+        
+      }
+      
+      else if (input$dist %in% "d7") {
+        
+        plot((d7), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="purple",
+             xlab="Treatment effect", 
+             ylab="Density") 
+        
+        lines( (d8), col = "purple", lty=w, lwd=ww)     
+        
+      }
+      else if (input$dist %in% "d9") {
+        
+        plot((d9), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="green",
+             xlab="Treatment effect", 
+             ylab="Density")  
+        
+        lines( (d10), col = "green", lty=w, lwd=ww)     
+        
+      }
+      
+      else if (input$dist %in% "d11") {
+        
+        plot((d11), xlim = dx, main=paste0("Density of treatment estimates, truth= ",p3(theta1),""), ylim=c(0,dz),lty=wz, lwd=ww, col="grey",
+             xlab="Treatment effect",  
+             ylab="Density")  
+        
+        lines( (d12), col = "grey", lty=w, lwd=ww)     
+        
+      }
+      
+      
+      abline(v = theta1, col = "darkgrey")                
+      legend("topright",       # Add legend to density
+             legend = c(" adj. for true prognostic covariates", 
+                        " not adj. for true prognostic covariates" ,
+                        " adj. for covariates unrelated to outcome", 
+                        " not adj. for covariates unrelated to outcome",
+                        " adj. for mix of prognostic and unrelated to outcome", 
+                        " not adj. mix of prognostic and unrelated to outcome", 
+                        " adj. for correlated prognostic covariates", 
+                        " not adj. for correlated prognostic covariates",
+                        " adj. for imbalanced prognostic covariates", 
+                        " not adj. for imbalanced prognostic covariates", 
+                        " adj. for imbalanced covariates unrelated to outcome", 
+                        " not adj. imbalanced covariates unrelated to outcome"
+                        
+             ),
+             col = c("black", "black","red","red","blue", "blue", "purple", "purple", "green", "green", "grey", "grey"),
+             lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w)  ,lwd=ww
+             , bty = "n", cex=1)
+    })
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    # SIMUALTION PLOT
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    # collect simulation trt effect standard error estimates from simulation and plot!
+    
+    output$reg.plotMM <- renderPlot({         #standard errors
+      
+      # Get the  data
+      
+    #  res <- simul()$res
+     # res2 <- simul2()$res
+      #res3 <- simul3()$res
+      
+      #sample <- random.sample()
+     # sigma1=sample$sigma
+    #  N1 <- mcmc()$N # 
+      
+    #  n1 <- mcmc()$Na
+    #  n2 <- mcmc()$Nb
+      
+      # pull in the loaded objects
+      if (is.null(content2$tab1)) return()  # this stops red error messages before the first button is loaded
+      if (is.null(content3$tab2)) return()
+      if (is.null(content4$tab3)) return()
+      if (is.null(content5$tab6)) return()
+      
+      res <- as.data.frame(content2$tab1)     # loaded objects assigned to objects
+      res <- as.data.frame(lapply(res, as.numeric))
+      
+      res2 <- as.data.frame(content3$tab2)
+      res2 <- as.data.frame(lapply(res2, as.numeric))
+      
+      res3 <- as.data.frame(content4$tab3)
+      res3 <- as.data.frame(lapply(res3, as.numeric))
+      
+      se. <- (content5$tab6)
+      
+      ## below here code is the same 
+      
+      
+      d1 <-  density(res[,2] )
+      d2 <-  density(res[,4] )
+      d3 <-  density(res[,6] )
+      d4 <-  density(res[,8] )
+      d5 <-  density(res[,10] )
+      d6 <-  density(res[,12] )
+      d7 <-  density(res2[,2] )
+      d8 <-  density(res2[,4] )
+      
+      d9 <-   density(res3[,2] )
+      d10 <-  density(res3[,4] )
+      d11 <-  density(res3[,6] )
+      d12 <-  density(res3[,8] )
+      
+      # we may have imbalance in numbers, otherwise the se will not be exactly correct and this maybe seen in plot
+     # se. <-  sqrt( sigma1^2/n1 + sigma1^2/n2 )   #ditto
+      
+      
+      #######################
+      # need to get zz here
+      # theta=sample$theta   # for purposes of saving
+      # here we save simulation results
+      # rename if important to keep
+      # save(list = c("wz","w","ww","se.","N1","n1","n2","res", "res2","res3","theta","zz"), file = "simulation_results.Rdata")  
+      # theta<- NULL
+      #######################
+      
+      
+      
+      
+      dz <- max(c(d1$y, d2$y, d3$y, d4$y, d5$y, d6$y, d7$y, d8$y  , d9$y, d10$y, d11$y, d12$y    ))
+      dx <- range(c(d1$x,d2$x,  d3$x, d4$x, d5$x, d6$x, d7$x, d8$x   , d9$x, d10$x, d11$x, d12$x    ))
+      
+      if (input$dist %in% "All") {
+        
+        plot( (d1), xlim = c(dx), main=paste0("Density of treatment standard error estimates, truth= ",p4(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
+              xlab="Standard error",  
+              ylab="Density")  
+        lines( (d2), col = "black", lty=w, lwd=ww)  
+        lines( (d3), col = "red", lty=wz, lwd=ww)    
+        lines( (d4), col = "red", lty=w, lwd=ww)          
+        lines( (d5), col = "blue", lty=wz, lwd=ww)       
+        lines( (d6), col = "blue", lty=w, lwd=ww)       
+        lines( (d7), col = "purple", lty=wz, lwd=ww)       
+        lines( (d8), col = "purple", lty=w, lwd=ww)       
+        
+        lines( (d9), col = "green", lty=wz, lwd=ww)       
+        lines( (d10), col = "green", lty=w, lwd=ww)       
+        lines( (d11), col = "grey", lty=wz, lwd=ww)       
+        lines( (d12), col = "grey", lty=w, lwd=ww)  
+        
+      }
+      
+      
+      else if (input$dist %in% "d1") {  
+        
+        plot((d1), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,
+             xlab="Treatment effect",  
+             ylab="Density") 
+        lines( (d2), col = "black", lty=w, lwd=ww)  
+        
+      }
+      
+      else if (input$dist %in% "d3") {  
+        
+        
+        plot((d3), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww,col="red",
+             xlab="Treatment effect", 
+             ylab="Density")  
+        lines( (d4), col = "red", lty=w, lwd=ww)          
+        
+      }
+      
+      else if (input$dist %in% "d5") {
+        
+        plot((d5), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="blue",
+             xlab="Treatment effect",  
+             ylab="Density")  
+        
+        lines( (d6), col = "blue", lty=w, lwd=ww)       
+        
+      }
+      
+      else if (input$dist %in% "d7") {
+        
+        plot((d7), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="purple",
+             xlab="Treatment effect",  
+             ylab="Density") 
+        
+        lines( (d8), col = "purple", lty=w, lwd=ww)     
+        
+      }
+      
+      else if (input$dist %in% "d9") {
+        
+        plot((d9), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="green",
+             xlab="Treatment effect",  
+             ylab="Density")  
+        
+        lines( (d10), col = "green", lty=w, lwd=ww)     
+        
+      }
+      
+      else if (input$dist %in% "d11") {
+        
+        plot((d11), xlim = dx, main=paste0("Density of treatment standard error estimates, truth= ",p3(se.),""), ylim=c(0,dz),lty=wz, lwd=ww, col="grey",
+             xlab="Treatment effect",  
+             ylab="Density")  
+        
+        lines( (d12), col = "grey", lty=w, lwd=ww)     
+        
+      }
+      
+      abline(v = se., col = "darkgrey")   
+      legend("topright",           # Add legend to density
+             legend = c(" adj. for true prognostic covariates", 
+                        " not adj. for true prognostic covariates" ,
+                        " adj. for covariates unrelated to outcome", 
+                        " not adj. for covariates unrelated to outcome",
+                        " adj. for mix of prognostic and unrelated to outcome", 
+                        " not adj. mix of prognostic and unrelated to outcome", 
+                        " adj. for correlated prognostic covariates", 
+                        " not adj. for correlated prognostic covariates",
+                        " adj. for imbalanced prognostic covariates", 
+                        " not adj. for imbalanced prognostic covariates", 
+                        " adj. for imbalanced covariates unrelated to outcome", 
+                        " not adj. imbalanced covariates unrelated to outcome"
+                        
+             ),
+             col = c("black", "black","red","red","blue", "blue", "purple", "purple", "green", "green", "grey", "grey"),
+             lty = c(wz, w,wz,w,wz,w,wz,w,wz,w,wz,w) ,lwd=ww
+             , bty = "n", cex=1)
+    })
+    
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    
+ 
  
 }) 
 
