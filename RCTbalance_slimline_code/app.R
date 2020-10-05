@@ -493,7 +493,7 @@ compared to other prognostic factors [7,8].
                                   #           h4(paste("Table 6 Summary, sorted by smallest mean squared error (MSE) estimate")),
                                   #           img(src='summary4.png', align = "center"),
                                   #           
-                                  # )     ,
+                                  # )     ,  
                                   
                                   tabPanel("6 Notes & references", value=3, 
                                            
