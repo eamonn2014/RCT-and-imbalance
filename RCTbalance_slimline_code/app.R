@@ -431,20 +431,29 @@ compared to other prognostic factors [7,8].
                                             
                                             
                                            # this spinner indicating something is loading does not seem to work
-                                            shinycssloaders::withSpinner(
-                                              div(plotOutput("reg.plotLL",  width=fig.width8, height=fig.height7)),  #trt est plot
-                                            ) ,
-                                            # this spinner indicating something is loading does not seem to work
-                                            shinycssloaders::withSpinner(
-                                              div(plotOutput("reg.plotMM",  width=fig.width8, height=fig.height7)),  #se est plot
-                                            ) ,
-                                            # this spinner indicating something is loading does work
-                                            shinycssloaders::withSpinner(
-                                              verbatimTextOutput('content5'),  #summary table
-
-                                            ),
+                                            # shinycssloaders::withSpinner(
+                                            #   div(plotOutput("reg.plotLL",  width=fig.width8, height=fig.height7)),  #trt est plot
+                                            # ) ,
+                                            # # this spinner indicating something is loading does not seem to work
+                                            # shinycssloaders::withSpinner(
+                                            #   div(plotOutput("reg.plotMM",  width=fig.width8, height=fig.height7)),  #se est plot
+                                            # ) ,
+                                            # # this spinner indicating something is loading does work
+                                            # shinycssloaders::withSpinner(
+                                            #   verbatimTextOutput('content5'),  #summary table
+                                            # 
+                                            # ),
 
                                      
+                                           shinycssloaders::withSpinner(plotOutput("plot1",  width=fig.width8, height=fig.height7),5),
+                                           
+                                           shinycssloaders::withSpinner(plotOutput("plot2",  width=fig.width8, height=fig.height7),5),
+                                           
+                                           shinycssloaders::withSpinner(verbatimTextOutput("content1"),type = 5),
+                                           
+                                           
+                                           
+                                           
                                             
                                   ),
                                   
@@ -1609,7 +1618,7 @@ server <- shinyServer(function(input, output   ) {
                  
     )
     
-    # If upload3 button is pressed this will activate
+    # If upload4 button is pressed this will activate
     observeEvent(input$upload4, 
                  
                  isolate({
@@ -1627,38 +1636,68 @@ server <- shinyServer(function(input, output   ) {
     
     # now we have put the data that we load into objects that can be used as inputs  
     
-    output$content1 <- renderPrint({
-      if (is.null(content1$tab1)) return()  #res
-      content1$tab1
-    })
-    
-    output$content2 <- renderPrint({
-      if (is.null(content2$tab2)) return()   #res2
-      content2$tab2
-    })
-    output$content3 <- renderPrint({
-      if (is.null(content3$tab3)) return() #res3
-      content3$tab3
-    })
-    output$content4 <- renderPrint({
-      if (is.null(content4$tab4)) return()  #theta
-      content4$tab4
-    })
-    output$content5 <- renderPrint({
-      if (is.null(content5$tab5)) return()  #zz
-      content5$tab5
-    })    
-    output$content6 <- renderPrint({
-      if (is.null(content6$tab6)) return() #se.
-      content6$tab6
-    })
+    # output$content1 <- renderPrint({
+    #   if (is.null(content1$tab1)) return()  #res
+    #   content1$tab1
+    # })
+    # 
+    # output$content2 <- renderPrint({
+    #   if (is.null(content2$tab2)) return()   #res2
+    #   content2$tab2
+    # })
+    # output$content3 <- renderPrint({
+    #   if (is.null(content3$tab3)) return() #res3
+    #   content3$tab3
+    # })
+    # output$content4 <- renderPrint({
+    #   if (is.null(content4$tab4)) return()  #theta
+    #   content4$tab4
+    # })
+    # output$content5 <- renderPrint({
+    #   if (is.null(content5$tab5)) return()  #zz
+    #   content5$tab5
+    # })    
+    # output$content6 <- renderPrint({
+    #   if (is.null(content6$tab6)) return() #se.
+    #   content6$tab6
+    # })
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # the code to load is complete
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     ##repeat plot code for read in data
     
-    output$reg.plotLL <- renderPlot({         #means
+    
+    observeEvent(c(input$upload, input$upload2, input$upload3, input$upload4),{  
+      
+      output$content1 <- renderPrint({
+        if (is.null(content1$tab1)) return()
+        content1$tab1
+      })
+      
+      output$content2 <- renderPrint({
+        if (is.null(content2$tab2)) return()
+        content2$tab2
+      })
+      output$content3 <- renderPrint({
+        if (is.null(content3$tab3)) return()
+        content3$tab3
+      })
+      output$content4 <- renderPrint({
+        if (is.null(content4$tab4)) return()
+        content4$tab4
+      })
+      output$content5 <- renderPrint({
+        if (is.null(content5$tab5)) return()
+        content5$tab5
+      })    
+      output$content6 <- renderPrint({
+        if (is.null(content6$tab6)) return()
+        content6$tab6
+      })
+      
+      
+      output$plot1   <- renderPlot({         #means    
       
       # Get the  data
       if (is.null(content1$tab1)) return()  # this stops red error messages before the first button is loaded
@@ -1802,7 +1841,7 @@ server <- shinyServer(function(input, output   ) {
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     # collect simulation trt effect standard error estimates from simulation and plot!
     
-    output$reg.plotMM <- renderPlot({         #standard errors
+      output$plot2<- renderPlot({        #standard errors
       
       # Get the  data
       
@@ -1964,6 +2003,7 @@ server <- shinyServer(function(input, output   ) {
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
+    })
     
  
  
