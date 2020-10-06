@@ -449,7 +449,7 @@ compared to other prognostic factors [7,8].
                                            
                                            shinycssloaders::withSpinner(plotOutput("plot2",  width=fig.width8, height=fig.height7),5),
                                            
-                                           shinycssloaders::withSpinner(verbatimTextOutput("content1"),type = 5),
+                                           shinycssloaders::withSpinner(verbatimTextOutput("content5"),type = 5),
                                            
                                            
                                            
