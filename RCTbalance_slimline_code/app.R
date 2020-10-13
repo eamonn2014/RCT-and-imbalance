@@ -555,11 +555,14 @@ compared to other prognostic factors [7,8].
                                                   div(p(" ")),
                                                   tags$a(href = "https://twitter.com/f2harrell/status/1299755896319475712", tags$span(style="color:blue", "[9] Frank Harrell, twitter, Adjusted analysis"),),   
                                                   div(p(" ")),
-                                                  tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[10 Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
+                                                  tags$a(href = "https://discourse.datamethods.org/t/guidelines-for-covariate-adjustment-in-rcts/2814/2", tags$span(style="color:blue", "[10] Frank Harrell, Guidelines for covariate adjustment in rcts"),),  
                                                   div(p(" ")),
                                                   tags$a(href = "https://www.fharrell.com/post/covadj/", tags$span(style="color:blue", "[11] E.Steyerberg explains some of the advantages of conditioning on covariates"),),  
                                                   div(p(" ")),
-                                               
+                                                  tags$a(href = "https://twitter.com/f2harrell/status/1118481156037591042", tags$span(style="color:purple", "[12] Approach to simulation to investigate"),),  
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://raw.githubusercontent.com/andrew10043/probability/master/rct_adjustment.R", tags$span(style="color:purple", "[13] Code for the approach in reference [12]"),),  
+                                                  
                                                   tags$hr()
                                            ) 
                                            
