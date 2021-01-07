@@ -134,7 +134,7 @@
                 Due to randomisation we do not expect covariates to be related to the treatment assignment, 
                 but they may be related to the outcome and so are not considered confounding. 
                 Differences between the outcome which can be attributed to differences in the covariates can be removed, 
-                resulting in a more precise estimate of treatment effect. This should be considered more often as sample sizes can be reduced.
+                resulting in a more precise estimate of treatment effect [3a]. This should be considered more often as sample sizes can be reduced.
                 
                 As Frank Harrell has said, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)' [4].
 
@@ -542,6 +542,8 @@ compared to other prognostic factors [7,8].
                                                   tags$a(href = "https://www.linkedin.com/pulse/stop-obsessing-balance-stephen-senn/", tags$span(style="color:blue", "[2] Stephen Senn, Stop obsessing about balance"),),   
                                                   div(p(" ")),
                                                   tags$a(href = "https://discourse.datamethods.org/t/should-we-ignore-covariate-imbalance-and-stop-presenting-a-stratified-table-one-for-randomized-trials/547/32", tags$span(style="color:blue", "[3] Stephen Senn, point 4, Should we ignore covariate imbalance and stop presenting a stratified table one for randomized trials"),),  
+                                                  div(p(" ")),
+                                                  tags$a(href = "https://thestatsgeek.com/2014/02/01/adjusting-for-baseline-covariates-in-randomized-controlled-tr", tags$span(style="color:blue", "[3a] Adjusting for baseline covariates in randomized controlled trials"),),  
                                                   div(p(" ")),
                                                   tags$a(href = "https://twitter.com/f2harrell/status/1298640944405807105",  tags$span(style="color:blue", "[4]  Frank Harrell, twitter, 'unadjusted analysis makes the most severe assumptions of all (that risk factors do not exist)'."),),   
                                                   div(p(" ")),
